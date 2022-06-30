@@ -10,10 +10,7 @@ export default function Login(){
 
     return (
         <div className="LoginPage">
-            <Form
-            name="normal_login"
-            className="login-form"
-            >
+            <Form name="normal_login" className="login-form">
                 <Form.Item>
                     <h2>Log in</h2>
                 </Form.Item>
@@ -26,7 +23,7 @@ export default function Login(){
                     },
                     ]}
                 >
-                    <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+                    <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" size="large"/>
 
                 </Form.Item>
                 
@@ -39,11 +36,7 @@ export default function Login(){
                     },
                     ]}
                 >
-                    <Input
-                    prefix={<LockOutlined className="site-form-item-icon" />}
-                    type="password"
-                    placeholder="Password"
-                    />
+                    <Input prefix={<LockOutlined className="site-form-item-icon" />} type="password" placeholder="Password" size="large"/>
                 </Form.Item>
                 <Form.Item>
                     <a className="login-form-forgot" href="">
@@ -52,7 +45,7 @@ export default function Login(){
                 </Form.Item>
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" className="login-form-button">
+                    <Button type="primary" htmlType="submit" className="login-form-button" size="large">
                     Log in
                     </Button>
 
