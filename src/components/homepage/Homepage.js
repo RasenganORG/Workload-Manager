@@ -2,34 +2,10 @@ import "./Homepage.scss"
 import { SearchOutlined} from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, Input, Col, Row, Card, Progress, Avatar, List} from 'antd';
 import React from 'react';
-import Item from "antd/lib/list/Item";
+import { BrowserRouter as Router, Routes, Route, Link, Outlet } from "react-router-dom";
 
 export default function Homepage(){ 
-    const projectTasksData = [
-        {
-            title: "Upcoming tasks",
-            taskNumber: 34,
-        },
-        {
-            title: "Assigned tasks",
-            taskNumber: 5,
-        },
-        {
-            title: "Blocked tasks",
-            taskNumber: 2,
-        }
-        
-    ];
 
-    const userData = [
-        {
-            userName: "Jane Doe",
-        },
-        {
-            userName: "John Doe",
-        }
-    ];
- 
     return (
         <div className="Homepage">
             <Layout>
@@ -50,9 +26,22 @@ export default function Homepage(){
                         </Col>
                         <Col span={20}> 
                             <Menu defaultSelectedKeys={["activeProjects"]}theme="dark" mode="horizontal">
-                                <Menu.Item key="activeProjects">Active projects</Menu.Item>
-                                <Menu.Item key="completedProjects">Completed projects</Menu.Item>
-                                <Menu.Item key="userList">User List</Menu.Item>
+                                 
+                                <Menu.Item key="activeProjects">
+                                    <Link to="active-projects">
+                                        Active projects
+                                    </Link>    
+                                </Menu.Item>
+                                <Menu.Item key="completedProjects">
+                                    <Link to="completed-projects">
+                                        Completed projects
+                                    </Link>
+                                </Menu.Item>
+                                <Menu.Item key="userList">
+                                    <Link to="user-list">
+                                        User List
+                                    </Link>    
+                                </Menu.Item>
                             </Menu>
                         </Col>
                         
@@ -81,253 +70,8 @@ export default function Homepage(){
                             </Layout.Sider>
                         </Col>
                         <Col span={18}>
-                        <Layout
-                            style={{
-                            padding: '0 24px 24px',
-                            }}
-                        >
-                            <Breadcrumb
-                            style={{
-                                margin: '16px 0',
-                            }}
-                            >
-                                <Breadcrumb.Item>Home</Breadcrumb.Item>
-                                <Breadcrumb.Item>Active Projects</Breadcrumb.Item>
-                            </Breadcrumb>
-
-                            {/* main content start */}
-                            <Layout.Content className="site-layout-background">
-
-                                <Row gutter={[16,16]}>
-                                    <Col span={8}>
-                                        <Card title={'Project 1'} bordered={false}>
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                                            <Row gutter={4}>
-                                                <Col span={20}>
-                                                <Progress percent={53} /> 
-                                                </Col>
-                                                <Col span={4}>
-                                                    <p>completed</p>
-                                                </Col> 
-                                            </Row>
-                                            <Row gutter={4}>
-                                                <Col span={12}>
-                                                    <h3>Statistics</h3>
-                                                    <List
-                                                        itemLayout="horizontal"
-                                                        dataSource={projectTasksData}
-                                                        renderItem={(item) => (
-                                                        <List.Item>
-                                                            <List.Item.Meta
-                                                            title={<a href="#">{item.title + ": " + item.taskNumber}</a>}
-                                                            />
-                                                        </List.Item>
-                                                        )}
-                                                    />
-                                                </Col>
-                                                <Col span={12}>
-                                                    <h3>Assigned users</h3 >
-                                                    <List
-                                                        itemLayout="horizontal"
-                                                        dataSource={userData}
-                                                        renderItem={(item) => (
-                                                        <List.Item>
-                                                            <List.Item.Meta
-                                                            avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                                                            title={<a href="#">{item.userName}</a>}
-                                                            />
-                                                        </List.Item>
-                                                        )}
-                                                    />
-                                                </Col>
-                                            </Row>
-                                        </Card>
-                                        {/* todo: create componenets to render cards */}
-                                    </Col>
-                                    <Col span={8}>
-                                        <Card title={'Project 1'} bordered={false}>
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                                            <Row gutter={4}>
-                                                <Col span={20}>
-                                                <Progress percent={53} /> 
-                                                </Col>
-                                                <Col span={4}>
-                                                    <p>completed</p>
-                                                </Col> 
-                                            </Row>
-                                            <Row gutter={4}>
-                                                <Col span={12}>
-                                                    <h3>Statistics</h3>
-                                                    <List
-                                                        itemLayout="horizontal"
-                                                        dataSource={projectTasksData}
-                                                        renderItem={(item) => (
-                                                        <List.Item>
-                                                            <List.Item.Meta
-                                                            title={<a href="#">{item.title + ": " + item.taskNumber}</a>}
-                                                            />
-                                                        </List.Item>
-                                                        )}
-                                                    />
-                                                </Col>
-                                                <Col span={12}>
-                                                    <h3>Assigned users</h3 >
-                                                    <List
-                                                        itemLayout="horizontal"
-                                                        dataSource={userData}
-                                                        renderItem={(item) => (
-                                                        <List.Item>
-                                                            <List.Item.Meta
-                                                            avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                                                            title={<a href="#">{item.userName}</a>}
-                                                            />
-                                                        </List.Item>
-                                                        )}
-                                                    />
-                                                </Col>
-                                            </Row>
-                                        </Card>
-                                        {/* todo: create componenets to render cards */}
-                                    </Col>
-                                    <Col span={8}>
-                                        <Card title={'Project 1'} bordered={false}>
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                                            <Row gutter={4}>
-                                                <Col span={20}>
-                                                <Progress percent={53} /> 
-                                                </Col>
-                                                <Col span={4}>
-                                                    <p>completed</p>
-                                                </Col> 
-                                            </Row>
-                                            <Row gutter={4}>
-                                                <Col span={12}>
-                                                    <h3>Statistics</h3>
-                                                    <List
-                                                        itemLayout="horizontal"
-                                                        dataSource={projectTasksData}
-                                                        renderItem={(item) => (
-                                                        <List.Item>
-                                                            <List.Item.Meta
-                                                            title={<a href="#">{item.title + ": " + item.taskNumber}</a>}
-                                                            />
-                                                        </List.Item>
-                                                        )}
-                                                    />
-                                                </Col>
-                                                <Col span={12}>
-                                                    <h3>Assigned users</h3 >
-                                                    <List
-                                                        itemLayout="horizontal"
-                                                        dataSource={userData}
-                                                        renderItem={(item) => (
-                                                        <List.Item>
-                                                            <List.Item.Meta
-                                                            avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                                                            title={<a href="#">{item.userName}</a>}
-                                                            />
-                                                        </List.Item>
-                                                        )}
-                                                    />
-                                                </Col>
-                                            </Row>
-                                        </Card>
-                                        {/* todo: create componenets to render cards */}
-                                    </Col>
-                                    <Col span={8}>
-                                        <Card title={'Project 1'} bordered={false}>
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                                            <Row gutter={4}>
-                                                <Col span={20}>
-                                                <Progress percent={53} /> 
-                                                </Col>
-                                                <Col span={4}>
-                                                    <p>completed</p>
-                                                </Col> 
-                                            </Row>
-                                            <Row gutter={4}>
-                                                <Col span={12}>
-                                                    <h3>Statistics</h3>
-                                                    <List
-                                                        itemLayout="horizontal"
-                                                        dataSource={projectTasksData}
-                                                        renderItem={(item) => (
-                                                        <List.Item>
-                                                            <List.Item.Meta
-                                                            title={<a href="#">{item.title + ": " + item.taskNumber}</a>}
-                                                            />
-                                                        </List.Item>
-                                                        )}
-                                                    />
-                                                </Col>
-                                                <Col span={12}>
-                                                    <h3>Assigned users</h3 >
-                                                    <List
-                                                        itemLayout="horizontal"
-                                                        dataSource={userData}
-                                                        renderItem={(item) => (
-                                                        <List.Item>
-                                                            <List.Item.Meta
-                                                            avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                                                            title={<a href="#">{item.userName}</a>}
-                                                            />
-                                                        </List.Item>
-                                                        )}
-                                                    />
-                                                </Col>
-                                            </Row>
-                                        </Card>
-                                        {/* todo: create componenets to render cards */}
-                                    </Col>
-                                    <Col span={8}>
-                                        <Card title={'Project 1'} bordered={false}>
-                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                                            <Row gutter={4}>
-                                                <Col span={20}>
-                                                <Progress percent={53} /> 
-                                                </Col>
-                                                <Col span={4}>
-                                                    <p>completed</p>
-                                                </Col> 
-                                            </Row>
-                                            <Row gutter={4}>
-                                                <Col span={12}>
-                                                    <h3>Statistics</h3>
-                                                    <List
-                                                        itemLayout="horizontal"
-                                                        dataSource={projectTasksData}
-                                                        renderItem={(item) => (
-                                                        <List.Item>
-                                                            <List.Item.Meta
-                                                            title={<a href="#">{item.title + ": " + item.taskNumber}</a>}
-                                                            />
-                                                        </List.Item>
-                                                        )}
-                                                    />
-                                                </Col>
-                                                <Col span={12}>
-                                                    <h3>Assigned users</h3 >
-                                                    <List
-                                                        itemLayout="horizontal"
-                                                        dataSource={userData}
-                                                        renderItem={(item) => (
-                                                        <List.Item>
-                                                            <List.Item.Meta
-                                                            avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                                                            title={<a href="#">{item.userName}</a>}
-                                                            />
-                                                        </List.Item>
-                                                        )}
-                                                    />
-                                                </Col>
-                                            </Row>
-                                        </Card>
-                                        {/* todo: create componenets to render cards */}
-                                    </Col>
-                                    
-                                </Row>
-                            </Layout.Content>
-                        </Layout>
+                            <Outlet /> 
+                            {/* reference for outlet > https://www.youtube.com/watch?v=PWi9V9d_Jsc */}
                         </Col>
                     </Row>
                 </Layout>
