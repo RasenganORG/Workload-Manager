@@ -1,0 +1,5 @@
+// @import "/src/assets/variables.scss";
+
+ .ant-col {
+    width:100vw //solves a bug where if we dont have any active proejcts the sidebar is collapsed
+ } 
