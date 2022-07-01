@@ -94,6 +94,8 @@ export default function Homepage(){
                                 <Breadcrumb.Item>Home</Breadcrumb.Item>
                                 <Breadcrumb.Item>Active Projects</Breadcrumb.Item>
                             </Breadcrumb>
+
+                            {/* main content start */}
                             <Layout.Content className="site-layout-background">
 
                                 <Row gutter={[16,16]}>
