@@ -18,7 +18,7 @@ export default function Homepage(){
                                 enterButton={<SearchOutlined />}
                                 size="large"
                                 onSearch={alert}
-                                style={{"padding-top": "1em", width:"100%"}}
+                                style={{"padding": "1em 0" , width:"100%"}}
                             />
                         </Col>  
                         <Col span={1}>

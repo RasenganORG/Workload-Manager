@@ -1,0 +1,11 @@
+.ProjectWrapper {
+    .projectBreadcrumbs .ant-breadcrumb-link, .projectBreadcrumbs .ant-breadcrumb-separator {
+        color: white    
+    }
+
+    .ant-page-header-heading-left {
+        flex-direction: column;
+        align-items: start;
+    }
+
+}

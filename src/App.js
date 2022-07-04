@@ -8,6 +8,8 @@ import Homepage from './components/homepage/Homepage'
 import ActiveProjects from './components/homepage/activeProjects/activeProjects';
 import CompletedProjects from './components/homepage/completedProjects/completedProjects';
 import UserList from './components/homepage/userList/userList';
+import Project from './components/homepage/projectPage/Project';
+import Tasks from './components/homepage/projectPage/tasks/tasks';
 function App() {
 
 
@@ -25,6 +27,11 @@ function App() {
               <Route path="active-projects" element={ <ActiveProjects/>} />
               <Route path="completed-projects" element={ <CompletedProjects/>} />
               <Route path="user-list" element={ <UserList /> } />
+            </Route>
+            <Route path="/project" element={<Project />}>
+              <Route path="" element={<Tasks />} />
+              <Route path="tasks" element={<Tasks />} />
+              <Route path="tasks" element={<Tasks />} />
             </Route>
           </Routes>
         </Router>
