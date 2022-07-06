@@ -3,21 +3,22 @@ import React from "react";
 import "antd/dist/antd.css";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Login from './components/login/Login';
-import Register from "./components/register/Register"
-import Homepage from './components/homepage/Homepage'
+import Register from "./components/register/Register";
+import Homepage from './components/homepage/Homepage';
 import ActiveProjects from './components/homepage/activeProjects/activeProjects';
 import CompletedProjects from './components/homepage/completedProjects/completedProjects';
 import UserList from './components/homepage/userList/userList';
 import Project from './components/homepage/projectPage/Project';
 import Tasks from './components/homepage/projectPage/tasks/tasks';
 import AboutProject from './components/homepage/projectPage/about/AboutProject';
-import Projectstatistics from "./components/homepage/projectPage/projectStatistics/ProjectStatistics"
+import Projectstatistics from "./components/homepage/projectPage/projectStatistics/ProjectStatistics";
+import NewTask from './components/homepage/projectPage/NewTaskPage/NewTasks';
 function App() {
 
 
   return (
      
-      <div className="App" style={{"overflow-x": "hidden"}}>
+      <div className="App" >
          <Router>
           <Routes>
             <Route path="/login" element={<Login />} />
@@ -30,6 +31,7 @@ function App() {
                   <Route path="tasks" element={<Tasks />} />
                   <Route path="about" element={<AboutProject />} />
                   <Route path="statistics" element={<Projectstatistics />} />
+                  <Route path="newtask" element={<NewTask />} />
                 </Route>
               </Route>
               <Route path="completed-projects" element={ <CompletedProjects/>} />

@@ -1,8 +1,8 @@
 import "./Project.scss"
-import {Layout, Menu, Row, PageHeader, Breadcrumb} from 'antd';
+import {Layout, Menu, Row, PageHeader, Col, Button, Breadcrumb} from 'antd';
 import React from 'react'
 import { Outlet, Link } from "react-router-dom";
-
+import {PlusCircleOutlined } from '@ant-design/icons';
 export default function Project() {
  
     return (
@@ -24,9 +24,16 @@ export default function Project() {
                 <Layout>
                     
                     <Layout.Content>
-                        <Row>
-                            <PageHeader className="site-page-header" title={"Project 1 "} subTitle={"Last updated: " + "2 hours ago"} />
-                        </Row>
+                        <Row justify="space-between">
+                                <PageHeader className="site-page-header" title={"Project 1 "} subTitle={"Last updated: " + "2 hours ago"} />
+                               
+                                <Button type="primary" size="large" style={{margin: "16px"}}>
+                                    <Link to="newtask">
+                                        Add new task 
+                                        <PlusCircleOutlined size="large"/>
+                                    </Link>
+                                </Button>
+                         </Row>
                         
                         <Row>
                         <Menu mode="horizontal" style={{flex: "auto"}} defaultSelectedKeys="tasks">

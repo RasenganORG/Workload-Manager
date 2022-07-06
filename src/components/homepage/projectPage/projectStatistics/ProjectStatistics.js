@@ -122,7 +122,7 @@ export default function Projectstatistics() {
     xAxis: {
       categories: ["January", "February", "March", "April", "May", "June", "July"]
     }
-  }
+  };
   return (
     <Layout>
       <Layout.Content style={{margin: "16px 0"}}>
@@ -132,7 +132,7 @@ export default function Projectstatistics() {
               className="site-page-header"
               title="Project Calendar"
             />
-            <Calendar dateCellRender={dateCellRender} monthCellRender={monthCellRender} />;
+            <Calendar dateCellRender={dateCellRender} monthCellRender={monthCellRender} />
           </div>
           <div>
             <PageHeader

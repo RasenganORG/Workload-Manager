@@ -7,9 +7,8 @@ import { useLocation } from "react-router-dom";
 import { useState } from "react";
 
 export default function Homepage(){ 
-    const [sidebarColumns, setSiderbarColumns ] = useState(4)
-    const [contentColumns, setContentColumns ] = useState(20)
-    const [ShouldSiderbarRender, setShouldSiderbarRender] = useState(true)
+    const [sidebarColumns, setSiderbarColumns ] = useState(4) //4 cols out of 24
+    const [contentColumns, setContentColumns ] = useState(20) //20 cols out of 20
     const [currentPath, setCurrentPath] = useState("/")
 
 
