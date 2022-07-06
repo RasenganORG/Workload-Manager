@@ -1,6 +1,14 @@
 import { Breadcrumb, Layout, Col, Row, Card, Progress, Avatar, List} from 'antd';
-
+import { Outlet, useLocation, Link, useOutletContext} from 'react-router-dom';
+import { useEffect } from 'react';
 export default function CompletedProjects() {
+    const [currentPath, setCurrentPath] = useOutletContext();
+
+    const GetPath = () => useLocation().pathname
+    useEffect( () => {
+        setCurrentPath(GetPath)
+    })
+
     const PlaceholderCompletedProject = () => {
         const projectTasksData = [
             {
@@ -92,7 +100,7 @@ export default function CompletedProjects() {
 
             {/* main content start */}
             <Layout.Content className="site-layout-background">
-
+                
                 <Row gutter={[16,16]}>
                     <PlaceholderCompletedProject />
                     <PlaceholderCompletedProject />

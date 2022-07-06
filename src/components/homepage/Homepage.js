@@ -1,11 +1,34 @@
 import "./Homepage.scss"
 import { SearchOutlined} from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, Input, Col, Row, Card, Progress, Avatar, List} from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Outlet } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useState } from "react";
 
 export default function Homepage(){ 
+    const [sidebarColumns, setSiderbarColumns ] = useState(4)
+    const [contentColumns, setContentColumns ] = useState(20)
+    const [ShouldSiderbarRender, setShouldSiderbarRender] = useState(true)
+    const [currentPath, setCurrentPath] = useState("/")
 
+
+    //when the router path is modified we remove/add the siderbar, depending on the path
+    //each direct child of homepage(active-projects, completed-projects and user-list) has 
+    //a function that updates the path using router context
+    
+    useEffect( () => {
+        if(currentPath === "/active-projects" || currentPath === "/completed-projects") {
+            setSiderbarColumns(4);
+            setContentColumns(20)
+        } else {
+            setSiderbarColumns(0);
+            setContentColumns(24)
+        }
+    }, [currentPath])
+     
+     
+  
     return (
         <div className="Homepage">
             <Layout>
@@ -17,9 +40,9 @@ export default function Homepage(){
                                 allowClear
                                 enterButton={<SearchOutlined />}
                                 size="large"
-                                onSearch={alert}
+                                onSearch={console.log("searching...")}
                                 style={{"padding": "1em 0" , width:"100%"}}
-                            />
+                             />
                         </Col>  
                         <Col span={1}>
                             <div className="logo">logo</div>
@@ -49,7 +72,9 @@ export default function Homepage(){
                 </Layout.Header>
                 <Layout>
                     <Row>
-                        <Col span={4}>
+
+                        
+                        <Col span={sidebarColumns}>
                             <Layout.Sider width={"100%"} className="site-layout-background">
                                 <Menu mode="inline"style={{height: '100%', borderRight: 0}}>
                                     <Menu.SubMenu title="Most Recent Projects">
@@ -69,8 +94,8 @@ export default function Homepage(){
                                 </Menu>
                             </Layout.Sider>
                         </Col>
-                        <Col span={18}>
-                            <Outlet /> 
+                        <Col span={contentColumns}>
+                            <Outlet context={[currentPath, setCurrentPath] }/> 
                             {/* reference for outlet > https://www.youtube.com/watch?v=PWi9V9d_Jsc */}
                         </Col>
                     </Row>

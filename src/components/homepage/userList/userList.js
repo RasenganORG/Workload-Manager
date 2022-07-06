@@ -1,6 +1,14 @@
 import { Breadcrumb, Layout, Collapse, Avatar, Row, Button, List, Divider} from 'antd';
-
+import { Outlet, useLocation, Link, useOutletContext} from 'react-router-dom';
+import { useEffect } from 'react';
 export default function UserList() {
+    const [currentPath, setCurrentPath] = useOutletContext();
+
+    const GetPath = () => useLocation().pathname
+    useEffect( () => {
+        setCurrentPath(GetPath)
+    })
+
     const collapsePanelPlaceholder = <div style={{display: "flex", alignItems: "center"}}> <Avatar src="https://joeschmoe.io/api/v1/random" />  <p>John Doe</p></div>
     const userInfo = () => {
         return (

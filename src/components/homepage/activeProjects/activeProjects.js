@@ -1,6 +1,16 @@
 import { Breadcrumb, Layout, Col, Row, Card, Progress, Avatar, List} from 'antd';
+import { useContext, useEffect } from 'react';
+import { Outlet, useLocation, Link, useOutletContext} from 'react-router-dom';
 
 export default function ActiveProjects()   {
+    const [currentPath, setCurrentPath] = useOutletContext();
+
+    const GetPath = () => useLocation().pathname
+    useEffect( () => {
+        setCurrentPath(GetPath)
+    })
+
+
     const PlaceholderActiveProject = () => {
         const projectTasksData = [
             {
@@ -26,9 +36,10 @@ export default function ActiveProjects()   {
                 userName: "John Doe",
             }
         ];
+        console.log(useLocation().pathname)
         return (
             <Col span={8}>
-                <Card title={'Project 1'} bordered={false}>
+                <Card title={<Link to="project">Project 1</Link>} bordered={false}>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
                     <Row gutter={4}>
                         <Col span={20}>
@@ -74,32 +85,42 @@ export default function ActiveProjects()   {
             </Col>
         )
     }
+    const RenderActiveProjects = (shouldRender) => {
+        //we remove the rendered project if the path goes further than activeprojects, for eg, we go to active-projects/project and we only the individual obj 
+        if(shouldRender.pathname === '/active-projects' || shouldRender.pathname === '/active-projects/' || shouldRender.pathname === '/') {
+            return (
+                <Layout
+                style={{
+                padding: '0 24px 24px',
+                }}
+                >
+                    <Breadcrumb
+                    style={{
+                        margin: '16px 0 ',
+                    }}
+                    >
+                        <Breadcrumb.Item>Home</Breadcrumb.Item>
+                        <Breadcrumb.Item>Active Projects</Breadcrumb.Item>
+                    </Breadcrumb>
+
+                    <Row gutter={[16,16]}>
+                        <PlaceholderActiveProject />
+                        <PlaceholderActiveProject />
+                        <PlaceholderActiveProject />
+                        <PlaceholderActiveProject />
+                        <PlaceholderActiveProject />
+                    </Row>
+                </Layout>
+            )
+        } else {
+            return null
+        }
        
+    } 
     return (
-        <Layout
-            style={{
-            padding: '0 24px 24px',
-            }}
-        >
-            <Breadcrumb
-            style={{
-                margin: '16px 0',
-            }}
-            >
-                <Breadcrumb.Item>Home</Breadcrumb.Item>
-                <Breadcrumb.Item>Active Projects</Breadcrumb.Item>
-            </Breadcrumb>
-
-            {/* main content start */}
-            <Layout.Content className="site-layout-background">
-
-                <Row gutter={[16,16]}>
-                    <PlaceholderActiveProject />
-                    <PlaceholderActiveProject />
-                    <PlaceholderActiveProject />
-                    <PlaceholderActiveProject />
-                </Row>
-            </Layout.Content>
+        <Layout>
+         {RenderActiveProjects(useLocation())}
+                <Outlet />
         </Layout>
 
     )

@@ -18,21 +18,21 @@ function App() {
       <div className="App">
          <Router>
           <Routes>
-            
-               
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} /> 
             <Route path="/" element={<Homepage /> }> 
               <Route path="/" element={ <ActiveProjects/>} />
-              <Route path="active-projects" element={ <ActiveProjects/>} />
+              <Route path="active-projects/" element={ <ActiveProjects/>}>
+                <Route path="project" element={<Project />}>
+                  <Route path="" element={<Tasks />} />
+                  <Route path="tasks" element={<Tasks />} />
+                  <Route path="tasks" element={<Tasks />} />
+                </Route>
+              </Route>
               <Route path="completed-projects" element={ <CompletedProjects/>} />
               <Route path="user-list" element={ <UserList /> } />
             </Route>
-            <Route path="/project" element={<Project />}>
-              <Route path="" element={<Tasks />} />
-              <Route path="tasks" element={<Tasks />} />
-              <Route path="tasks" element={<Tasks />} />
-            </Route>
+          
           </Routes>
         </Router>
       </div>
