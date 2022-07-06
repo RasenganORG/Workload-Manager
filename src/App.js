@@ -10,12 +10,14 @@ import CompletedProjects from './components/homepage/completedProjects/completed
 import UserList from './components/homepage/userList/userList';
 import Project from './components/homepage/projectPage/Project';
 import Tasks from './components/homepage/projectPage/tasks/tasks';
+import AboutProject from './components/homepage/projectPage/about/AboutProject';
+import Projectstatistics from "./components/homepage/projectPage/projectStatistics/ProjectStatistics"
 function App() {
 
 
   return (
      
-      <div className="App">
+      <div className="App" style={{"overflow-x": "hidden"}}>
          <Router>
           <Routes>
             <Route path="/login" element={<Login />} />
@@ -26,7 +28,8 @@ function App() {
                 <Route path="project" element={<Project />}>
                   <Route path="" element={<Tasks />} />
                   <Route path="tasks" element={<Tasks />} />
-                  <Route path="tasks" element={<Tasks />} />
+                  <Route path="about" element={<AboutProject />} />
+                  <Route path="statistics" element={<Projectstatistics />} />
                 </Route>
               </Route>
               <Route path="completed-projects" element={ <CompletedProjects/>} />

@@ -36,7 +36,7 @@ export default function Project() {
                         </Menu>
                         </Row>
                         <Row className="projectContent">
-                        <Outlet />
+                            <Outlet />
                         </Row>
                     </Layout.Content>
                 </Layout>
