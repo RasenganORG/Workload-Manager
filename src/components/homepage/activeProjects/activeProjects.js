@@ -4,11 +4,15 @@ import { Outlet, useLocation, Link, useOutletContext} from 'react-router-dom';
 
 export default function ActiveProjects()   {
     const [currentPath, setCurrentPath] = useOutletContext();
-
-    const GetPath = () => useLocation().pathname
+    const path = useLocation().pathname;
+    
     useEffect( () => {
-        setCurrentPath(GetPath)
-    })
+        setCurrentPath(path)
+   })
+ 
+    
+ 
+    
 
 
     const PlaceholderActiveProject = () => {
@@ -72,7 +76,7 @@ export default function ActiveProjects()   {
                                 renderItem={(item) => (
                                 <List.Item>
                                     <List.Item.Meta
-                                    avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
+                                    avatar={<Avatar src="https://joeschmoe.io/api/v1/random" size="small"/>}
                                     title={<a href="#">{item.userName}</a>}
                                     />
                                 </List.Item>

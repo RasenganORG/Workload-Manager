@@ -3,11 +3,13 @@ import { Outlet, useLocation, Link, useOutletContext} from 'react-router-dom';
 import { useEffect } from 'react';
 export default function CompletedProjects() {
     const [currentPath, setCurrentPath] = useOutletContext();
-
-    const GetPath = () => useLocation().pathname
+    const path = useLocation().pathname;
     useEffect( () => {
-        setCurrentPath(GetPath)
+        setCurrentPath(path)
     })
+ 
+ 
+
 
     const PlaceholderCompletedProject = () => {
         const projectTasksData = [
@@ -69,7 +71,7 @@ export default function CompletedProjects() {
                                 renderItem={(item) => (
                                 <List.Item>
                                     <List.Item.Meta
-                                    avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
+                                    avatar={<Avatar src="https://joeschmoe.io/api/v1/random" size="small"/>}
                                     title={<a href="#">{item.userName}</a>}
                                     />
                                 </List.Item>

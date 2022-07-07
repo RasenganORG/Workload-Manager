@@ -27,10 +27,9 @@ export default function Project() {
                         <Row justify="space-between">
                                 <PageHeader className="site-page-header" title={"Project 1 "} subTitle={"Last updated: " + "2 hours ago"} />
                                
-                                <Button type="primary" size="large" style={{margin: "16px"}}>
+                                <Button type="primary" size="large" style={{margin: "16px", display: "flex"}}>
                                     <Link to="newtask">
-                                        Add new task 
-                                        <PlusCircleOutlined size="large"/>
+                                        Add new task
                                     </Link>
                                 </Button>
                          </Row>

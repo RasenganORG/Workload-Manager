@@ -3,13 +3,17 @@ import { Outlet, useLocation, Link, useOutletContext} from 'react-router-dom';
 import { useEffect } from 'react';
 export default function UserList() {
     const [currentPath, setCurrentPath] = useOutletContext();
+    const path = useLocation().pathname;
 
-    const GetPath = () => useLocation().pathname
+
+
     useEffect( () => {
-        setCurrentPath(GetPath)
+        setCurrentPath(path)
     })
 
-    const collapsePanelPlaceholder = <div style={{display: "flex", alignItems: "center"}}> <Avatar src="https://joeschmoe.io/api/v1/random" />  <p>John Doe</p></div>
+
+     
+    const collapsePanelPlaceholder =<p> <Avatar src="https://joeschmoe.io/api/v1/random" />  John Doe</p> 
     const userInfo = () => {
         return (
             <div>

@@ -9,10 +9,10 @@ export default function NewTask() {
         <Card title="Add new task">
         <Form
           labelCol={{
-            span: 1,
+            span: 1
           }}
           wrapperCol={{
-            span: 22,
+            span: 21,
           }}
           layout="horizontal"
     
@@ -21,7 +21,7 @@ export default function NewTask() {
           <Form.Item label="Task title">
             <Input />
           </Form.Item>
-          <Form.Item label="Task description">
+          <Form.Item label="Description">
              <TextArea rows={4} />
           </Form.Item>
           <Form.Item label="Asignee">
@@ -37,7 +37,7 @@ export default function NewTask() {
           <Form.Item label="Due date">
             <DatePicker />
           </Form.Item>
-          <Form.Item label="Status">
+          <Form.Item label="Queue">
             <Select>
               <Select.Option>Pending</Select.Option>
               <Select.Option>In progress</Select.Option>
@@ -52,7 +52,7 @@ export default function NewTask() {
             </Select>
           </Form.Item>
           <Form.Item >
-            <Button type="primary">Create task</Button>
+            <Button type="primary" onClick={() => alert("it's-a me, mario")}>Create task</Button>
           </Form.Item>
         </Form>
 

@@ -7,17 +7,12 @@ import { useLocation } from "react-router-dom";
 import { useState } from "react";
 
 export default function Homepage(){ 
+    const [currentPath, setCurrentPath] = useState("/")
     const [sidebarColumns, setSiderbarColumns ] = useState(4) //4 cols out of 24
     const [contentColumns, setContentColumns ] = useState(20) //20 cols out of 20
-    const [currentPath, setCurrentPath] = useState("/")
 
-
-    //when the router path is modified we remove/add the siderbar, depending on the path
-    //each direct child of homepage(active-projects, completed-projects and user-list) has 
-    //a function that updates the path using router context
-    
     useEffect( () => {
-        if(currentPath === "/active-projects" || currentPath === "/completed-projects") {
+        if(currentPath === "/active-projects" || currentPath === "/completed-projects" || currentPath === "/") {
             setSiderbarColumns(4);
             setContentColumns(20)
         } else {
@@ -25,6 +20,15 @@ export default function Homepage(){
             setContentColumns(24)
         }
     }, [currentPath])
+
+
+   
+
+    //when the router path is modified we remove/add the siderbar, depending on the path
+    //each direct child of homepage(active-projects, completed-projects and user-list) has 
+    //a function that updates the path using router context
+    
+    
      
      
   
@@ -38,7 +42,6 @@ export default function Homepage(){
                                 placeholder="Search project"
                                 allowClear
                                 enterButton={<SearchOutlined />}
-                                size="large"
                                 onSearch={console.log("searching...")}
                                 style={{"padding": "1em 0" , width:"100%"}}
                              />
@@ -76,13 +79,13 @@ export default function Homepage(){
                         <Col span={sidebarColumns}>
                             <Layout.Sider width={"100%"} className="site-layout-background">
                                 <Menu mode="inline"style={{height: '100%', borderRight: 0}}>
-                                    <Menu.SubMenu title="Most Recent Projects">
+                                    <Menu.SubMenu title="Most Recent Projects" key="mostRecentProjects">
                                         <Menu.Item>Project 1</Menu.Item>
                                         <Menu.Item>Project 1</Menu.Item>
                                         <Menu.Item>Project 1</Menu.Item>
                                     </Menu.SubMenu>
 
-                                    <Menu.SubMenu title="All projects">
+                                    <Menu.SubMenu title="All projects" key="allProjects">
                                         <Menu.Item>Project 1</Menu.Item>
                                         <Menu.Item>Project 1</Menu.Item>
                                         <Menu.Item>Project 1</Menu.Item>
