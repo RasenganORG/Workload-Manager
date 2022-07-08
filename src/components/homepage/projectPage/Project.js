@@ -2,7 +2,7 @@ import "./Project.scss"
 import {Layout, Menu, Row, PageHeader, Col, Button, Breadcrumb} from 'antd';
 import React from 'react'
 import { Outlet, Link } from "react-router-dom";
-import {PlusCircleOutlined } from '@ant-design/icons';
+
 export default function Project() {
  
     return (

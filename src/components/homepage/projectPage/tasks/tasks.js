@@ -1,5 +1,5 @@
 import Board from 'react-trello'
-
+import { Layout } from 'antd'
 
 export default function Tasks() {
     const data = {
@@ -98,10 +98,13 @@ export default function Tasks() {
         // https://www.npmjs.com/package/react-trello kanban board documentation
 
     return (
-        <Board 
-            data={data} onCardClick={testCardCLick}
-            style={{background: "transparent"}}
-            draggable={true}
-        />
+			 <Layout>
+ 				<Board 
+							data={data} onCardClick={testCardCLick}
+							style={{background: "transparent"}}
+							draggable={true}
+					/>
+     </Layout>
+        
     )
 }

@@ -5,14 +5,14 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Outlet } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
-
+import Siderbar from "./Sidebar";
 export default function Homepage(){ 
     const [currentPath, setCurrentPath] = useState("/")
     const [sidebarColumns, setSiderbarColumns ] = useState(4) //4 cols out of 24
     const [contentColumns, setContentColumns ] = useState(20) //20 cols out of 20
 
     useEffect( () => {
-        if(currentPath === "/active-projects" || currentPath === "/completed-projects" || currentPath === "/") {
+        if(currentPath === "/projects" || currentPath === "/completed-projects" || currentPath === "/") {
             setSiderbarColumns(4);
             setContentColumns(20)
         } else {
@@ -29,7 +29,7 @@ export default function Homepage(){
     //a function that updates the path using router context
     
     
-     
+
      
   
     return (
@@ -47,10 +47,11 @@ export default function Homepage(){
                              />
                         </Col>  
                         <Col span={1}>
-                            <div className="logo">logo</div>
+                            <div className="logo">
+ 														</div>
                         </Col>
                         <Col span={20}> 
-                            <Menu defaultSelectedKeys={["activeProjects"]}theme="dark" mode="horizontal">
+                            {/* <Menu defaultSelectedKeys={["activeProjects"]}theme="dark" mode="horizontal">
                                  
                                 <Menu.Item key="activeProjects">
                                     <Link to="active-projects">
@@ -67,34 +68,40 @@ export default function Homepage(){
                                         User List
                                     </Link>    
                                 </Menu.Item>
+                            </Menu> */}
+                            <Menu defaultSelectedKeys={["projects"]}theme="dark" mode="horizontal">
+                                 
+                                <Menu.Item key="1">
+                                    <Link to="projects">
+                                        Projects
+                                    </Link>    
+                                </Menu.Item>
+																<Menu.Item key="2">
+                                    <Link to="user-list">
+                                        User List
+                                    </Link>    
+                                </Menu.Item>
+                                <Menu.Item key="3">
+                                    <Link to="concedii">
+                                        Concedii
+                                    </Link>
+                                </Menu.Item>
+                                <Menu.Item key="4">
+                                    <Link to="statistics">
+                                        Stats
+                                    </Link>    
+                                </Menu.Item>
                             </Menu>
                         </Col>
                         
                         </Row>
                 </Layout.Header>
                 <Layout>
-                    <Row>
+                    <Row style={{"max-width": "100%"}}>
 
                         
                         <Col span={sidebarColumns}>
-                            <Layout.Sider width={"100%"} className="site-layout-background">
-                                <Menu mode="inline"style={{height: '100%', borderRight: 0}}>
-                                    <Menu.SubMenu title="Most Recent Projects" key="mostRecentProjects">
-                                        <Menu.Item>Project 1</Menu.Item>
-                                        <Menu.Item>Project 1</Menu.Item>
-                                        <Menu.Item>Project 1</Menu.Item>
-                                    </Menu.SubMenu>
-
-                                    <Menu.SubMenu title="All projects" key="allProjects">
-                                        <Menu.Item>Project 1</Menu.Item>
-                                        <Menu.Item>Project 1</Menu.Item>
-                                        <Menu.Item>Project 1</Menu.Item>
-                                        <Menu.Item>Project 1</Menu.Item>
-                                        <Menu.Item>Project 1</Menu.Item>
-                                        <Menu.Item>Project 1</Menu.Item>
-                                    </Menu.SubMenu>
-                                </Menu>
-                            </Layout.Sider>
+														<Siderbar />
                         </Col>
                         <Col span={contentColumns}>
                             <Outlet context={[currentPath, setCurrentPath] }/> 
