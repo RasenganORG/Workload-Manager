@@ -24,10 +24,10 @@ export default function Project() {
                 <Layout>
                     
                     <Layout.Content>
-                        <Row justify="space-between">
+                        <Row justify="space-between" align="middle">
                                 <PageHeader className="site-page-header" title={"Project 1 "} subTitle={"Last updated: " + "2 hours ago"} />
                                
-                                <Button type="primary" size="large" style={{margin: "16px", display: "flex"}}>
+                                <Button type="primary" style={{margin: "16px", display: "flex"}}>
                                     <Link to="newtask">
                                         Add new task
                                     </Link>

@@ -1,4 +1,4 @@
-import { Breadcrumb, Layout, Col, Row, Card, Progress, Avatar, List} from 'antd';
+import { Breadcrumb, Layout, Col, Row, Card, Progress, Button, List} from 'antd';
 import { useState, useContext, useEffect } from 'react';
 import { Outlet, useLocation, Link, useOutletContext} from 'react-router-dom';
 
@@ -177,14 +177,22 @@ export default function Projects()   {
 	const RenderProjects = () => {
 		const breadcrumbs = () => {
 			return (
-				<Breadcrumb
-				style={{
-						margin: '16px 0 ',
-				}}
-				>
-						<Breadcrumb.Item>Home</Breadcrumb.Item>
-						<Breadcrumb.Item>Projects</Breadcrumb.Item>
-				</Breadcrumb>
+				<Row justify='space-between' align='middle'>
+					<Breadcrumb
+					style={{
+							margin: '16px 0 ',
+					}}
+					>
+							<Breadcrumb.Item>Home</Breadcrumb.Item>
+							<Breadcrumb.Item>Projects</Breadcrumb.Item>
+					</Breadcrumb>
+
+					<Button type="primary">
+						<Link to="add-new-project">
+							Add new project
+						</Link>
+					</Button>
+				</Row>
 			)
 		}
 		return (

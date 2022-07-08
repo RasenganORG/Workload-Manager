@@ -16,6 +16,7 @@ import Concedii from './components/homepage/concedii/Concedii';
 import Statistics from './components/homepage/statistics/Statistics';
 import VacationCalendar from './components/homepage/concedii/calendar/Calendar';
 import Wiki from './components/homepage/concedii/wiki/Wiki';
+import NewProject from './components/homepage/projects/newProject/NewProject';
 function App() {
 
   return (
@@ -28,7 +29,8 @@ function App() {
             <Route path="/" element={<Homepage /> }> 
               <Route path="/" element={<Navigate to="projects" />} />
 							<Route path="/projects" element={ <Projects />}>
-								<Route path="project" element={<Project />}>
+								<Route path="add-new-project" element={ <NewProject s/>} />
+ 								<Route path="project" element={<Project />}>
 									<Route path="" element={<Navigate to="tasks" />} />
 									<Route path="tasks" element={<Tasks />} />
 									<Route path="about" element={<AboutProject />} />
