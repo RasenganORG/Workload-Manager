@@ -5,7 +5,6 @@ export default function Wiki() {
  
 	return (
 		<Row>
- 			<p></p>
 			<Card title="decy  cum sa-ti iei concediu" style={{width:"100%"}} >
       <p>
 				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse condimentum nulla eget magna elementum tincidunt. In hac habitasse platea dictumst. In consectetur lacus vitae molestie molestie. Phasellus sit amet ligula tellus. Fusce consequat lobortis leo, nec feugiat tortor commodo eu. Fusce vel arcu risus. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
