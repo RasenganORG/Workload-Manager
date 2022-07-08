@@ -5,14 +5,11 @@ export default function UserList() {
     const [currentPath, setCurrentPath] = useOutletContext();
     const path = useLocation().pathname;
 
-
-
     useEffect( () => {
         setCurrentPath(path)
     })
 
 
-     
     const collapsePanelPlaceholder =<p> <Avatar src="https://joeschmoe.io/api/v1/random" />  John Doe</p> 
     const userInfo = () => {
         return (
@@ -42,37 +39,36 @@ export default function UserList() {
         )
     }
     
-     return (
-        <div>
-             <Layout style={{ padding: '0 24px 24px'}}>
-            <Breadcrumb
-            style={{
-                margin: '16px 0',
-            }}
-            >
-                <Breadcrumb.Item>Home</Breadcrumb.Item>
-                <Breadcrumb.Item>User list</Breadcrumb.Item>
-            </Breadcrumb>
+    return (
+			<Layout style={{ padding: '0 24px 24px'}}>
+				<Breadcrumb
+				style={{
+						margin: '16px 0',
+				}}
+				>
+						<Breadcrumb.Item>Home</Breadcrumb.Item>
+						<Breadcrumb.Item>User list</Breadcrumb.Item>
+				</Breadcrumb>
 
-            {/* main content start */}
-            <Layout className="site-layout-background">
-                <Collapse  >
-                    <Collapse.Panel header={collapsePanelPlaceholder} >  {/* todo assign a key here */}
-                       { userInfo()}
-                    </Collapse.Panel>
-                    <Collapse.Panel header={collapsePanelPlaceholder} >  
-                       { userInfo()}
-                    </Collapse.Panel>
-                    <Collapse.Panel header={collapsePanelPlaceholder} >  
-                       { userInfo()}
-                    </Collapse.Panel>
-                    <Collapse.Panel header={collapsePanelPlaceholder} >  
-                       { userInfo()}
-                    </Collapse.Panel>
-                </Collapse>
-           
-            </Layout>
-        </Layout>
-        </div>
+				{/* main content start */}
+				<Layout className="site-layout-background">
+						<Collapse  >
+								<Collapse.Panel header={collapsePanelPlaceholder} >  {/* todo assign a key here */}
+										{ userInfo()}
+								</Collapse.Panel>
+								<Collapse.Panel header={collapsePanelPlaceholder} >  
+										{ userInfo()}
+								</Collapse.Panel>
+								<Collapse.Panel header={collapsePanelPlaceholder} >  
+										{ userInfo()}
+								</Collapse.Panel>
+								<Collapse.Panel header={collapsePanelPlaceholder} >  
+										{ userInfo()}
+								</Collapse.Panel>
+						</Collapse>
+				
+				</Layout>
+		</Layout>
+
     )
 }

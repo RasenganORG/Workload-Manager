@@ -69,7 +69,7 @@ export default function Homepage(){
                                     </Link>    
                                 </Menu.Item>
                             </Menu> */}
-                            <Menu defaultSelectedKeys={["projects"]}theme="dark" mode="horizontal">
+                            <Menu defaultSelectedKeys={["1"]} theme="dark" mode="horizontal">
                                  
                                 <Menu.Item key="1">
                                     <Link to="projects">
