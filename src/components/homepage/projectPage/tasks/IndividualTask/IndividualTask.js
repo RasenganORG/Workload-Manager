@@ -4,7 +4,7 @@ import { Avatar, Card, Row, Col, Form, Input, Select } from 'antd';
 export default function IndividualTask() {
 
 	return (
-		<Card title="Individual task #232" style={{ width: "100%" }}>
+		<Card title="Individual task #232" style={{ width: "100%", margin:"16px 0" }}>
 			<Row gutter={32}>
 				<Col span={20}>
 					<p>

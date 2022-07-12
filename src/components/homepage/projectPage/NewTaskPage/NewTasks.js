@@ -25,7 +25,7 @@ export default function NewTask() {
 							<TextArea rows={4} />
 						</Form.Item>
 						<Form.Item label="Asignee">
-							<Select>
+							<Select data-cy="newTaskAsignee">
 								<Select.Option value="user0">John Doe 0</Select.Option>
 								<Select.Option value="user1">John Doe 1</Select.Option>
 								<Select.Option value="user2">John Doe 2</Select.Option>
