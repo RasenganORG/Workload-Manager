@@ -24,8 +24,16 @@ export default function NewTask() {
 						<Form.Item label="Description">
 							<TextArea rows={4} />
 						</Form.Item>
-						<Form.Item label="Asignee">
-							<Select data-cy="newTaskAsignee">
+						<Form.Item 
+							label="Asignee"
+							rules={[
+								{
+									required: true,
+									message: 'Please input your username!',
+								}
+							]}
+						>
+							<Select data-cy="newTaskAsignee" value="user0">
 								<Select.Option value="user0">John Doe 0</Select.Option>
 								<Select.Option value="user1">John Doe 1</Select.Option>
 								<Select.Option value="user2">John Doe 2</Select.Option>
@@ -34,25 +42,25 @@ export default function NewTask() {
 							</Select>
 						</Form.Item>
 
-						<Form.Item label="Due date">
+						<Form.Item label="Due date" data-cy="taskDueDate">
 							<DatePicker />
 						</Form.Item>
 						<Form.Item label="Queue">
-							<Select>
-								<Select.Option>Pending</Select.Option>
-								<Select.Option>In progress</Select.Option>
-								<Select.Option>Backlog</Select.Option>
+							<Select value="queue1">
+								<Select.Option value="queue1">Pending</Select.Option>
+								<Select.Option value="queue2">In progress</Select.Option>
+								<Select.Option value="queue3">Backlog</Select.Option>
 							</Select>
 						</Form.Item>
 						<Form.Item label="Priority">
-							<Select>
-								<Select.Option>Low priority</Select.Option>
-								<Select.Option>Medium priority</Select.Option>
-								<Select.Option>High Priority</Select.Option>
+							<Select value="prority0">
+								<Select.Option value="priority0">Low priority</Select.Option>
+								<Select.Option value="priority1">Medium priority</Select.Option>
+								<Select.Option value="priority2">High Priority</Select.Option>
 							</Select>
 						</Form.Item>
 						<Form.Item >
-							<Button type="primary" onClick={() => alert("it's-a me, mario")}>Create task</Button>
+							<Button type="primary"  onClick={() => alert("it's-a me, mario")}>Create task</Button>
 						</Form.Item>
 					</Form>
 

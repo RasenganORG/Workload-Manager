@@ -7,7 +7,6 @@ import Highcharts from 'highcharts'
 export default function Statistics() {
 	const [currentPath, setCurrentPath] = useOutletContext();
 	const path = useLocation().pathname;
-
 	const highchartOptions = {
 		title: {
 			text: "Statistics"

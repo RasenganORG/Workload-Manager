@@ -15,7 +15,7 @@ export default function Concedii() {
 
 
 	return (
-		<Layout style={{ padding: '0 24px 24px', "min-height": "100%" }}>
+		<Layout style={{ padding: '0 24px 24px', minHeight: "100%" }}>
 			<Breadcrumb
 				style={{
 					margin: '16px 0',

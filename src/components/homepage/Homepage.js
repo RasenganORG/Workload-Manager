@@ -1,11 +1,11 @@
 import "./Homepage.scss"
 import { SearchOutlined } from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu, Input, Col, Row, Card, Progress, Avatar, List } from 'antd';
+import { Layout, Menu, Input, Col, Row } from 'antd';
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Outlet } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { useState } from "react";
 import Siderbar from "./Sidebar";
+
 export default function Homepage() {
 	const [currentPath, setCurrentPath] = useState("/")
 	const [sidebarColumns, setSiderbarColumns] = useState(4) //4 cols out of 24
@@ -22,15 +22,27 @@ export default function Homepage() {
 	}, [currentPath])
 
 
-
-
 	//when the router path is modified we remove/add the siderbar, depending on the path
 	//each direct child of homepage(active-projects, completed-projects and user-list) has 
 	//a function that updates the path using router context
-
-
-
-
+	const menuItems = [
+		{
+			label: <Link to="projects">Projects</Link>,
+			key: 'item-1'
+		},
+		{
+			label: <Link to="user-list">User list</Link>,
+			key: 'item-2'
+		},
+		{
+			label: <Link to="concedii">Concedii</Link>,
+			key: 'item-3'
+		},
+		{
+			label: <Link to="statistics">Statistics</Link>,
+			key: 'item-4'
+		}
+	]
 
 	return (
 		<div className="Homepage">
@@ -51,53 +63,13 @@ export default function Homepage() {
 							</div>
 						</Col>
 						<Col span={20}>
-							{/* <Menu defaultSelectedKeys={["activeProjects"]}theme="dark" mode="horizontal">
-                                 
-                                <Menu.Item key="activeProjects">
-                                    <Link to="active-projects">
-                                        Active projects
-                                    </Link>    
-                                </Menu.Item>
-                                <Menu.Item key="completedProjects">
-                                    <Link to="completed-projects">
-                                        Completed projects
-                                    </Link>
-                                </Menu.Item>
-                                <Menu.Item key="userList">
-                                    <Link to="user-list">
-                                        User List
-                                    </Link>    
-                                </Menu.Item>
-                            </Menu> */}
-							<Menu defaultSelectedKeys={["1"]} theme="dark" mode="horizontal">
-
-								<Menu.Item key="1">
-									<Link to="projects">
-										Projects
-									</Link>
-								</Menu.Item>
-								<Menu.Item key="2">
-									<Link to="user-list">
-										User List
-									</Link>
-								</Menu.Item>
-								<Menu.Item key="3">
-									<Link to="concedii">
-										Concedii
-									</Link>
-								</Menu.Item>
-								<Menu.Item key="4">
-									<Link to="statistics">
-										Stats
-									</Link>
-								</Menu.Item>
-							</Menu>
+							<Menu defaultSelectedKeys={["1"]} theme="dark" mode="horizontal" items={menuItems} />
 						</Col>
 
 					</Row>
 				</Layout.Header>
 				<Layout>
-					<Row style={{ "max-width": "100%" }}>
+					<Row style={{ maxWidth: "100%" }}>
 
 
 						<Col span={sidebarColumns}>

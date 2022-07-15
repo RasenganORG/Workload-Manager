@@ -74,8 +74,8 @@ export default function Projects() {
 							</Col>
 							<Col span={12} style={{
 								display: "flex",
-								"align-items": "center",
-								"justify-content": "center"
+								alignItems: "center",
+								justifyContent: "center"
 							}}>
 								<Progress type="circle" percent={Math.floor(Math.random() * 100)} />
 							</Col>
@@ -134,8 +134,8 @@ export default function Projects() {
 							</Col>
 							<Col span={12} style={{
 								display: "flex",
-								"align-items": "center",
-								"justify-content": "center"
+								alignItems: "center",
+								justifyContent: "center"
 							}}>
 								<Progress type="circle" percent={100} />
 							</Col>
