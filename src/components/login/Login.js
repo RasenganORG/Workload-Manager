@@ -24,7 +24,8 @@ export default function Login() {
 							message: 'Please input your Username!',
 						},
 					]}
-				>
+					data-cy="usernameInput"
+ 				>
 					<Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" size="large" />
 
 				</Form.Item>
@@ -37,6 +38,8 @@ export default function Login() {
 							message: 'Please input your Password!',
 						},
 					]}
+					data-cy="passwordInput"
+
 				>
 					<Input prefix={<LockOutlined className="site-form-item-icon" />} type="password" placeholder="Password" size="large" />
 				</Form.Item>
@@ -46,7 +49,7 @@ export default function Login() {
 					</a>
 				</Form.Item>
 
-				<Form.Item>
+				<Form.Item data-cy="loginSubmitButton">
 					<Button type="primary" htmlType="submit" className="login-form-button" size="large">
 						Log in
 					</Button>

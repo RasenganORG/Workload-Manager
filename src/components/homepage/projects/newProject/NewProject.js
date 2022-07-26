@@ -84,7 +84,7 @@ export default function NewProject() {
 							placeholder="Select a color"
 							data-cy="colorSelector"
 						>
-							<Select >
+							<Select placeholder="Select a color label option">
 								<Select.Option value="none">None</Select.Option>
 								<Select.Option value="red">Red</Select.Option>
 								<Select.Option value="purple">Purple</Select.Option>

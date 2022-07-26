@@ -18,22 +18,37 @@ export default function NewTask() {
 
 					>
 
-						<Form.Item label="Task title">
-							<Input />
-						</Form.Item>
-						<Form.Item label="Description">
-							<TextArea rows={4} />
-						</Form.Item>
-						<Form.Item 
-							label="Asignee"
+						<Form.Item
+							label="Task title"
+							name="taskTitle"
 							rules={[
 								{
 									required: true,
-									message: 'Please input your username!',
+									message: "Please add a task name!"
 								}
 							]}
+							data-cy="taskTitle"
 						>
-							<Select data-cy="newTaskAsignee" value="user0">
+							<Input placeholder="Add the task title" />
+						</Form.Item>
+						<Form.Item 
+							label="Description"
+ 							name="taskDescription"
+							rules={[
+								{
+									required: true,
+									message: 'Please add a description for your task!',
+								},
+							]}
+							data-cy="taskDescription"
+						>
+							<TextArea rows={4} placeholder="Add a task description"/>
+						</Form.Item>
+						<Form.Item
+							label="Asignee"
+							data-cy="taskAsignee"
+						>
+							<Select data-cy="newTaskAsignee" placeholder="Assign an user to this tasks(leave blank for the task to remain unassigned)">
 								<Select.Option value="user0">John Doe 0</Select.Option>
 								<Select.Option value="user1">John Doe 1</Select.Option>
 								<Select.Option value="user2">John Doe 2</Select.Option>
@@ -42,25 +57,47 @@ export default function NewTask() {
 							</Select>
 						</Form.Item>
 
-						<Form.Item label="Due date" data-cy="taskDueDate">
+						<Form.Item 
+							label="Due date" 
+							name="dueDate"
+							rules={[
+								{
+									required: true,
+									message: 'Please add a due date for your project!'
+								}
+							]}
+							data-cy="dueDateSelector"
+						>
 							<DatePicker />
 						</Form.Item>
-						<Form.Item label="Queue">
-							<Select value="queue1">
+						<Form.Item 
+							label="Queue"
+							name="queueSelector"
+						>
+							<Select   placeholder="Select a queue for the task">
 								<Select.Option value="queue1">Pending</Select.Option>
 								<Select.Option value="queue2">In progress</Select.Option>
 								<Select.Option value="queue3">Backlog</Select.Option>
 							</Select>
 						</Form.Item>
-						<Form.Item label="Priority">
-							<Select value="prority0">
+						<Form.Item 
+							label="Priority"
+							name="taskPriority"
+							rules={[
+								{
+									required: true,
+									message: "Please select a priority for your task!"}
+							]}
+							data-cy="taskPriority"
+						>
+							<Select placeholder="Select the task priority">
 								<Select.Option value="priority0">Low priority</Select.Option>
 								<Select.Option value="priority1">Medium priority</Select.Option>
 								<Select.Option value="priority2">High Priority</Select.Option>
 							</Select>
 						</Form.Item>
 						<Form.Item >
-							<Button type="primary"  onClick={() => alert("it's-a me, mario")}>Create task</Button>
+							<Button htmlType="submit" type="primary" onClick={() => console.log("it's-a me, mario")}>Create task</Button>
 						</Form.Item>
 					</Form>
 

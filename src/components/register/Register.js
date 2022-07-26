@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 
 export default function Register() {
-
+ 
 	return (
 		<div className="registrationPage">
 			<Form name="normal_register" className="register-form">

@@ -1,10 +1,10 @@
  
 describe('Check if all required inputs can be completed', () => {
 	beforeEach(() => {
-		cy.visit('projects/add-new-project/')
+		cy.visit('projects/project/newtask/')
 
 	})
-  it('Check if new project form is working', () => {
+  it('Check if new task form is working', () => {
 		cy.get("[data-cy='projectTitle']").find("input").type("Project 2")
 		cy.get("[data-cy='projectDescription']").find("textarea").type("Project 2 description")
 		cy.get("[data-cy='addUsers']")
