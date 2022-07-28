@@ -1,41 +1,124 @@
-import React from 'react'
-import { useAuth } from '../auth/AuthProvider';
-import { useNavigate, useLocation } from "react-router-dom";
+import "antd/dist/antd.css";
+import { Form, Input, Button } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { login, reset } from "../../features/auth/authSlice";
+import Spinner from "../Spinner";
+
+
 
 export default function LogIn() {
-  let navigate = useNavigate();
-  let location = useLocation();
-  let auth = useAuth();
+	const [formData, setFormData] = useState({
+		username: "",
+		password: ""
+	})
 
-  let from = location.state?.from?.pathname || '/';
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    
-    let formData = new FormData(event.currentTarget);
-    let username = formData.get('username');
-		
-    auth.signin(username, () => {
-      // Send them back to the page they tried to visit when they were
-      // redirected to the login page. Use { replace: true } so we don't create
-      // another entry in the history stack for the login page.  This means that
-      // when they get to the protected page and click the back button, they
-      // won't end up back on the login page, which is also really nice for the
-      // user experience.
-      navigate(from, { replace: true });
-    });
-  }
+	const { email, password } = formData
 
-  return (
-    <div>
-      <p>You must log in to view the page at {from}</p>
+	const navigate = useNavigate()
+	const dispatch = useDispatch()
+	let location = useLocation()
 
-      <form onSubmit={handleSubmit}>
-        <label>
-          Username: <input name="username" type="text" />
-        </label>{' '}
-        <button type="submit">Login</button>
-      </form>
-    </div>
-  );
+	let from = location.state?.from?.pathname || '/';
+
+
+	const { user, isLoading, isError, isSuccess, message } = useSelector(
+		(state) => state.auth
+	)
+
+	useEffect(() => {
+		if (isError) {
+			toast.error(message)
+		}
+
+		if (isSuccess || user) {
+			navigate(from, { replace: true });
+		}
+
+		dispatch(reset())
+	}, [user, isError, isSuccess, message, navigate, dispatch])
+
+	const onChange = (e) => {
+		setFormData((prevState) => ({
+			...prevState,
+			[e.target.name]: e.target.value,
+		}))
+	}
+
+	const onSubmit = (e) => {
+
+		const userData = {
+			email,
+			password,
+		}
+		console.log(userData)
+		dispatch(login(userData))
+	}
+
+	if (isLoading) {
+		return <Spinner />
+	}
+
+	return (
+		<div className="registrationPage">
+			<Form name="normal_register" className="register-form" onFinish={onSubmit}>
+				<Form.Item>
+					<h2>Log in </h2>
+				</Form.Item>
+				<Form.Item
+					name="usernameItem"
+					rules={[
+						{
+							required: true,
+							message: 'Please select an Username!',
+						},
+					]}
+				>
+					<Input
+						name="email"
+						id="email"
+						defaultValue={email}
+						prefix={<UserOutlined className="site-form-item-icon" />}
+						placeholder="E-mail"
+						onChange={onChange}
+					/>
+				</Form.Item>
+
+				<Form.Item
+					name="passwordItem"
+					rules={[
+						{
+							required: true,
+							message: 'Please input your Password!',
+						}
+					]}
+				>
+					<Input
+						name="password"
+						id="password"
+						defaultValue={password}
+						prefix={<LockOutlined className="site-form-item-icon" />}
+						type="password"
+						placeholder="Password"
+						onChange={onChange}
+
+					/>
+				</Form.Item>
+
+				<Form.Item>
+					<Button type="primary" htmlType="submit" className="register-form-button" size="large" style={{ width: "100%" }}>
+						Log in
+					</Button>
+
+					<p>Don't have an account? <Link to="../register"> <a href="">Register</a> </Link></p>
+
+				</Form.Item>
+			</Form>
+		</div>
+	)
 }

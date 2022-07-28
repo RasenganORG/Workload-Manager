@@ -1,10 +1,19 @@
 import { SearchOutlined } from '@ant-design/icons';
-import { Layout, Menu, Input, Col, Row } from 'antd';
+import { Layout, Menu, Input, Col, Row, Button } from 'antd';
 import React from 'react';
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { AuthStatus } from '../auth/AuthStatus';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout, reset } from '../../features/auth/authSlice';
 export default function LayoutPage() {
-
+	const navigate = useNavigate()
+	const dispatch = useDispatch()
+	const user = useSelector((state) => state.auth)
+	const onLogout = () => {
+		dispatch(logout())
+		dispatch(reset())
+		navigate("/")
+	}
 	const menuItems = [
 		{
 			label: <Link to="projects">Projects</Link>,
@@ -23,18 +32,28 @@ export default function LayoutPage() {
 			key: 'item-4'
 		}
 	]
+	let authItems
+	if (user.user) {
+		authItems = [
+			{
+				label: <Button type="primary" onClick={onLogout}>Log out</Button>,
+				key: 'item-1'
+			}
 
-	const authItems = [
-		{
-			label: <Link to="login">Login</Link>,
-			key: 'item-1'
-		},
-		{
-			label: <Link to="register">Register</Link>,
-			key: 'item-2'
-		},
-	]
+		]
+	} else {
+		authItems = [
+			{
+				label: <Link to="login">Login</Link>,
+				key: 'item-1'
+			},
+			{
+				label: <Link to="register">Register</Link>,
+				key: 'item-2'
+			},
 
+		]
+	}
 	return (
 		<div className="Homepage">
 			<Layout>
@@ -61,7 +80,7 @@ export default function LayoutPage() {
 							<Menu defaultSelectedKeys={["1"]} theme="dark" mode="horizontal" items={authItems} />
 						</Col>
 
-						
+
 					</Row>
 				</Layout.Header>
 				<Layout>
