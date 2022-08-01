@@ -16,42 +16,42 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 import PrivateRoute from './features/auth/PrivateRoute';
 function App() {
-	return (
+  return (
 
-		<div className="App" >
-			<Router>
-				<AuthProvider>
-					<Routes>
-						<Route path="/" element={<LayoutPage />}>
-							<Route index element={<Projects />} />
-							<Route path="/projects" element={<Projects />} />
-							<Route path="/projects/:projectId" element={<ProjectItem />} />
-							<Route
-								path="statistics"
-								element={
-									<PrivateRoute>
-										<Statistics />
-									</PrivateRoute>
-								} />
-							<Route
-								path="user-list"
-								element={
-									<PrivateRoute>
-										<UserList />
-									</PrivateRoute>
-								} />
-						</Route>
+    <div className="App" >
+      <Router>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<LayoutPage />}>
+              <Route index element={<Projects />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/projects/:projectId" element={<ProjectItem />} />
+              <Route
+                path="statistics"
+                element={
+                  <PrivateRoute>
+                    <Statistics />
+                  </PrivateRoute>
+                } />
+              <Route
+                path="user-list"
+                element={
+                  <PrivateRoute>
+                    <UserList />
+                  </PrivateRoute>
+                } />
+            </Route>
 
-						<Route path="/login" element={<LogIn />} />
-						<Route path="/register" element={<Register />} />
-						<Route path="*" element={<NotFound />} />
-					</Routes>
-				</AuthProvider>
-			</Router>
-			<ToastContainer />
-		</div>
+            <Route path="/login" element={<LogIn />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
+      </Router>
+      <ToastContainer />
+    </div>
 
-	);
+  );
 }
 
 export default App;
