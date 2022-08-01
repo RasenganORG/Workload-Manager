@@ -51,7 +51,6 @@ export default function LogIn() {
 	}
 
 	const onSubmit = (e) => {
-
 		const userData = {
 			email,
 			password,

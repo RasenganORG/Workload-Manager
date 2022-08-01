@@ -1,7 +1,7 @@
 import "./Register.scss"
 import "antd/dist/antd.css";
 import { Form, Input, Button } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -12,13 +12,14 @@ import Spinner from "../Spinner";
 
 export default function Register() {
 	const [formData, setFormData] = useState({
-		username: "",
-		email: "",
-		password: "",
-		password2: ""
+		name: '',
+		email: '',
+		phoneNumber: '',
+		password: '',
+		password2: ''
 	})
 
-	const { username, email, password, password2 } = formData
+	const { name, email, phoneNumber, password, password2 } = formData
 
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
@@ -44,17 +45,20 @@ export default function Register() {
 			...prevState,
 			[e.target.name]: e.target.value
 		}))
-		console.log(formData)
 	}
-
+	console.log(formData)
 	const onSubmit = () => {
 		if (password !== password2) {
 			toast.error("Passwords do not match")
 		} else {
 			const userData = {
-				username,
+				name,
 				email,
-				password
+				password,
+				avatar: '',
+				projectsAssignedTo: [],
+				phoneNumber,
+
 			}
 			dispatch(register(userData))
 		}
@@ -72,23 +76,24 @@ export default function Register() {
 					<h2>Register </h2>
 				</Form.Item>
 				<Form.Item
-					name="usernameItem"
+					name="nameItem"
 					rules={[
 						{
 							required: true,
-							message: 'Please select an Username!',
+							message: 'Please input your name!',
 						},
 					]}
 				>
 					<Input
-						name="username"
-						id="username"
-						defaultValue={username}
+						name="name"
+						id="name"
+						defaultValue={name}
 						prefix={<UserOutlined className="site-form-item-icon" />}
-						placeholder="Username"
+						placeholder="Name"
 						onChange={onChange}
 					/>
 				</Form.Item>
+
 
 				<Form.Item
 					name="emailItem"
@@ -106,6 +111,25 @@ export default function Register() {
 						prefix={<MailOutlined className="site-form-item-icon" />}
 						type="email"
 						placeholder="E-mail address"
+						onChange={onChange}
+					/>
+				</Form.Item>
+
+				<Form.Item
+					name="phoneNumber"
+					rules={[
+						{
+							required: true,
+							message: 'Please add your phone number!',
+						},
+					]}
+				>
+					<Input
+						name="phoneNumber"
+						id="phoneNumber"
+						defaultValue={phoneNumber}
+						prefix={<PhoneOutlined />}
+						placeholder="Phone number"
 						onChange={onChange}
 					/>
 				</Form.Item>
@@ -156,7 +180,7 @@ export default function Register() {
 						Create account
 					</Button>
 
-					<p>Already have an account? <Link to="../login"> <a href="">Log in</a> </Link></p>
+					<p>Already have an account? <Link to="../login"> <a href=''>Log in</a> </Link></p>
 
 				</Form.Item>
 			</Form>

@@ -5,15 +5,18 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { AuthStatus } from '../auth/AuthStatus';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, reset } from '../../features/auth/authSlice';
+
 export default function LayoutPage() {
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
-	const user = useSelector((state) => state.auth)
+	const user = useSelector((state) => state.auth.user)
 	const onLogout = () => {
 		dispatch(logout())
 		dispatch(reset())
 		navigate("/")
 	}
+
+
 	const menuItems = [
 		{
 			label: <Link to="projects">Projects</Link>,
@@ -33,7 +36,7 @@ export default function LayoutPage() {
 		}
 	]
 	let authItems
-	if (user.user) {
+	if (user) {
 		authItems = [
 			{
 				label: <Button type="primary" onClick={onLogout}>Log out</Button>,
@@ -64,7 +67,7 @@ export default function LayoutPage() {
 								placeholder="Search project"
 								allowClear
 								enterButton={<SearchOutlined />}
-								onSearch={console.log("searching...")}
+								// onSearch={}
 								style={{ "padding": "1em 0", width: "100%" }}
 							/>
 						</Col>
@@ -85,9 +88,8 @@ export default function LayoutPage() {
 				</Layout.Header>
 				<Layout>
 					<Row style={{ maxWidth: "100%" }}>
-
-						<AuthStatus />
-
+						{/* <AuthStatus /> */}
+						{user ? `welcome, ${user.username} ` : 'you are not logged in'}
 
 						<Col span={4}>
 							{/* <Siderbar /> */}
