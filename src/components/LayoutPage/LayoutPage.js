@@ -1,9 +1,21 @@
 import { SearchOutlined } from '@ant-design/icons';
-import { Layout, Menu, Input, Col, Row } from 'antd';
+import { Layout, Menu, Input, Col, Row, Button } from 'antd';
 import React from 'react';
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { AuthStatus } from '../auth/AuthStatus';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout, reset } from '../../features/auth/authSlice';
+
 export default function LayoutPage() {
+	const navigate = useNavigate()
+	const dispatch = useDispatch()
+	const user = useSelector((state) => state.auth.user)
+	const onLogout = () => {
+		dispatch(logout())
+		dispatch(reset())
+		navigate("/")
+	}
+
 
 	const menuItems = [
 		{
@@ -23,18 +35,28 @@ export default function LayoutPage() {
 			key: 'item-4'
 		}
 	]
+	let authItems
+	if (user) {
+		authItems = [
+			{
+				label: <Button type="primary" onClick={onLogout}>Log out</Button>,
+				key: 'item-1'
+			}
 
-	const authItems = [
-		{
-			label: <Link to="login">Login</Link>,
-			key: 'item-1'
-		},
-		{
-			label: <Link to="register">Register</Link>,
-			key: 'item-2'
-		},
-	]
+		]
+	} else {
+		authItems = [
+			{
+				label: <Link to="login">Login</Link>,
+				key: 'item-1'
+			},
+			{
+				label: <Link to="register">Register</Link>,
+				key: 'item-2'
+			},
 
+		]
+	}
 	return (
 		<div className="Homepage">
 			<Layout>
@@ -45,7 +67,7 @@ export default function LayoutPage() {
 								placeholder="Search project"
 								allowClear
 								enterButton={<SearchOutlined />}
-								onSearch={console.log("searching...")}
+								// onSearch={}
 								style={{ "padding": "1em 0", width: "100%" }}
 							/>
 						</Col>
@@ -61,14 +83,13 @@ export default function LayoutPage() {
 							<Menu defaultSelectedKeys={["1"]} theme="dark" mode="horizontal" items={authItems} />
 						</Col>
 
-						
+
 					</Row>
 				</Layout.Header>
 				<Layout>
 					<Row style={{ maxWidth: "100%" }}>
-
-						<AuthStatus />
-
+						{/* <AuthStatus /> */}
+						{user ? `welcome, ${user.username} ` : 'you are not logged in'}
 
 						<Col span={4}>
 							{/* <Siderbar /> */}
