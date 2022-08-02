@@ -12,6 +12,7 @@ import ProjectItem from './components/LayoutPage/pages/Projects/ProjectItem/Proj
 import NotFound from './components/LayoutPage/pages/404/NotFound';
 import Statistics from './components/LayoutPage/pages/Statistics/Statistics';
 import UserList from './components/LayoutPage/pages/UserList/UserList';
+import NewProject from './components/LayoutPage/pages/Projects/NewProject/NewProject';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 import PrivateRoute from './features/auth/PrivateRoute';
@@ -25,8 +26,9 @@ function App() {
             <Route path="/" element={<LayoutPage />}>
               <Route index element={<Projects />} />
               <Route path="/projects" element={<Projects />} />
+              <Route path="/projects/add-project" element={<NewProject />} />
               <Route path="/projects/:projectId" element={<ProjectItem />} />
-              <Route
+               <Route
                 path="statistics"
                 element={
                   <PrivateRoute>
