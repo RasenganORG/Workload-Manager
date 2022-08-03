@@ -10,10 +10,10 @@ export default function Projects() {
 		(state) => state.projects
 	)
 	const dispatch = useDispatch()
-
+ 
 	useEffect(() => {
 		dispatch(getProjects())
-	}, [])
+	}, [dispatch])
 
 	const generateProjectCard = (project, iterationId) => {
 		const { id, title, description, tasks, status } = project

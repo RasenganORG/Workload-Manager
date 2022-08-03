@@ -89,7 +89,6 @@ export default function Tasks() {
 					{ id: 'Card45', title: 'Pay Rent', description: 'Transfer via NEFT', label: '5 mins' },
 					{ id: 'Card46', title: 'Write Blog', description: 'Can AI make memes', label: '30 mins' },
 
-
 				]
 			}
 		]

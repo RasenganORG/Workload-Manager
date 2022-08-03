@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
-import { useLocation } from 'react-router'
-import axios from 'axios'
+import { useParams } from 'react-router'
 import { useSelector, useDispatch } from 'react-redux';
 import { reset, getProject } from '../../../../../features/projects/projectsSlice';
 import Spinner from '../../../../Spinner';
@@ -8,23 +7,17 @@ import { Layout, Menu, Row, PageHeader, Col, Button, Breadcrumb } from 'antd';
 import { Outlet, Link } from "react-router-dom";
 
 export default function ProjectItem() {
-	const currentPath = useLocation().pathname
+	const pathParams = useParams()
 	const dispatch = useDispatch()
-	//the currenct path returns /projects/id, we're using currentPath.replace to remove "/projects/"
-	//so that we can use the id to fetch an individual project
-	const projectId = currentPath.replace('/projects/', '')
+	
 	const { currentProject, isLoading, isError, isSuccess, message } = useSelector(
 		(state) => state.projects
 	)
-
-	useEffect(() => {
- 		dispatch(getProject(projectId))
+ 	useEffect(() => {
+ 		dispatch(getProject(pathParams.projectId))
 	}, [])
-
-
  
-	console.log(projectId)
-	if (isLoading) {
+ 	if (isLoading) {
 		return <Spinner />
 	}
 	if (currentProject == null) {
