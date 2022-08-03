@@ -16,6 +16,7 @@ import NewProject from './components/LayoutPage/pages/Projects/NewProject/NewPro
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 import PrivateRoute from './features/auth/PrivateRoute';
+import { Navigate } from 'react-router-dom';
 function App() {
   return (
 
@@ -24,7 +25,7 @@ function App() {
         <AuthProvider>
           <Routes>
             <Route path="/" element={<LayoutPage />}>
-              <Route index element={<Projects />} />
+              <Route index element={<Navigate to ='projects'/>} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/projects/add-project" element={<NewProject />} />
               <Route path="/projects/:projectId" element={<ProjectItem />} />

@@ -15,8 +15,8 @@ export default function Projects() {
 		dispatch(getProjects())
 	}, [])
 
-	const generateProjectCard = (project, id) => {
-		const { title, description, tasks, status } = project
+	const generateProjectCard = (project, iterationId) => {
+		const { id, title, description, tasks, status } = project
 		const projectTasksData = [
 			{
 				title: "Upcoming tasks",
@@ -36,7 +36,7 @@ export default function Projects() {
 		return (
 			<Col key={id} span={8}>
 				<Badge.Ribbon text={status} color="green">
-					<Card title={title} bordered={false}>
+					<Card title={ <Link to={id}>{title}</Link>} bordered={false}>
 						<p>{description}</p>
 						<Row gutter={4}>
 							<Col span={12}>
@@ -88,14 +88,14 @@ export default function Projects() {
 				</Breadcrumb>
 
 				<Button type="primary">
-					<Link to="projects/add-project">
+					<Link to="add-project">
 						Add new project
 					</Link>
 				</Button>
 			</Row>
 			<Row gutter={[16, 16]} >
-				{projectList ? projectList.map((project, id) => {
-					{ return generateProjectCard(project, id) }
+				{projectList ? projectList.map((project, iterationId) => {
+					{ return generateProjectCard(project, iterationId) }
 				}) : 'No projects added yet'}
 			</Row>
 			<Outlet />
