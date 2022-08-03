@@ -18,9 +18,17 @@ const addProject = async (projectData) => {
 	return response.data
 }
 
+//get an individual project 
+const getProject = async (projectId) => {
+	const GET_PROJECT_URL = `http://localhost:8080/api/project/${projectId}`
+	const response = await axios.get(GET_PROJECT_URL)
+
+	return response.data
+}
 const projectsService = {
 	getProjects,
-	addProject
+	addProject,
+	getProject
 }
 
 export default projectsService

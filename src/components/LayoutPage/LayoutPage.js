@@ -89,8 +89,7 @@ export default function LayoutPage() {
 				<Layout>
 					<Row style={{ maxWidth: "100%" }}>
 						{/* <AuthStatus /> */}
-						{user ? `welcome, ${user.username} ` : 'you are not logged in'}
- 
+	
 						<Col span={24}>
 							<Outlet />
 							{/* reference for outlet > https://www.youtube.com/watch?v=PWi9V9d_Jsc */}

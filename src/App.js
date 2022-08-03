@@ -17,44 +17,62 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
 import PrivateRoute from './features/auth/PrivateRoute';
 import { Navigate } from 'react-router-dom';
+import AboutProject from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/aboutProject';
+import NewTask from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/newTask';
+import ProjectStatistics from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/projectStatistics';
+import Tasks from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks';
+
 function App() {
-  return (
+	return (
 
-    <div className="App" >
-      <Router>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<LayoutPage />}>
-              <Route index element={<Navigate to ='projects'/>} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/projects/add-project" element={<NewProject />} />
-              <Route path="/projects/:projectId" element={<ProjectItem />} />
-               <Route
-                path="statistics"
-                element={
-                  <PrivateRoute>
-                    <Statistics />
-                  </PrivateRoute>
-                } />
-              <Route
-                path="user-list"
-                element={
-                  <PrivateRoute>
-                    <UserList />
-                  </PrivateRoute>
-                } />
-            </Route>
+		<div className="App" >
+			<Router>
+				<AuthProvider>
+					<Routes>
+						<Route path="/" element={<LayoutPage />}>
+							<Route index element={<Navigate to='projects' />} />
+							<Route path="/projects" element={<Projects />} />
+							<Route path="/projects/add-project" element={<NewProject />} />
+							<Route path="/projects/:projectId" element={<ProjectItem />}>
+								<Route path="" element={<Navigate to="tasks" />} />
+								<Route path="about" element={<AboutProject />} />
+								<Route path="add-task" element={<NewTask />} />
+								<Route path="statistics" element={<ProjectStatistics />} />
+								<Route path="tasks" element={<Tasks />}>
 
-            <Route path="/login" element={<LogIn />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </Router>
-      <ToastContainer />
-    </div>
+								</Route>
 
-  );
+							</Route>
+							{/* <Route path="/projects/:projectId" element={<ProjectItem />} />
+							<Route path="/projects/:projectId" element={<ProjectItem />} />
+							<Route path="/projects/:projectId" element={<ProjectItem />} /> */}
+
+							<Route
+								path="statistics"
+								element={
+									<PrivateRoute>
+										<Statistics />
+									</PrivateRoute>
+								} />
+							<Route
+								path="user-list"
+								element={
+									<PrivateRoute>
+										<UserList />
+									</PrivateRoute>
+								} />
+						</Route>
+
+						<Route path="/login" element={<LogIn />} />
+						<Route path="/register" element={<Register />} />
+						<Route path="*" element={<NotFound />} />
+					</Routes>
+				</AuthProvider>
+			</Router>
+			<ToastContainer />
+		</div>
+
+	);
 }
 
 export default App;

@@ -3,12 +3,11 @@ import projectsService from "./projectsService.js";
 
 const initialState = {
 	projectList: null,
+	currentProject: null,
 	isError: false,
 	isSuccess: false,
 	isLoading: true,
 	message: ''
-
-
 }
 
 export const addProject = createAsyncThunk('projects/addProject', async (project, thunkAPI) => {
@@ -39,6 +38,20 @@ export const getProjects = createAsyncThunk('projects/getProjects', async (proje
 	}
 })
 
+export const getProject = createAsyncThunk('projects/getProject', async (projectId, thunkAPI) => {
+	try {
+		return await projectsService.getProject(projectId)
+	} catch (error) {
+		const message =
+			(error.response &&
+				error.response.data &&
+				error.response.data.message) ||
+			error.message ||
+			error.toString()
+		return thunkAPI.rejectWithValue(message)
+	}
+})
+
 export const projectsSlice = createSlice({
 	name: 'projects',
 	initialState,
@@ -48,6 +61,7 @@ export const projectsSlice = createSlice({
 			state.isError = false
 			state.isSuccess = false
 			state.message = ''
+			state.currentProject = null
 		}
 	},
 	extraReducers: (builder) => {
@@ -77,6 +91,20 @@ export const projectsSlice = createSlice({
 				state.isLoading = false
 				state.isError = true
 				state.message = action.payload
+			})
+			.addCase(getProject.pending, (state) => {
+				state.isLoading = true
+			})
+			.addCase(getProject.fulfilled, (state, action) => {
+				state.isLoading = false
+				state.isSuccess = true
+				state.currentProject = action.payload
+			})
+			.addCase(getProject.rejected, (state, action) => {
+				state.isLoading = false
+				state.isError = true
+				state.message = action.payload
+				state.currentProject = null
 			})
  
 	},
