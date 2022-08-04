@@ -1,7 +1,5 @@
-import React from 'react'
+import React from "react";
 
 export default function ProjectItem() {
-	return (
-		<div>Individual Project Item Page</div>
-	)
+  return <div>Individual Project Item Page</div>;
 }
