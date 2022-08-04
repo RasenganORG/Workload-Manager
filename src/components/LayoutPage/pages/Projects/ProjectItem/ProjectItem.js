@@ -9,15 +9,32 @@ import { Outlet, Link } from "react-router-dom";
 export default function ProjectItem() {
 	const pathParams = useParams()
 	const dispatch = useDispatch()
-	
+
 	const { currentProject, isLoading, isError, isSuccess, message } = useSelector(
 		(state) => state.projects
 	)
- 	useEffect(() => {
- 		dispatch(getProject(pathParams.projectId))
+	useEffect(() => {
+		dispatch(getProject(pathParams.projectId))
 	}, [])
- 
- 	if (isLoading) {
+
+	const menuItems = [
+		{
+			label: <Link to="tasks">Tasks</Link>,
+			key: 'tasks'
+		},
+		{
+			label: <Link to="about">About</Link>,
+			key: 'about'
+		},
+		{
+			label: <Link to="statistics">Project statistics</Link>,
+			key: 'statistics'
+		}
+	]
+
+
+
+	if (isLoading) {
 		return <Spinner />
 	}
 	if (currentProject == null) {
@@ -53,14 +70,11 @@ export default function ProjectItem() {
 						</Row>
 
 						<Row>
-							<Menu mode="horizontal" style={{ flex: "auto" }} defaultSelectedKeys="tasks">
-								<Menu.Item key="tasks"><Link to="tasks">Tasks</Link></Menu.Item>
-								<Menu.Item key="about"><Link to="about">About</Link></Menu.Item>
-								<Menu.Item key="statistics"><Link to="statistics">Project statistics</Link></Menu.Item>
-							</Menu>
+							<Menu defaultSelectedKeys={'tasks'} style={{ flex: 'auto' }} mode='horizontal' items={menuItems} />
 						</Row>
+
 						<Row className="projectContent">
-							<Outlet context={{currentProject}}/>
+							<Outlet context={{ currentProject }} />
 						</Row>
 					</Layout.Content>
 				</Layout>

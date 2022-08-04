@@ -20,19 +20,19 @@ export default function LayoutPage() {
 	const menuItems = [
 		{
 			label: <Link to="projects">Projects</Link>,
-			key: 'item-1'
+			key: 'projects'
 		},
 		{
 			label: <Link to="user-list">User list</Link>,
-			key: 'item-2'
+			key: 'userlist'
 		},
 		{
 			label: <Link to="concedii">Concedii</Link>,
-			key: 'item-3'
+			key: 'concedii'
 		},
 		{
 			label: <Link to="statistics">Statistics</Link>,
-			key: 'item-4'
+			key: 'statistics'
 		}
 	]
 	let authItems
@@ -76,7 +76,7 @@ export default function LayoutPage() {
 							</div>
 						</Col>
 						<Col span={16}>
-							<Menu defaultSelectedKeys={["1"]} theme="dark" mode="horizontal" items={menuItems} />
+							<Menu defaultSelectedKeys={'projects'} theme="dark" mode="horizontal" items={menuItems} />
 						</Col>
 
 						<Col span={4}>
@@ -89,7 +89,7 @@ export default function LayoutPage() {
 				<Layout>
 					<Row style={{ maxWidth: "100%" }}>
 						{/* <AuthStatus /> */}
-	
+
 						<Col span={24}>
 							<Outlet />
 							{/* reference for outlet > https://www.youtube.com/watch?v=PWi9V9d_Jsc */}

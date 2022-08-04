@@ -1,6 +1,5 @@
 import axios from "axios";
-const ALL_PROJECTS_URL = "http://localhost:8080/api/projects/"
-
+ 
 //get all projects
 const getProjects = async () => {
 	const PROJECTS_URL = "http://localhost:8080/api/projects/"
@@ -25,10 +24,19 @@ const getProject = async (projectId) => {
 
 	return response.data
 }
+
+//update project 
+const updateProject = async (projectData, projectId) => {
+	const GET_PROJECT_URL = `http://localhost:8080/api/project/${projectId}`
+	const response = await axios.put(GET_PROJECT_URL, projectData)
+
+	return response.data
+}
 const projectsService = {
 	getProjects,
 	addProject,
-	getProject
+	getProject,
+	updateProject
 }
 
 export default projectsService
