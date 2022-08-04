@@ -36,7 +36,7 @@ export default function Projects() {
 		return (
 			<Col key={id} span={8}>
 				<Badge.Ribbon text={status} color="green">
-					<Card title={ <Link to={id}>{title}</Link>} bordered={false}>
+					<Card title={<Link to={id}>{title}</Link>} bordered={false}>
 						<p>{description}</p>
 						<Row gutter={4}>
 							<Col span={12}>

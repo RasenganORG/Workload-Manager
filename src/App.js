@@ -25,11 +25,11 @@ function App() {
         <AuthProvider>
           <Routes>
             <Route path="/" element={<LayoutPage />}>
-              <Route index element={<Navigate to ='projects'/>} />
+              <Route index element={<Navigate to='projects' />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/projects/add-project" element={<NewProject />} />
               <Route path="/projects/:projectId" element={<ProjectItem />} />
-               <Route
+              <Route
                 path="statistics"
                 element={
                   <PrivateRoute>
