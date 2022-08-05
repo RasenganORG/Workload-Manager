@@ -77,10 +77,7 @@ export const projectsSlice = createSlice({
       state.isSuccess = false
       state.message = ''
       state.currentProject = null
-    },
-    addProjectTasks: (state, action) => {
-      state.currentProject.tasks.push(action.payload)
-    }
+    } 
   },
   extraReducers: (builder) => {
     builder

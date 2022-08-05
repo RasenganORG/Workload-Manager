@@ -27,7 +27,7 @@ const getProject = async (projectId) => {
 
 //update project 
 const updateProject = async (projectData, projectId) => {
-	const GET_PROJECT_URL = `http://localhost:8080/api/project/${projectId}`
+	const GET_PROJECT_URL = `http://localhost:8080/api/project/${projectId}/add-task`
 	const response = await axios.put(GET_PROJECT_URL, projectData)
 
 	return response.data

@@ -1,12 +1,14 @@
 import { Layout, Card, Form, Input, Button, Select, Radio, DatePicker } from "antd"
 import TextArea from "antd/lib/input/TextArea"
-import { useState } from "react"
-import { useNavigate, useParams } from "react-router"
+import { useContext, useState } from "react"
+import { useNavigate, useOutletContext, useParams } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { CloseOutlined } from '@ant-design/icons';
 import { Link } from "react-router-dom"
 import { addProjectTasks, updateProject } from "../../../../../../features/projects/projectsSlice"
 import { projectsActions } from "../../../../../../features/projects/projectsSlice"
+import { reset } from "../../../../../../features/auth/authSlice"
+import { current } from "@reduxjs/toolkit"
 
 export default function NewTask() {
   const [formData, setFormData] = useState({
@@ -25,14 +27,14 @@ export default function NewTask() {
   const { currentProject } = useSelector(
     (state) => state.projects
   )
-  console.log(currentProject.tasks)
   const onInputChange = (e) => {
-    console.log(formData)
     setFormData((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }))
   }
+
+  const { wasTaskAdded, setWasTaskAdded } = useOutletContext()
 
   const onSelectChange = (value, inputName) => {
     setFormData((prevState) => ({
@@ -41,11 +43,11 @@ export default function NewTask() {
     }))
   }
   const onSubmit = () => {
-    dispatch(addProjectTasks(formData))
-    dispatch(updateProject({ projectData: currentProject, projectId: params.projectId }))
+    dispatch(updateProject({ projectData: formData, projectId: params.projectId }))
     navigate(-1)
+    setWasTaskAdded(true)
   }
-  console.log(projectsActions)
+
   return (
     <Layout>
       <Layout.Content style={{ margin: "16px 0" }}>
@@ -136,6 +138,12 @@ export default function NewTask() {
             <Form.Item
               label="Queue"
               name="queueSelector"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select a queue"
+                }
+              ]}
             >
               <Select
                 placeholder="Select a queue for the task"
@@ -144,9 +152,9 @@ export default function NewTask() {
                   onSelectChange(value, 'queue')
                 }}
               >
-                <Select.Option value="queue1">Pending</Select.Option>
-                <Select.Option value="queue2">In progress</Select.Option>
-                <Select.Option value="queue3">Backlog</Select.Option>
+                <Select.Option value="pending">Pending</Select.Option>
+                <Select.Option value="inProgress">In progress</Select.Option>
+                <Select.Option value="backlog">Backlog</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item

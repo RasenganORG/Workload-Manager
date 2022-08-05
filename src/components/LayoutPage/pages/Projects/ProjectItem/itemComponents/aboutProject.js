@@ -1,9 +1,12 @@
 import { Layout, Card } from "antd"
-import { useOutletContext } from "react-router"
-
+import { useSelector } from "react-redux"
 export default function AboutProject() {
 
-	const { currentProject } = useOutletContext()
+	
+	const { currentProject } = useSelector(
+		(state) => state.projects
+	)
+
 	return (
 		<Layout>
 			<Layout.Content style={{ margin: "16px 0" }}>

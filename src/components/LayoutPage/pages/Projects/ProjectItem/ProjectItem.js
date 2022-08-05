@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import { useSelector, useDispatch } from 'react-redux';
 import { reset, getProject } from '../../../../../features/projects/projectsSlice';
@@ -10,12 +10,18 @@ export default function ProjectItem() {
 	const pathParams = useParams()
 	const dispatch = useDispatch()
 
+  //this state is set to TRUE when a new task is added to trigger the 
+  //getProject dispatch from useEffect and reload the project with the new task
+  //added 
+  const [wasTaskAdded, setWasTaskAdded] = useState(false)
+
 	const { currentProject, isLoading, isError, isSuccess, message } = useSelector(
 		(state) => state.projects
 	)
 	useEffect(() => {
 		dispatch(getProject(pathParams.projectId))
-	}, [])
+    setWasTaskAdded(false)
+	}, [wasTaskAdded])
 
 	const menuItems = [
 		{
@@ -74,7 +80,7 @@ export default function ProjectItem() {
 						</Row>
 
 						<Row className="projectContent">
-							<Outlet context={{ currentProject }} />
+							<Outlet context={{ wasTaskAdded, setWasTaskAdded }} />
 						</Row>
 					</Layout.Content>
 				</Layout>
