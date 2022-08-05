@@ -4,11 +4,8 @@ import { useContext, useState } from "react"
 import { useNavigate, useOutletContext, useParams } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { CloseOutlined } from '@ant-design/icons';
-import { Link } from "react-router-dom"
-import { addProjectTasks, updateProject } from "../../../../../../features/projects/projectsSlice"
-import { projectsActions } from "../../../../../../features/projects/projectsSlice"
-import { reset } from "../../../../../../features/auth/authSlice"
-import { current } from "@reduxjs/toolkit"
+import { updateProject } from "../../../../../../features/projects/projectsSlice"
+
 
 export default function NewTask() {
   const [formData, setFormData] = useState({
@@ -34,7 +31,10 @@ export default function NewTask() {
     }))
   }
 
-  const { wasTaskAdded, setWasTaskAdded } = useOutletContext()
+  //this state is set to TRUE when a new task is added to trigger the 
+  //getProject dispatch from the Projects page useEffect and fetch the
+  //project with the new added task 
+  const { setWasTaskAdded } = useOutletContext()
 
   const onSelectChange = (value, inputName) => {
     setFormData((prevState) => ({
@@ -181,10 +181,9 @@ export default function NewTask() {
               </Select>
             </Form.Item>
             <Form.Item >
-              <Button htmlType="submit" type="primary" onClick={() => console.log("it's-a me, mario")}>Create task</Button>
+              <Button htmlType="submit" type="primary">Create task</Button>
             </Form.Item>
           </Form>
-
 
         </Card>
       </Layout.Content>
