@@ -1,11 +1,11 @@
 import { Layout, Card, Form, Input, Button, Select, Radio, DatePicker } from "antd"
 import TextArea from "antd/lib/input/TextArea"
-import { useContext, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate, useOutletContext, useParams } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { CloseOutlined } from '@ant-design/icons';
 import { updateProject } from "../../../../../../features/projects/projectsSlice"
-
+import { getAllUsers } from "../../../../../../features/users/userSlice"
 
 export default function NewTask() {
   const [formData, setFormData] = useState({
@@ -21,15 +21,21 @@ export default function NewTask() {
   const dispatch = useDispatch()
 
   const params = useParams()
-  const { currentProject } = useSelector(
-    (state) => state.projects
-  )
+
+
   const onInputChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }))
   }
+  const { userList } = useSelector(
+    (state) => state.users
+  )
+
+  useEffect(() => {
+    dispatch(getAllUsers())
+  }, [])
 
   //this state is set to TRUE when a new task is added to trigger the 
   //getProject dispatch from the Projects page useEffect and fetch the
@@ -108,11 +114,10 @@ export default function NewTask() {
                   onSelectChange(value, 'asignee')
                 }}
               >
-                <Select.Option value="user0">John Doe 0</Select.Option>
-                <Select.Option value="user1">John Doe 1</Select.Option>
-                <Select.Option value="user2">John Doe 2</Select.Option>
-                <Select.Option value="user3">John Doe 3</Select.Option>
-                <Select.Option value="user4">John Doe 4</Select.Option>
+                {userList ? userList.map((user, index) => {
+                  return <Select.Option key={index} value={user.name}>{user.name}</Select.Option>
+                }) : ''}
+
               </Select>
             </Form.Item>
 
@@ -187,6 +192,6 @@ export default function NewTask() {
 
         </Card>
       </Layout.Content>
-    </Layout>
+    </Layout >
   )
 }

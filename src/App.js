@@ -2,8 +2,6 @@ import './App.css';
 import React from "react";
 import "antd/dist/antd.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider } from './components/auth/AuthProvider';
-import { RequireAuth } from './components/auth/RequiredAuth';
 import LayoutPage from './components/LayoutPage/LayoutPage';
 import LogIn from './components/Login/LogIn';
 import Register from './components/Register/Register';
@@ -27,47 +25,45 @@ function App() {
 
     <div className="App" >
       <Router>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<LayoutPage />}>
-              <Route index element={<Navigate to='projects' />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/projects/add-project" element={<NewProject />} />
-              <Route path="/projects/:projectId" element={<ProjectItem />}>
-                <Route path="" element={<Tasks />} />
-                <Route path="about" element={<AboutProject />} />
-                <Route path="add-task" element={<NewTask />} />
-                <Route path="statistics" element={<ProjectStatistics />} />
-                <Route path="tasks" element={<Tasks />}>
-
-                </Route>
+        <Routes>
+          <Route path="/" element={<LayoutPage />}>
+            <Route index element={<Navigate to='projects' />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/add-project" element={<NewProject />} />
+            <Route path="/projects/:projectId" element={<ProjectItem />}>
+              <Route path="" element={<Tasks />} />
+              <Route path="about" element={<AboutProject />} />
+              <Route path="add-task" element={<NewTask />} />
+              <Route path="statistics" element={<ProjectStatistics />} />
+              <Route path="tasks" element={<Tasks />}>
 
               </Route>
-              {/* <Route path="/projects/:projectId" element={<ProjectItem />} />
+
+            </Route>
+            {/* <Route path="/projects/:projectId" element={<ProjectItem />} />
 							<Route path="/projects/:projectId" element={<ProjectItem />} />
 							<Route path="/projects/:projectId" element={<ProjectItem />} /> */}
 
-              <Route
-                path="statistics"
-                element={
-                  <PrivateRoute>
-                    <Statistics />
-                  </PrivateRoute>
-                } />
-              <Route
-                path="user-list"
-                element={
-                  <PrivateRoute>
-                    <UserList />
-                  </PrivateRoute>
-                } />
-            </Route>
+            <Route
+              path="statistics"
+              element={
+                <PrivateRoute>
+                  <Statistics />
+                </PrivateRoute>
+              } />
+            <Route
+              path="user-list"
+              element={
+                <PrivateRoute>
+                  <UserList />
+                </PrivateRoute>
+              } />
+          </Route>
 
-            <Route path="/login" element={<LogIn />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
+          <Route path="/login" element={<LogIn />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </Router>
       <ToastContainer />
     </div>
