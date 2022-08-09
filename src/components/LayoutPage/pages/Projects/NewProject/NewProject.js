@@ -112,7 +112,7 @@ export default function NewProject() {
                 }}
               >
                 {userList ? userList.map((user, index) => {
-                  return <Select.Option key={index} value={user.name}>{user.name}</Select.Option>
+                  return <Select.Option key={index} value={user.id}>{user.name}</Select.Option>
                 }) : ''}
               </Select>
 

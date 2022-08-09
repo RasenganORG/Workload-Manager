@@ -1,12 +1,12 @@
 import Board from 'react-trello'
 import { Layout } from 'antd'
-import { Outlet, useNavigate, useParams } from 'react-router-dom'
-import { useDispatch, useSelector } from "react-redux"
-import { useEffect } from 'react'
-import { getProject } from '../../../../../../features/projects/projectsSlice'
-import { current } from '@reduxjs/toolkit'
+import { Outlet, useNavigate } from 'react-router-dom'
+import { useSelector } from "react-redux"
+
 
 export default function Tasks() {
+
+  const navigate = useNavigate();
 
   const { currentProject } = useSelector(
     (state) => state.projects
@@ -18,52 +18,53 @@ export default function Tasks() {
   const inProgressTasks = currentProject.tasks.filter((task) => task.queue == 'inProgress')
   const completedTasks = currentProject.tasks.filter((task) => task.queue == 'completed')
 
-  const taskGenerator = (task, index) => {
+  const taskGenerator = (task) => {
     return {
-      id: index.toString(), //if id is passed as a number we would receive a console error
+      id: task.id,
       title: task.title,
       description: task.description,
-      label: task.priority
+      label: task.asignee,
+      metadata: {
+        taskInfo: 'asdsa'
+      }
     }
   }
 
   const data = {
     lanes: [
       {
-        id: 'lane1',
+        id: 'backlogLane',
         title: 'Backlog',
         label: `${backlogTasks.length}`,
-        cards: backlogTasks.map((task, index) => taskGenerator(task, index))
+        cards: backlogTasks.map((task) => taskGenerator(task))
       },
       {
-        id: 'lane2',
-        title: 'Pending tasks',
+        id: 'sprintLane',
+        title: 'Sprint',
         label: `${pendingTasks.length}`,
-        cards: pendingTasks.map((task, index) => taskGenerator(task, index))
+        cards: pendingTasks.map((task) => taskGenerator(task))
       },
       {
-        id: 'lane3',
-        title: 'In progress',
+        id: 'blockedLane',
+        title: 'Blocked ',
         label: `${inProgressTasks.length}`,
-        cards: inProgressTasks.map((task, index) => taskGenerator(task, index))
+        cards: inProgressTasks.map((task) => taskGenerator(task))
       },
       {
-        id: 'lane4',
-        title: 'Completed',
+        id: 'inProgressLane',
+        title: 'In progress',
         label: `${completedTasks.length}`,
-        cards: completedTasks.map((task, index) => taskGenerator(task, index))
+        cards: completedTasks.map((task) => taskGenerator(task))
       },
       {
-        id: 'lane5',
-        title: 'My tasks',
+        id: 'completedLane',
+        title: 'Completed',
         label: 'task number here',
         cards: []
       }
     ]
   }
-  const testCardCLick = (cardId) => {
-    console.log(cardId + " was selected")
-  }
+
 
   // https://www.npmjs.com/package/react-trello kanban board documentation
 
@@ -73,7 +74,8 @@ export default function Tasks() {
         data={data}
         style={{ background: "transparent" }}
         draggable={true}
-      // onCardClick={() => navigate(`individual-task`)}
+        onCardClick={(cardId, metadata, laneId) => navigate(`${cardId}`)}
+        canAddLanes={true}
       />
       <Outlet />
     </Layout>

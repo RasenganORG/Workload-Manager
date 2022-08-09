@@ -15,7 +15,8 @@ export default function ProjectItem() {
   //added 
   const [wasTaskAdded, setWasTaskAdded] = useState(false)
 
-  const { currentProject, isLoading, isError, isSuccess, message } = useSelector(
+
+  const { currentProject, isLoading } = useSelector(
     (state) => state.projects
   )
   useEffect(() => {
@@ -59,7 +60,7 @@ export default function ProjectItem() {
           }}
         >
           <Breadcrumb.Item>Home</Breadcrumb.Item>
-          <Breadcrumb.Item>Active Projects</Breadcrumb.Item>
+          <Breadcrumb.Item>Projects</Breadcrumb.Item>
           <Breadcrumb.Item>{currentProject.title}</Breadcrumb.Item>
         </Breadcrumb>
         <Layout>

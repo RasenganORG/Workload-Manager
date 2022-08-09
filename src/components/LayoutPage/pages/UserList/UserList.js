@@ -87,9 +87,9 @@ export default function UserList() {
       {/* main content start */}
       <Layout className="site-layout-background">
         <Collapse  >
-          {userList?.map((user, id) => {
+          {userList ? userList.map((user, id) => {
             return userGenerator(user.name, user.phoneNumber, user.email, id)
-          })}
+          }) : <p>No users added yet</p>}
         </Collapse>
       </Layout>
     </Layout>

@@ -16,10 +16,10 @@ import 'react-toastify/dist/ReactToastify.css'
 import PrivateRoute from './features/auth/PrivateRoute';
 import { Navigate } from 'react-router-dom';
 import AboutProject from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/aboutProject';
-import NewTask from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/newTask';
 import ProjectStatistics from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/projectStatistics';
-import Tasks from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks';
-
+import NewTask from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/newTask';
+import Tasks from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/tasks';
+import Task from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/task';
 function App() {
   return (
 
@@ -31,13 +31,13 @@ function App() {
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/add-project" element={<NewProject />} />
             <Route path="/projects/:projectId" element={<ProjectItem />}>
-              <Route path="" element={<Tasks />} />
+              <Route path="" index element={<Navigate to='tasks' />} />
               <Route path="about" element={<AboutProject />} />
               <Route path="add-task" element={<NewTask />} />
               <Route path="statistics" element={<ProjectStatistics />} />
-              <Route path="tasks" element={<Tasks />}>
+              <Route path="tasks" element={<Tasks />} />
+              <Route path="tasks/:taskId" element={<Task />} />
 
-              </Route>
 
             </Route>
             {/* <Route path="/projects/:projectId" element={<ProjectItem />} />

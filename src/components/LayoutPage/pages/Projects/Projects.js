@@ -22,7 +22,7 @@ export default function Projects() {
     const projectTasksData = [
       {
         title: "Upcoming tasks",
-        taskNumber: tasks.length,
+        taskNumber: tasks?.length,
       },
       {
         title: "Assigned tasks",

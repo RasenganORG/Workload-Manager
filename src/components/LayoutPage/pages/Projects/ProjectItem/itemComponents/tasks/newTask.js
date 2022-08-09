@@ -4,8 +4,8 @@ import { useEffect, useState } from "react"
 import { useNavigate, useOutletContext, useParams } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { CloseOutlined } from '@ant-design/icons';
-import { updateProject } from "../../../../../../features/projects/projectsSlice"
-import { getAllUsers } from "../../../../../../features/users/userSlice"
+import { updateProject } from "../../../../../../../features/projects/projectsSlice"
+import { getAllUsers } from "../../../../../../../features/users/userSlice"
 
 export default function NewTask() {
   const [formData, setFormData] = useState({
@@ -14,7 +14,9 @@ export default function NewTask() {
     asignee: '',
     dueDate: '',
     queue: '',
-    priority: ''
+    priority: '',
+    id: Date.now()
+
   })
 
   const navigate = useNavigate()
@@ -114,6 +116,7 @@ export default function NewTask() {
                   onSelectChange(value, 'asignee')
                 }}
               >
+
                 {userList ? userList.map((user, index) => {
                   return <Select.Option key={index} value={user.name}>{user.name}</Select.Option>
                 }) : ''}
