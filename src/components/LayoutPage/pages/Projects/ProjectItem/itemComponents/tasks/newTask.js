@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useNavigate, useOutletContext, useParams } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { CloseOutlined } from '@ant-design/icons';
-import { updateProject } from "../../../../../../../features/projects/projectsSlice"
+import { addTask } from "../../../../../../../features/projects/projectsSlice"
 import { getAllUsers } from "../../../../../../../features/users/userSlice"
 
 export default function NewTask() {
@@ -15,6 +15,7 @@ export default function NewTask() {
     dueDate: '',
     queue: '',
     priority: '',
+    complexity: '',
     id: Date.now()
 
   })
@@ -51,7 +52,7 @@ export default function NewTask() {
     }))
   }
   const onSubmit = () => {
-    dispatch(updateProject({ projectData: formData, projectId: params.projectId }))
+    dispatch(addTask({ taskData: formData, projectId: params.projectId }))
     navigate(-1)
     setWasTaskAdded(true)
   }
@@ -121,6 +122,9 @@ export default function NewTask() {
                   return <Select.Option key={index} value={user.name}>{user.name}</Select.Option>
                 }) : ''}
 
+
+
+
               </Select>
             </Form.Item>
 
@@ -160,7 +164,7 @@ export default function NewTask() {
                   onSelectChange(value, 'queue')
                 }}
               >
-                <Select.Option value="pending">Pending</Select.Option>
+                <Select.Option value="sprint">Sprint</Select.Option>
                 <Select.Option value="inProgress">In progress</Select.Option>
                 <Select.Option value="backlog">Backlog</Select.Option>
               </Select>
@@ -183,11 +187,35 @@ export default function NewTask() {
                   onSelectChange(value, 'priority')
                 }}
               >
-                <Select.Option value="lowPriority">Low priority</Select.Option>
-                <Select.Option value="mediumPriority">Medium priority</Select.Option>
-                <Select.Option value="highPriority">High Priority</Select.Option>
+                <Select.Option value="Low priority">Low priority</Select.Option>
+                <Select.Option value="Medium priority">Medium priority</Select.Option>
+                <Select.Option value="High Priority">High Priority</Select.Option>
               </Select>
             </Form.Item>
+            <Form.Item
+              label="Complexity"
+              name="taskComplexity"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select a complexity for your task!"
+                }
+              ]}
+              data-cy="taskPriority"
+            >
+              <Select
+                placeholder="Select the task complexity"
+                name='priority'
+                onChange={(value) => {
+                  onSelectChange(value, 'complexity')
+                }}
+              >
+                <Select.Option value="Low complexity">Low complexity</Select.Option>
+                <Select.Option value="Medium complexity">Medium complexity</Select.Option>
+                <Select.Option value="High complexity">High complexity</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item ></Form.Item>
             <Form.Item >
               <Button htmlType="submit" type="primary">Create task</Button>
             </Form.Item>

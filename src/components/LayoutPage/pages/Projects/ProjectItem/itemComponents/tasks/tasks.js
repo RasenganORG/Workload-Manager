@@ -14,13 +14,13 @@ export default function Tasks() {
 
   //get project tasks and filter them by the queue
   const backlogTasks = currentProject.tasks.filter((task) => task.queue == 'backlog')
-  const pendingTasks = currentProject.tasks.filter((task) => task.queue == 'pending')
+  const sprintTasks = currentProject.tasks.filter((task) => task.queue == 'sprint')
   const inProgressTasks = currentProject.tasks.filter((task) => task.queue == 'inProgress')
   const completedTasks = currentProject.tasks.filter((task) => task.queue == 'completed')
 
   const taskGenerator = (task) => {
     return {
-      id: task.id,
+      id: task.id.toString(),
       title: task.title,
       description: task.description,
       label: task.asignee,
@@ -41,26 +41,26 @@ export default function Tasks() {
       {
         id: 'sprintLane',
         title: 'Sprint',
-        label: `${pendingTasks.length}`,
-        cards: pendingTasks.map((task) => taskGenerator(task))
+        label: `${sprintTasks.length}`,
+        cards: sprintTasks.map((task) => taskGenerator(task))
       },
       {
         id: 'blockedLane',
         title: 'Blocked ',
         label: `${inProgressTasks.length}`,
-        cards: inProgressTasks.map((task) => taskGenerator(task))
+        cards: []
       },
       {
         id: 'inProgressLane',
         title: 'In progress',
         label: `${completedTasks.length}`,
-        cards: completedTasks.map((task) => taskGenerator(task))
+        cards: inProgressTasks.map((task) => taskGenerator(task))
       },
       {
         id: 'completedLane',
         title: 'Completed',
         label: 'task number here',
-        cards: []
+        cards: completedTasks.map((task) => taskGenerator(task))
       }
     ]
   }

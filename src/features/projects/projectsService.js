@@ -9,8 +9,8 @@ const getProjects = async () => {
 }
 
 //add a project
-const addProject = async (projectData) => {
-  const response = await axios.post(PROJECT_URL, projectData)
+const addProject = async (taskData) => {
+  const response = await axios.post(PROJECT_URL, taskData)
 
   return response.data
 }
@@ -22,17 +22,25 @@ const getProject = async (projectId) => {
   return response.data
 }
 
-//update project 
-const updateProject = async (projectData, projectId) => {
-  const response = await axios.put(`${PROJECT_URL}${projectId}/add-task`, projectData)
+//add a task
+const addTask = async (taskData, projectId) => {
+  const response = await axios.put(`${PROJECT_URL}${projectId}/add-task`, taskData)
 
   return response.data
 }
+//update a task
+const updateTask = async (taskData, taskId, projectId) => {
+  const response = await axios.put(`${PROJECT_URL}${projectId}/tasks/${taskId}`, taskData)
+
+  return response.data
+}
+
 const projectsService = {
   getProjects,
   addProject,
   getProject,
-  updateProject
+  addTask,
+  updateTask
 }
 
 export default projectsService

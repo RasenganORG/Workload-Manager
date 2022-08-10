@@ -52,10 +52,25 @@ export const getProject = createAsyncThunk('projects/getProject', async (project
   }
 })
 
-export const updateProject = createAsyncThunk('projects/updateProject', async (projectInfo, thunkAPI) => {
+export const addTask = createAsyncThunk('projects/addTask', async (taskInfo, thunkAPI) => {
   try {
-    const {projectData, projectId} = projectInfo
-    return await projectsService.updateProject(projectData, projectId)
+    const { taskData, projectId } = taskInfo
+    return await projectsService.addTask(taskData, projectId)
+  } catch (error) {
+    const message =
+      (error.response &&
+        error.response.data &&
+        error.response.data.message) ||
+      error.message ||
+      error.toString()
+    return thunkAPI.rejectWithValue(message)
+  }
+})
+
+export const updateTask = createAsyncThunk('projects/updateTask', async (taskInfo, thunkAPI) => {
+  try {
+    const { taskData, taskId, projectId } = taskInfo
+    return await projectsService.updateTask(taskData, taskId, projectId)
   } catch (error) {
     const message =
       (error.response &&
@@ -77,7 +92,7 @@ export const projectsSlice = createSlice({
       state.isSuccess = false
       state.message = ''
       state.currentProject = null
-    } 
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -121,14 +136,26 @@ export const projectsSlice = createSlice({
         state.message = action.payload
         state.currentProject = null
       })
-      .addCase(updateProject.pending, (state) => {
+      .addCase(addTask.pending, (state) => {
         state.isLoading = true
       })
-      .addCase(updateProject.fulfilled, (state, action) => {
+      .addCase(addTask.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
       })
-      .addCase(updateProject.rejected, (state, action) => {
+      .addCase(addTask.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(updateTask.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(updateTask.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+      })
+      .addCase(updateTask.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload
