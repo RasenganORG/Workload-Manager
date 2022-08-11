@@ -5,16 +5,21 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { getAllUsers } from '../../../../../../../features/users/userSlice';
 import { updateTask } from '../../../../../../../features/projects/projectsSlice';
+import { reset } from '../../../../../../../features/users/userSlice';
+
+
 export default function Task() {
   const [currentTask, setCurrentTask] = useState('')
   const [showSaveButton, setShowSaveButton] = useState(false)
-
   const [viewMode, setViewMode] = useState('readOnly')
   //we would be able to assign a task only to people that are assigned to this project 
   //the list of assigned users is obtained by filtering through the allUsers state using the id's of the
   //users that are assinged to the selected project
   const [usersAssigned, setUsersAssigned] = useState([])
-  const { title, description, asignee, queue, priority, complexity } = currentTask
+  const { title, description, asignee, queue, priority, complexity, creationDate, dueDate, id } = currentTask
+  const params = useParams()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const [formData, setFormData] = useState({
     title: title,
@@ -22,11 +27,13 @@ export default function Task() {
     asignee: asignee,
     queue: queue,
     priority: priority,
-    complexity: complexity
+    complexity: complexity,
+    creationDate: creationDate,
+    dueDate: dueDate,
+    id: id
   })
-  const params = useParams()
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
+
+
   const { currentProject } = useSelector(
     (state) => state.projects
   )
@@ -50,6 +57,7 @@ export default function Task() {
     return usersArr
   }
 
+
   useEffect(() => {
     setCurrentTask(getTask(currentProject.tasks))
     dispatch(getAllUsers())
@@ -67,10 +75,16 @@ export default function Task() {
         asignee: asignee,
         queue: queue,
         priority: priority,
-        complexity: complexity
+        complexity: complexity,
+        creationDate: creationDate,
+        dueDate: dueDate,
+        id: id
       })
     }
+
   }, [userList])
+
+
 
 
   const onInputChange = (e) => {
@@ -88,6 +102,14 @@ export default function Task() {
       [inputName]: value
     }))
   }
+  const handleSave = (e) => {
+    e.preventDefault()
+    setViewMode('readOnly')
+    dispatch(updateTask({ data: { formData, currentTask }, projectId: params.projectId, taskId: params.taskId }))
+    dispatch(reset())
+    navigate('../')
+  }
+
   const titleData = () => {
     const handleEditButton = () => {
       setShowSaveButton(true)
@@ -112,21 +134,16 @@ export default function Task() {
   }
   const SaveButton = (props) => {
     const { display } = props;
-    const handleSave = () => {
-      setShowSaveButton(false)
-      setViewMode('readOnly')
-      // dispatch(updateTask({ taskData: formData, taskId: 1, projectId: params.projectId }))
-    }
+
     if (showSaveButton) {
       return (
         <div>
-          <Button type='primary' onClick={handleSave}>Save changes</Button>
+          <Button type='primary' onClick={(e) => { handleSave(e) }}>Save changes</Button>
         </div>
       )
     } else {
       return <></>
     }
-
 
   }
 
@@ -146,10 +163,7 @@ export default function Task() {
           {/* <p><b>Queue: </b> {currentTask.queue}</p>
           <p><b>Priority: </b>{currentTask.priority}</p> */}
         </Col>
-        <Col span={4}>
-          <p><b>Assigned to </b></p>
-          <p> <Avatar src="https://joeschmoe.io/api/v1/random" />{asignee}</p>
-        </Col>
+
       </Row>
 
       <Row justify='space-between'>
@@ -161,7 +175,7 @@ export default function Task() {
 
             <Form.Item label="Status:" >
               <Select onChange={(e) => { onSelectChange(e, 'queue') }} placeholder={queue}>
-                <Select.Option value="Sprint">Completed</Select.Option>
+                <Select.Option value="Sprint">Sprint</Select.Option>
                 <Select.Option value="In Progress">In Progress</Select.Option>
                 <Select.Option value="Blocked">Blocked</Select.Option>
                 <Select.Option value="Backlog">Backlog</Select.Option>

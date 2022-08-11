@@ -16,6 +16,7 @@ export default function NewTask() {
     queue: '',
     priority: '',
     complexity: '',
+    creationDate: new Date(),
     id: Date.now()
 
   })
@@ -164,9 +165,8 @@ export default function NewTask() {
                   onSelectChange(value, 'queue')
                 }}
               >
-                <Select.Option value="sprint">Sprint</Select.Option>
-                <Select.Option value="inProgress">In progress</Select.Option>
-                <Select.Option value="backlog">Backlog</Select.Option>
+                <Select.Option value="Sprint">Sprint</Select.Option>
+                <Select.Option value="Backlog">Backlog</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item

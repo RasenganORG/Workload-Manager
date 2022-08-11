@@ -69,8 +69,8 @@ export const addTask = createAsyncThunk('projects/addTask', async (taskInfo, thu
 
 export const updateTask = createAsyncThunk('projects/updateTask', async (taskInfo, thunkAPI) => {
   try {
-    const { taskData, taskId, projectId } = taskInfo
-    return await projectsService.updateTask(taskData, taskId, projectId)
+    const { data, projectId, taskId } = taskInfo
+    return await projectsService.updateTask(data, projectId, taskId)
   } catch (error) {
     const message =
       (error.response &&
@@ -81,6 +81,8 @@ export const updateTask = createAsyncThunk('projects/updateTask', async (taskInf
     return thunkAPI.rejectWithValue(message)
   }
 })
+
+
 
 export const projectsSlice = createSlice({
   name: 'projects',
@@ -160,6 +162,7 @@ export const projectsSlice = createSlice({
         state.isError = true
         state.message = action.payload
       })
+
 
   },
 })

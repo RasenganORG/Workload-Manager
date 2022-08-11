@@ -29,8 +29,8 @@ const addTask = async (taskData, projectId) => {
   return response.data
 }
 //update a task
-const updateTask = async (taskData, taskId, projectId) => {
-  const response = await axios.put(`${PROJECT_URL}${projectId}/tasks/${taskId}`, taskData)
+const updateTask = async (data, projectId, taskId) => {
+  const response = await axios.put(`${PROJECT_URL}${projectId}/tasks/${taskId}`, data)
 
   return response.data
 }
@@ -40,7 +40,8 @@ const projectsService = {
   addProject,
   getProject,
   addTask,
-  updateTask
+  updateTask,
+
 }
 
 export default projectsService

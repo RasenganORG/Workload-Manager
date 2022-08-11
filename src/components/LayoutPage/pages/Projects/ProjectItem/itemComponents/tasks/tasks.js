@@ -1,22 +1,24 @@
 import Board from 'react-trello'
 import { Layout } from 'antd'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import { useSelector } from "react-redux"
-
-
+import { useDispatch } from 'react-redux';
+import { deleteTask } from '../../../../../../../features/projects/projectsSlice';
 export default function Tasks() {
-
+  const params = useParams()
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   const { currentProject } = useSelector(
     (state) => state.projects
   )
 
   //get project tasks and filter them by the queue
-  const backlogTasks = currentProject.tasks.filter((task) => task.queue == 'backlog')
-  const sprintTasks = currentProject.tasks.filter((task) => task.queue == 'sprint')
-  const inProgressTasks = currentProject.tasks.filter((task) => task.queue == 'inProgress')
-  const completedTasks = currentProject.tasks.filter((task) => task.queue == 'completed')
+  const backlogTasks = currentProject.tasks.filter((task) => task.queue == 'Backlog')
+  const sprintTasks = currentProject.tasks.filter((task) => task.queue == 'Sprint')
+  const inProgressTasks = currentProject.tasks.filter((task) => task.queue == 'In Progress')
+  const completedTasks = currentProject.tasks.filter((task) => task.queue == 'Completed')
+  const blockedTasks = currentProject.tasks.filter((task) => task.queue == 'Blocked')
 
   const taskGenerator = (task) => {
     return {
@@ -28,6 +30,10 @@ export default function Tasks() {
         taskInfo: 'asdsa'
       }
     }
+  }
+
+  let handleCardDelete = (taskId) => {
+    console.log(taskId)
   }
 
   const data = {
@@ -48,7 +54,7 @@ export default function Tasks() {
         id: 'blockedLane',
         title: 'Blocked ',
         label: `${inProgressTasks.length}`,
-        cards: []
+        cards: blockedTasks.map((task) => taskGenerator(task))
       },
       {
         id: 'inProgressLane',
@@ -76,6 +82,7 @@ export default function Tasks() {
         draggable={true}
         onCardClick={(cardId, metadata, laneId) => navigate(`${cardId}`)}
         canAddLanes={true}
+        onCardDelete={(cardId) => handleCardDelete(cardId)}
       />
       <Outlet />
     </Layout>
