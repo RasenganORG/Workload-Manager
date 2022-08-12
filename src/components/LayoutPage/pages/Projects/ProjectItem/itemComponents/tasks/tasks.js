@@ -1,9 +1,11 @@
 import Board from 'react-trello'
-import { Layout } from 'antd'
+import { Layout, Button, message, Popconfirm } from 'antd'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import { useSelector } from "react-redux"
 import { useDispatch } from 'react-redux';
 import { deleteTask } from '../../../../../../../features/projects/projectsSlice';
+import { updateTask } from '../../../../../../../features/projects/projectsSlice';
+
 export default function Tasks() {
   const params = useParams()
   const navigate = useNavigate();
@@ -20,6 +22,12 @@ export default function Tasks() {
   const completedTasks = currentProject.tasks.filter((task) => task.queue == 'Completed')
   const blockedTasks = currentProject.tasks.filter((task) => task.queue == 'Blocked')
 
+  const text = 'Are you sure to delete this task?';
+
+  const confirm = () => {
+    message.info('Clicked on Yes.');
+  };
+
   const taskGenerator = (task) => {
     return {
       id: task.id.toString(),
@@ -32,38 +40,51 @@ export default function Tasks() {
     }
   }
 
-  let handleCardDelete = (taskId) => {
-    console.log(taskId)
+  const handleCardDelete = (taskId) => {
+    let taskToDelete = currentProject.tasks.find(task => task.id == taskId)
+    dispatch(deleteTask({ data: taskToDelete, projectId: params.projectId, taskId: params.taskId }))
+
   }
+
+  const handleLaneChange = (fromLaneId, toLaneId, cardId) => {
+    const currentTask = currentProject.tasks.find(task => task.id == cardId)
+    const newTask = {
+      ...currentTask,
+      queue: toLaneId,
+    }
+    dispatch(updateTask({ data: { newTask, currentTask }, projectId: params.projectId, taskId: cardId }))
+
+  }
+
 
   const data = {
     lanes: [
       {
-        id: 'backlogLane',
+        id: 'Backlog',
         title: 'Backlog',
         label: `${backlogTasks.length}`,
         cards: backlogTasks.map((task) => taskGenerator(task))
       },
       {
-        id: 'sprintLane',
+        id: 'Sprint',
         title: 'Sprint',
         label: `${sprintTasks.length}`,
         cards: sprintTasks.map((task) => taskGenerator(task))
       },
       {
-        id: 'blockedLane',
+        id: 'Blocked',
         title: 'Blocked ',
         label: `${inProgressTasks.length}`,
         cards: blockedTasks.map((task) => taskGenerator(task))
       },
       {
-        id: 'inProgressLane',
-        title: 'In progress',
+        id: 'In Progress',
+        title: `In Progress`,
         label: `${completedTasks.length}`,
         cards: inProgressTasks.map((task) => taskGenerator(task))
       },
       {
-        id: 'completedLane',
+        id: 'Completed',
         title: 'Completed',
         label: 'task number here',
         cards: completedTasks.map((task) => taskGenerator(task))
@@ -76,6 +97,9 @@ export default function Tasks() {
 
   return (
     <Layout>
+      <Popconfirm visibile={true} placement="topLeft" title={text} onConfirm={confirm} okText="Yes" cancelText="No">
+        <Button>TL</Button>
+      </Popconfirm>
       <Board
         data={data}
         style={{ background: "transparent" }}
@@ -83,6 +107,7 @@ export default function Tasks() {
         onCardClick={(cardId, metadata, laneId) => navigate(`${cardId}`)}
         canAddLanes={true}
         onCardDelete={(cardId) => handleCardDelete(cardId)}
+        onCardMoveAcrossLanes={(fromLaneId, toLaneId, cardId) => handleLaneChange(fromLaneId, toLaneId, cardId)}
       />
       <Outlet />
     </Layout>

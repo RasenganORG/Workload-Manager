@@ -1,4 +1,4 @@
-import { Avatar, Card, Row, Col, Form, Button, Select, Input } from 'antd';
+import { Card, Row, Col, Form, Button, Select, Input } from 'antd';
 import { useNavigate, useParams } from 'react-router';
 import { EditOutlined, LeftCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
@@ -6,12 +6,14 @@ import { useEffect, useState } from 'react';
 import { getAllUsers } from '../../../../../../../features/users/userSlice';
 import { updateTask } from '../../../../../../../features/projects/projectsSlice';
 import { reset } from '../../../../../../../features/users/userSlice';
-
+import { deleteTask } from '../../../../../../../features/projects/projectsSlice';
 
 export default function Task() {
   const [currentTask, setCurrentTask] = useState('')
   const [showSaveButton, setShowSaveButton] = useState(false)
   const [viewMode, setViewMode] = useState('readOnly')
+  const [tasks, setTasks] = useState(currentProject.tasks)
+
   //we would be able to assign a task only to people that are assigned to this project 
   //the list of assigned users is obtained by filtering through the allUsers state using the id's of the
   //users that are assinged to the selected project
@@ -105,10 +107,18 @@ export default function Task() {
   const handleSave = (e) => {
     e.preventDefault()
     setViewMode('readOnly')
-    dispatch(updateTask({ data: { formData, currentTask }, projectId: params.projectId, taskId: params.taskId }))
+    const newTask = formData
+    dispatch(updateTask({ data: { newTask, currentTask }, projectId: params.projectId, taskId: params.taskId }))
     dispatch(reset())
     navigate('../')
   }
+  const handleDelete = (e) => {
+    e.preventDefault()
+    console.log(currentTask, params.taskId, params.projectId)
+    dispatch(deleteTask({ data: currentTask, projectId: params.projectId, taskId: params.taskId }))
+
+  }
+
 
   const titleData = () => {
     const handleEditButton = () => {
@@ -168,11 +178,12 @@ export default function Task() {
 
       <Row justify='space-between'>
         <Col span={6}>
+
           <Form
             layout="vertical"
             style={{ textAlign: 'left ' }}
           >
-
+            <button onClick={(e) => handleDelete(e)}> delete</button>
             <Form.Item label="Status:" >
               <Select onChange={(e) => { onSelectChange(e, 'queue') }} placeholder={queue}>
                 <Select.Option value="Sprint">Sprint</Select.Option>

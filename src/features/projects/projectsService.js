@@ -34,14 +34,19 @@ const updateTask = async (data, projectId, taskId) => {
 
   return response.data
 }
+//delete a task
+const deleteTask = async (taskData, projectId, taskID) => {
+  const response = await axios.put(`${PROJECT_URL}${projectId}/tasks/${taskID}/delete`, taskData)
 
+  return response.data
+}
 const projectsService = {
   getProjects,
   addProject,
   getProject,
   addTask,
   updateTask,
-
+  deleteTask
 }
 
 export default projectsService

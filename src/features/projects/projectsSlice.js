@@ -82,6 +82,21 @@ export const updateTask = createAsyncThunk('projects/updateTask', async (taskInf
   }
 })
 
+export const deleteTask = createAsyncThunk('projects/deleteTask', async (taskInfo, thunkAPI) => {
+  try {
+    const { data, projectId, taskId } = taskInfo
+    return await projectsService.deleteTask(data, projectId, taskId)
+  } catch (error) {
+    const message =
+      (error.response &&
+        error.response.data &&
+        error.response.data.message) ||
+      error.message ||
+      error.toString()
+    return thunkAPI.rejectWithValue(message)
+  }
+})
+
 
 
 export const projectsSlice = createSlice({
@@ -158,6 +173,18 @@ export const projectsSlice = createSlice({
         state.isSuccess = true
       })
       .addCase(updateTask.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(deleteTask.pending, (state) => {
+        // state.isLoading = true
+      })
+      .addCase(deleteTask.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+      })
+      .addCase(deleteTask.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload
