@@ -40,9 +40,6 @@ function App() {
 
 
             </Route>
-            {/* <Route path="/projects/:projectId" element={<ProjectItem />} />
-							<Route path="/projects/:projectId" element={<ProjectItem />} />
-							<Route path="/projects/:projectId" element={<ProjectItem />} /> */}
 
             <Route
               path="statistics"

@@ -3,13 +3,22 @@ import projectsService from "./projectsService.js";
 
 const initialState = {
   projectList: null,
-  currentProject: null,
+  currentProject: {
+    isSuccess: false,
+    project: null
+  },
   isError: false,
   isSuccess: false,
   isLoading: true,
   message: ''
 }
-
+// TODO
+// -projectList
+// -currentProject(tasks to be deleted from here)
+// -tasks
+// remove context from outlet and use nested loading inside tasks
+// use dependency[tasksDone] for tasks success
+// change name of getProjec to getProjectItem to avoid mixins with getProgentS
 export const addProject = createAsyncThunk('projects/addProject', async (project, thunkAPI) => {
   try {
     return await projectsService.addProject(project)
@@ -37,10 +46,10 @@ export const getProjects = createAsyncThunk('projects/getProjects', async (proje
     return thunkAPI.rejectWithValue(message)
   }
 })
-
-export const getProject = createAsyncThunk('projects/getProject', async (projectId, thunkAPI) => {
+//TODO projecitem in loc de 
+export const getProjectItem = createAsyncThunk('projects/getProjectItem', async (projectId, thunkAPI) => {
   try {
-    return await projectsService.getProject(projectId)
+    return await projectsService.getProjectItem(projectId)
   } catch (error) {
     const message =
       (error.response &&
@@ -109,6 +118,9 @@ export const projectsSlice = createSlice({
       state.isSuccess = false
       state.message = ''
       state.currentProject = null
+    },
+    resetCurrentProjectSuccess: (state) => {
+      state.currentProject.isSuccess = false
     }
   },
   extraReducers: (builder) => {
@@ -139,38 +151,38 @@ export const projectsSlice = createSlice({
         state.isError = true
         state.message = action.payload
       })
-      .addCase(getProject.pending, (state) => {
+      .addCase(getProjectItem.pending, (state) => {
         state.isLoading = true
       })
-      .addCase(getProject.fulfilled, (state, action) => {
+      .addCase(getProjectItem.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
-        state.currentProject = action.payload
+        state.currentProject.project = action.payload
       })
-      .addCase(getProject.rejected, (state, action) => {
+      .addCase(getProjectItem.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload
-        state.currentProject = null
+        state.currentProject.project = null
       })
       .addCase(addTask.pending, (state) => {
         state.isLoading = true
       })
       .addCase(addTask.fulfilled, (state, action) => {
-        state.isLoading = false
         state.isSuccess = true
+        state.currentProject.isSuccess = true
       })
       .addCase(addTask.rejected, (state, action) => {
-        state.isLoading = false
+        state.currentProject.isSuccess = true
         state.isError = true
         state.message = action.payload
       })
       .addCase(updateTask.pending, (state) => {
-        state.isLoading = true
       })
       .addCase(updateTask.fulfilled, (state, action) => {
-        state.isLoading = false
         state.isSuccess = true
+        state.currentProject.isSuccess = true
+
       })
       .addCase(updateTask.rejected, (state, action) => {
         state.isLoading = false
@@ -181,11 +193,11 @@ export const projectsSlice = createSlice({
         // state.isLoading = true
       })
       .addCase(deleteTask.fulfilled, (state, action) => {
-        state.isLoading = false
         state.isSuccess = true
+        state.currentProject.isSuccess = true
+
       })
       .addCase(deleteTask.rejected, (state, action) => {
-        state.isLoading = false
         state.isError = true
         state.message = action.payload
       })
@@ -195,5 +207,5 @@ export const projectsSlice = createSlice({
 })
 
 export const projectsActions = projectsSlice.actions;
-export const { reset, addProjectTasks } = projectsSlice.actions
+export const { reset, resetCurrentProjectSuccess } = projectsSlice.actions
 export default projectsSlice.reducer

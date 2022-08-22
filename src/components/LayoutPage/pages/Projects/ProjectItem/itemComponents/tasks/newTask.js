@@ -41,10 +41,6 @@ export default function NewTask() {
     dispatch(getAllUsers())
   }, [])
 
-  //this state is set to TRUE when a new task is added to trigger the 
-  //getProject dispatch from the Projects page useEffect and fetch the
-  //project with the new added task 
-  const { setWasTaskAdded } = useOutletContext()
 
   const onSelectChange = (value, inputName) => {
     setFormData((prevState) => ({
@@ -55,7 +51,6 @@ export default function NewTask() {
   const onSubmit = () => {
     dispatch(addTask({ taskData: formData, projectId: params.projectId }))
     navigate(-1)
-    setWasTaskAdded(true)
   }
 
   return (

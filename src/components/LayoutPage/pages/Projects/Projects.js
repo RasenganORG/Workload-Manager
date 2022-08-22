@@ -21,20 +21,26 @@ export default function Projects() {
     const { id, title, description, tasks, status } = project
     const projectTasksData = [
       {
-        title: "Upcoming tasks",
-        taskNumber: tasks?.length,
+        title: "Backlog tasks",
+        taskNumber: tasks.filter((task) => task.queue == 'Backlog').length
       },
       {
-        title: "Assigned tasks",
-        taskNumber: 0,
+        title: "Tasks left in Sprint",
+        taskNumber: tasks.filter((task) => task.queue == 'Sprint').length
+
       },
       {
-        title: "Blocked tasks",
-        taskNumber: 0,
+        title: "Completed  tasks",
+        taskNumber: tasks.filter((task) => task.queue == 'Completed').length
       }
 
     ];
+    const getProjectCompletationPercent = (tasks) => {
+      const completedTasks = tasks.filter(task => task.queue == 'Completed')
+      const pendingTasks = tasks.filter(task => task.queue !== 'Completed')
 
+      return Math.ceil(completedTasks.length / (pendingTasks.length + completedTasks.length) * 100)
+    }
     return (
       <Col key={id} span={8}>
         <Badge.Ribbon text={status} color="green">
@@ -60,7 +66,7 @@ export default function Projects() {
                 alignItems: "center",
                 justifyContent: "center"
               }}>
-                <Progress type="circle" percent={55} />
+                <Progress type="circle" percent={getProjectCompletationPercent(tasks)} />
               </Col>
             </Row>
           </Card>

@@ -1,29 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import { useSelector, useDispatch } from 'react-redux';
-import { reset, getProject } from '../../../../../features/projects/projectsSlice';
+import { getProjectItem } from '../../../../../features/projects/projectsSlice';
 import Spinner from '../../../../Spinner';
-import { Layout, Menu, Row, PageHeader, Col, Button, Breadcrumb } from 'antd';
+import { Layout, Menu, Row, PageHeader, Button, Breadcrumb } from 'antd';
 import { Outlet, Link } from "react-router-dom";
 
 export default function ProjectItem() {
   const pathParams = useParams()
   const dispatch = useDispatch()
 
-  //this state is set to TRUE when a new task is added to trigger the 
-  //getProject dispatch from useEffect and reload the project with the new task
-  //added 
-  const [wasTaskAdded, setWasTaskAdded] = useState(false)
-
-
   const { currentProject, isLoading } = useSelector(
     (state) => state.projects
   )
+  const { project } = currentProject
   useEffect(() => {
-    dispatch(getProject(pathParams.projectId))
-    setWasTaskAdded(false)
-  }, [wasTaskAdded])
+    dispatch(getProjectItem(pathParams.projectId))
 
+
+  }, [currentProject.isSuccess])
   const menuItems = [
     {
       label: <Link to="tasks">Tasks</Link>,
@@ -44,7 +39,7 @@ export default function ProjectItem() {
   if (isLoading) {
     return <Spinner />
   }
-  if (currentProject == null) {
+  if (project == null) {
     return <>Error loading project</>
   }
   return (
@@ -61,7 +56,7 @@ export default function ProjectItem() {
         >
           <Breadcrumb.Item>Home</Breadcrumb.Item>
           <Breadcrumb.Item>Projects</Breadcrumb.Item>
-          <Breadcrumb.Item>{currentProject.title}</Breadcrumb.Item>
+          <Breadcrumb.Item>{project ? project.title : ''}</Breadcrumb.Item>
         </Breadcrumb>
         <Layout>
 
@@ -69,7 +64,7 @@ export default function ProjectItem() {
             <Row justify="space-between" align="middle">
               <PageHeader
                 className="site-page-header"
-                title={currentProject.title}
+                title={project ? project?.title : ''}
               // subTitle={"Last updated: " + "2 hours ago"}
               />
 
@@ -85,7 +80,7 @@ export default function ProjectItem() {
             </Row>
 
             <Row className="projectContent">
-              <Outlet context={{ wasTaskAdded, setWasTaskAdded }} />
+              <Outlet />
             </Row>
           </Layout.Content>
         </Layout>

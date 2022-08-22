@@ -16,7 +16,7 @@ export default function NewProject() {
     colorLabel: 'none',
     billingOption: '',
     status: 'active',
-    tasks: []
+    tasks: null
   })
 
   const navigate = useNavigate()

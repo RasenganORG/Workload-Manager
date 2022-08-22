@@ -16,7 +16,7 @@ const addProject = async (taskData) => {
 }
 
 //get an individual project 
-const getProject = async (projectId) => {
+const getProjectItem = async (projectId) => {
   const response = await axios.get(`${PROJECT_URL}${projectId}`)
 
   return response.data
@@ -43,7 +43,7 @@ const deleteTask = async (taskData, projectId, taskID) => {
 const projectsService = {
   getProjects,
   addProject,
-  getProject,
+  getProjectItem,
   addTask,
   updateTask,
   deleteTask

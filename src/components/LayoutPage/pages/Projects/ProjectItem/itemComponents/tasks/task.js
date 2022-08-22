@@ -1,24 +1,21 @@
-import { Card, Row, Col, Form, Button, Select, Input } from 'antd';
+import { Card, Row, Col, Form, Button, Select, Input, message, Popconfirm } from 'antd';
 import { useNavigate, useParams } from 'react-router';
-import { EditOutlined, LeftCircleOutlined } from '@ant-design/icons';
+import { EditOutlined, LeftCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { getAllUsers } from '../../../../../../../features/users/userSlice';
-import { updateTask } from '../../../../../../../features/projects/projectsSlice';
+import { updateTask, deleteTask } from '../../../../../../../features/projects/projectsSlice';
 import { reset } from '../../../../../../../features/users/userSlice';
-import { deleteTask } from '../../../../../../../features/projects/projectsSlice';
-
+import { getAllUsers } from '../../../../../../../features/users/userSlice';
 export default function Task() {
   const [currentTask, setCurrentTask] = useState('')
   const [showSaveButton, setShowSaveButton] = useState(false)
   const [viewMode, setViewMode] = useState('readOnly')
-  const [tasks, setTasks] = useState(currentProject.tasks)
-
   //we would be able to assign a task only to people that are assigned to this project 
   //the list of assigned users is obtained by filtering through the allUsers state using the id's of the
   //users that are assinged to the selected project
   const [usersAssigned, setUsersAssigned] = useState([])
   const { title, description, asignee, queue, priority, complexity, creationDate, dueDate, id } = currentTask
+
   const params = useParams()
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -35,9 +32,8 @@ export default function Task() {
     id: id
   })
 
-
-  const { currentProject } = useSelector(
-    (state) => state.projects
+  const { project } = useSelector(
+    (state) => state.projects.currentProject
   )
   const { userList } = useSelector(
     (state) => state.users
@@ -52,16 +48,14 @@ export default function Task() {
   const getAssignedUsers = (users) => {
     let usersArr = []
     users.forEach(user => {
-      if (currentProject.usersAssigned.includes(user.id)) {
+      if (project.usersAssigned.includes(user.id)) {
         usersArr.push(user)
       }
     })
     return usersArr
   }
-
-
   useEffect(() => {
-    setCurrentTask(getTask(currentProject.tasks))
+    setCurrentTask(getTask(project.tasks))
     dispatch(getAllUsers())
     if (userList) {
       setUsersAssigned(getAssignedUsers(userList))
@@ -87,8 +81,7 @@ export default function Task() {
   }, [userList])
 
 
-
-
+  //form handler
   const onInputChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -96,7 +89,6 @@ export default function Task() {
     }))
 
   }
-
   const onSelectChange = (value, inputName) => {
     setShowSaveButton(true)
     setFormData((prevState) => ({
@@ -104,37 +96,40 @@ export default function Task() {
       [inputName]: value
     }))
   }
+  //event handlers
   const handleSave = (e) => {
-    e.preventDefault()
+    const newTask = formData;
     setViewMode('readOnly')
-    const newTask = formData
     dispatch(updateTask({ data: { newTask, currentTask }, projectId: params.projectId, taskId: params.taskId }))
     dispatch(reset())
     navigate('../')
   }
-  const handleDelete = (e) => {
-    e.preventDefault()
-    console.log(currentTask, params.taskId, params.projectId)
+  const handleEditButton = () => {
+    setShowSaveButton(true)
+    setViewMode('edit')
+  }
+  const handleDelete = () => {
     dispatch(deleteTask({ data: currentTask, projectId: params.projectId, taskId: params.taskId }))
-
+    navigate('../')
   }
 
-
+  //task card title information
   const titleData = () => {
-    const handleEditButton = () => {
-      setShowSaveButton(true)
-      setViewMode('edit')
-    }
     return (
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {viewMode == 'readOnly' ?
-            <p style={{ margin: 0 }}>{title}</p>
-            :
-            <Input name='title' onChange={(e) => { onInputChange(e) }} defaultValue={title} />
-          }
+            <>
+              <p style={{ margin: 0 }}>{title}</p>
+              <EditOutlined onClick={handleEditButton} style={{ cursor: 'pointer' }} />
 
-          <EditOutlined onClick={handleEditButton} style={{ cursor: 'pointer' }} />
+            </>
+            :
+            <>
+              <Input name='title' onChange={(e) => { onInputChange(e) }} defaultValue={title} />
+              <CloseOutlined onClick={() => { setViewMode('readOnly') }} />
+            </>
+          }
         </div>
         <div onClick={() => navigate(-1)}>
           <Button><LeftCircleOutlined />Go back</Button>
@@ -142,38 +137,17 @@ export default function Task() {
       </div>
     )
   }
-  const SaveButton = (props) => {
-    const { display } = props;
 
-    if (showSaveButton) {
-      return (
-        <div>
-          <Button type='primary' onClick={(e) => { handleSave(e) }}>Save changes</Button>
-        </div>
-      )
-    } else {
-      return <></>
-    }
-
-  }
-
-  // dispatch(updateTask({ taskData: formData, taskId: 1, projectId: params.projectId }))
   return (
     <Card title={titleData()} style={{ width: "100%", margin: "16px 0" }}>
       <Row gutter={32}>
-        <Col span={20} style={{ textAlign: 'left' }}>
+        <Col span={24} style={{ textAlign: 'left' }}>
           {viewMode == 'readOnly' ?
             <p >{description}</p>
             :
             <Input.TextArea name='description' style={{ width: '50%' }} onChange={(e) => onInputChange(e)} defaultValue={description} />
           }
-
-
-
-          {/* <p><b>Queue: </b> {currentTask.queue}</p>
-          <p><b>Priority: </b>{currentTask.priority}</p> */}
         </Col>
-
       </Row>
 
       <Row justify='space-between'>
@@ -183,7 +157,6 @@ export default function Task() {
             layout="vertical"
             style={{ textAlign: 'left ' }}
           >
-            <button onClick={(e) => handleDelete(e)}> delete</button>
             <Form.Item label="Status:" >
               <Select onChange={(e) => { onSelectChange(e, 'queue') }} placeholder={queue}>
                 <Select.Option value="Sprint">Sprint</Select.Option>
@@ -200,7 +173,20 @@ export default function Task() {
                 <Select.Option value="High complexity">High complexity</Select.Option>
               </Select>
             </Form.Item>
+
+
+            <Popconfirm
+
+              title="Are you sure to delete this task?"
+              onConfirm={handleDelete}
+              okText="Yes"
+              cancelText="No"
+            >
+              {showSaveButton ? <Button type='danger' >Delete task</Button> : ''}
+            </Popconfirm>
           </Form>
+
+
         </Col>
 
         <Col span={6}>
@@ -222,13 +208,10 @@ export default function Task() {
                 }) : ''}
               </Select>
             </Form.Item>
-            <SaveButton display={showSaveButton} />
+            {showSaveButton ? <Button type='primary' onClick={(e) => { handleSave(e) }}>Save changes</Button> : ''}
           </Form>
         </Col>
 
-
-      </Row>
-      <Row>
       </Row>
 
     </Card >
