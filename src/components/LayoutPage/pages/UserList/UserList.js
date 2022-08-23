@@ -11,7 +11,6 @@ export default function UserList() {
     (state) => state.users
   )
   useEffect(() => {
-
     dispatch(getAllUsers())
   }, [])
 

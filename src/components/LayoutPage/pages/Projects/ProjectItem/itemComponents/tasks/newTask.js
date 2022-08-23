@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { CloseOutlined } from '@ant-design/icons';
 import { addTask } from "../../../../../../../features/projects/projectsSlice"
 import { getAllUsers } from "../../../../../../../features/users/userSlice"
+import { getProjectItem } from "../../../../../../../features/projects/projectsSlice"
 
 export default function NewTask() {
   const [formData, setFormData] = useState({
@@ -17,8 +18,8 @@ export default function NewTask() {
     priority: '',
     complexity: '',
     creationDate: new Date(),
-    id: Date.now()
-
+    id: Date.now(),
+    comments: []
   })
 
   const navigate = useNavigate()
@@ -36,9 +37,13 @@ export default function NewTask() {
   const { userList } = useSelector(
     (state) => state.users
   )
+  const { project } = useSelector(
+    (state) => state.projects.currentProject
+  )
 
   useEffect(() => {
     dispatch(getAllUsers())
+
   }, [])
 
 
@@ -52,6 +57,19 @@ export default function NewTask() {
     dispatch(addTask({ taskData: formData, projectId: params.projectId }))
     navigate(-1)
   }
+
+  //we verify the user that are assign to the project and return an array with all the users assigned
+  const getAssignedUsers = (users) => {
+    let usersArr = []
+    users.forEach(user => {
+      if (project.usersAssigned.includes(user.id)) {
+        usersArr.push(user)
+      }
+    })
+    return usersArr
+  }
+  // can only assign the task to an user assigned to the project
+  const assignedUsers = getAssignedUsers(userList)
 
   return (
     <Layout>
@@ -114,7 +132,7 @@ export default function NewTask() {
                 }}
               >
 
-                {userList ? userList.map((user, index) => {
+                {assignedUsers ? assignedUsers.map((user, index) => {
                   return <Select.Option key={index} value={user.name}>{user.name}</Select.Option>
                 }) : ''}
 

@@ -1,4 +1,4 @@
-import { Card, Row, Col, Form, Button, Select, Input, message, Popconfirm } from 'antd';
+import { Card, Row, Col, Form, Button, Select, Input, Tooltip, Comment, Avatar, Popconfirm, Modal } from 'antd';
 import { useNavigate, useParams } from 'react-router';
 import { EditOutlined, LeftCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
@@ -6,15 +6,19 @@ import { useEffect, useState } from 'react';
 import { updateTask, deleteTask } from '../../../../../../../features/projects/projectsSlice';
 import { reset } from '../../../../../../../features/users/userSlice';
 import { getAllUsers } from '../../../../../../../features/users/userSlice';
+import moment from 'moment';
+import { time } from 'highcharts';
 export default function Task() {
   const [currentTask, setCurrentTask] = useState('')
   const [showSaveButton, setShowSaveButton] = useState(false)
   const [viewMode, setViewMode] = useState('readOnly')
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [newComment, setNewComment] = useState('')
   //we would be able to assign a task only to people that are assigned to this project 
   //the list of assigned users is obtained by filtering through the allUsers state using the id's of the
   //users that are assinged to the selected project
   const [usersAssigned, setUsersAssigned] = useState([])
-  const { title, description, asignee, queue, priority, complexity, creationDate, dueDate, id } = currentTask
+  const { title, description, asignee, queue, priority, complexity, creationDate, dueDate, id, comments } = currentTask
 
   const params = useParams()
   const navigate = useNavigate()
@@ -29,7 +33,8 @@ export default function Task() {
     complexity: complexity,
     creationDate: creationDate,
     dueDate: dueDate,
-    id: id
+    id: id,
+    comments: comments
   })
 
   const { project } = useSelector(
@@ -37,6 +42,9 @@ export default function Task() {
   )
   const { userList } = useSelector(
     (state) => state.users
+  )
+  const { user } = useSelector(
+    (state) => state.auth
   )
   const getTask = (tasks) => {
     return tasks.find((task) => {
@@ -74,12 +82,12 @@ export default function Task() {
         complexity: complexity,
         creationDate: creationDate,
         dueDate: dueDate,
-        id: id
+        id: id,
+        comments: comments
       })
     }
 
   }, [userList])
-
 
   //form handler
   const onInputChange = (e) => {
@@ -138,6 +146,56 @@ export default function Task() {
     )
   }
 
+
+  //add comment modal & modal handlers
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setViewMode('edit')
+    setShowSaveButton(true)
+    const comment = {
+      user: user.name,
+      comment: newComment,
+      timestamp: moment().format('YYYY-MM-DD HH:mm')
+    }
+
+    setFormData((prevState) => ({
+      ...prevState,
+      comments: [
+        ...prevState.comments,
+        comment
+      ]
+    }))
+    setNewComment('')
+    console.log(formData.comments)
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setNewComment('')
+    setIsModalVisible(false);
+  };
+
+  const generateComment = (user, comment, timestamp) => {
+    return (
+      <Col span={12} style={{ textAlign: 'left' }}>
+        <Card>
+          <Comment
+            author={user}
+            avatar={<Avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo" />}
+            content={comment}
+            datetime={
+              <Tooltip title={timestamp}>
+                <span>{moment(timestamp).fromNow()}</span>
+              </Tooltip>
+            }
+          />
+        </Card>
+      </Col>)
+  }
+
   return (
     <Card title={titleData()} style={{ width: "100%", margin: "16px 0" }}>
       <Row gutter={32}>
@@ -175,15 +233,7 @@ export default function Task() {
             </Form.Item>
 
 
-            <Popconfirm
 
-              title="Are you sure to delete this task?"
-              onConfirm={handleDelete}
-              okText="Yes"
-              cancelText="No"
-            >
-              {showSaveButton ? <Button type='danger' >Delete task</Button> : ''}
-            </Popconfirm>
           </Form>
 
 
@@ -208,10 +258,43 @@ export default function Task() {
                 }) : ''}
               </Select>
             </Form.Item>
-            {showSaveButton ? <Button type='primary' onClick={(e) => { handleSave(e) }}>Save changes</Button> : ''}
           </Form>
         </Col>
 
+      </Row>
+
+      <Row gutter={[16, 16]}>
+        <Col span={24} style={{ textAlign: 'left' }}>
+          {formData.comments ? <p>Comments</p> : ''}
+        </Col>
+        {formData.comments ? formData.comments.map((comment) => {
+          return generateComment(comment.user, comment.comment, comment.timestamp)
+        })
+          : ''}
+
+        <Col span={12} className="test" style={{ margin: '2rem 0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Button type="primary" size="small" onClick={showModal}>Add comment</Button>
+
+          <Modal title="Comment" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+            <Input.TextArea allowClear name='newComment' autoSize={true} onChange={(e) => setNewComment(e.target.value)} value={newComment} />
+
+          </Modal>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={12} style={{ textAlign: "left" }}>
+          <Popconfirm
+            title="Are you sure to delete this task?"
+            onConfirm={handleDelete}
+            okText="Yes"
+            cancelText="No"
+          >
+            {showSaveButton ? <Button type='danger' >Delete task</Button> : ''}
+          </Popconfirm>
+        </Col>
+        <Col span={12} style={{ textAlign: "right" }}>
+          {showSaveButton ? <Button type='primary' onClick={(e) => { handleSave(e) }}>Save changes</Button> : ''}
+        </Col>
       </Row>
 
     </Card >
