@@ -170,7 +170,6 @@ export default function Task() {
       ]
     }))
     setNewComment('')
-    console.log(formData.comments)
     setIsModalVisible(false);
   };
 

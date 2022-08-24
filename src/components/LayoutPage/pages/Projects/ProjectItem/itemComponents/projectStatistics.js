@@ -1,152 +1,102 @@
 import { Layout, Card, Badge, Calendar, PageHeader } from "antd"
 import HighchartsReact from "highcharts-react-official";
 import Highcharts from 'highcharts'
-
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router";
+import { getProjectItem } from "../../../../../../features/projects/projectsSlice";
+import { resetCurrentProjectSuccess } from "../../../../../../features/projects/projectsSlice";
+import moment from "moment";
 export default function ProjectStatistics() {
-	//boilerplate code for example calendar start
-	const getListData = (value) => {
-		let listData;
 
-		switch (value.date()) {
-			case 8:
-				listData = [
-					{
-						type: 'warning',
-						content: 'This is warning event.',
-					},
-					{
-						type: 'success',
-						content: 'This is usual event.',
-					},
-				];
-				break;
+  const params = useParams()
+  const dispatch = useDispatch()
 
-			case 10:
-				listData = [
-					{
-						type: 'warning',
-						content: 'This is warning event.',
-					},
-					{
-						type: 'success',
-						content: 'This is usual event.',
-					},
-					{
-						type: 'error',
-						content: 'This is error event.',
-					},
-				];
-				break;
+  const { project, isSuccess } = useSelector(
+    (state) => state.projects.currentProject
+  )
 
-			case 15:
-				listData = [
-					{
-						type: 'warning',
-						content: 'This is warning event',
-					},
-					{
-						type: 'success',
-						content: 'This is very long usual event。。....',
-					},
-					{
-						type: 'error',
-						content: 'This is error event 1.',
-					},
-					{
-						type: 'error',
-						content: 'This is error event 2.',
-					},
-					{
-						type: 'error',
-						content: 'This is error event 3.',
-					},
-					{
-						type: 'error',
-						content: 'This is error event 4.',
-					},
-				];
-				break;
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(getProjectItem(params.projectId))
+      dispatch(resetCurrentProjectSuccess())
+    }
+  }, [])
 
-			default:
-		}
+  //https://stackoverflow.com/questions/72393755/calendar-ant-design-how-to-show-events-with-variable-datesco
+  const formattedTasks = project.tasks.map(task => {
+    return {
+      id: task.id,
+      content: task.title,
+      date: moment(task.creationDate).format("DD/MM/YYYY")
+    }
+  })
 
-		return listData || [];
-	};
+  const dateCellRender = (value) => {
+    const stringValue = value.format("DD/MM/yyyy");
+    const listData = formattedTasks.filter(task => task.date === stringValue)
 
-	const getMonthData = (value) => {
-		if (value.month() === 8) {
-			return 1394;
-		}
-	};
-	const monthCellRender = (value) => {
-		const num = getMonthData(value);
-		return num ? (
-			<div className="notes-month">
-				<section>{num}</section>
-				<span>Backlog number</span>
-			</div>
-		) : null;
-	};
+    return (
+      <ul className="events">
+        {listData.map((item) => (
+          <li key={item.id}>
+            <Badge status={"success"} text={item.content} />
+          </li>
+        ))}
+      </ul>
+    );
+  };
 
-	const dateCellRender = (value) => {
-		const listData = getListData(value);
-		return (
-			<ul className="events">
-				{listData.map((item) => (
-					<li key={item.content}>
-						<Badge status={item.type} text={item.content} />
-					</li>
-				))}
-			</ul>
-		);
-	};
-	//boilerplate code for example calendar end
-	const highchartOptions = {
-		title: {
-			text: "Project statistics"
-		},
-		series: [
-			{
-				name: "Total tasks",
-				data: [23, 43, 60, 95, 150, 160, 200]
-			},
-			{
-				name: "Total worked tasks",
-				data: [20, 38, 54, 65, 100, 145, 190]
-			}
-		],
-		yAxis: {
+  const monthCellRender = (value) => [
+    console.log(value)
+  ]
 
-		},
+  const highchartOptions = {
+    title: {
+      text: "Project statistics"
+    },
+    series: [
+      {
+        name: "Total tasks",
+        data: [23, 43, 60, 95, 150, 160, 200]
+      },
+      {
+        name: "Total worked tasks",
+        data: [20, 38, 54, 65, 100, 145, 190]
+      }
+    ],
+    yAxis: {
 
-		xAxis: {
-			categories: ["January", "February", "March", "April", "May", "June", "July"]
-		}
-	};
-	return (
-		<Layout>
-			<Layout.Content style={{ margin: "16px 0" }}>
-				<Card title="Statistics">
-					<div>
-						<PageHeader
-							className="site-page-header"
-							title="Project Calendar"
-						/>
-						<Calendar dateCellRender={dateCellRender} monthCellRender={monthCellRender} />
-					</div>
-					<div>
-						<PageHeader
-							className="site-page-header"
-							title="Project chart"
-						/>
-						<HighchartsReact
-							highcharts={Highcharts}
-							options={highchartOptions}
-						/>
+    },
 
-					</div>
-				</Card>
-			</Layout.Content>
-		</Layout>
-	)
+    xAxis: {
+      categories: ["January", "February", "March", "April", "May", "June", "July"]
+    }
+  };
+  return (
+    <Layout>
+      <Layout.Content style={{ margin: "16px 0" }}>
+        <Card title="Statistics">
+          <div>
+            <PageHeader
+              className="site-page-header"
+              title="Project Calendar"
+            />
+            <Calendar dateCellRender={dateCellRender} monthCellRender={monthCellRender} />
+          </div>
+          <div>
+            <PageHeader
+              className="site-page-header"
+              title="Project chart"
+            />
+            <HighchartsReact
+              highcharts={Highcharts}
+              options={highchartOptions}
+            />
+
+          </div>
+        </Card>
+      </Layout.Content>
+    </Layout>
+  )
 }
