@@ -22,22 +22,22 @@ export default function Projects() {
     const projectTasksData = [
       {
         title: "Backlog tasks",
-        taskNumber: tasks.filter((task) => task.queue == 'Backlog').length
+        taskNumber: tasks ? tasks.filter((task) => task.queue == 'Backlog').length : 0
       },
       {
         title: "Tasks left in Sprint",
-        taskNumber: tasks.filter((task) => task.queue == 'Sprint').length
+        taskNumber: tasks ? tasks.filter((task) => task.queue == 'Sprint').length : 0
 
       },
       {
         title: "Completed  tasks",
-        taskNumber: tasks.filter((task) => task.queue == 'Completed').length
+        taskNumber: tasks ? tasks.filter((task) => task.queue == 'Completed').length : 0
       }
 
     ];
     const getProjectCompletationPercent = (tasks) => {
-      const completedTasks = tasks.filter(task => task.queue == 'Completed')
-      const pendingTasks = tasks.filter(task => task.queue !== 'Completed')
+      const completedTasks = tasks ? tasks.filter(task => task.queue == 'Completed') : 0
+      const pendingTasks = tasks ? tasks.filter(task => task.queue !== 'Completed') : 0
 
       return Math.ceil(completedTasks.length / (pendingTasks.length + completedTasks.length) * 100)
     }

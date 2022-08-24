@@ -30,10 +30,7 @@ export default function UserList() {
               Project 3
             </Button>
           </Row>
-          {/* <Divider />
-				<h3><b>Task status</b> </h3>
-				<p>Tasks assigned: 2</p>
-				<p>Tasks completed: 53</p> */}
+
           <Divider />
           <h3><b>Contact info</b> </h3>
           <p>Phone number: {phoneNumber}</p>

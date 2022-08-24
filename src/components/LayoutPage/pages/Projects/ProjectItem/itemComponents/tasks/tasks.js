@@ -26,11 +26,11 @@ export default function Tasks() {
   }, [isSuccess])
 
   //get project tasks and filter them by the queue
-  const backlogTasks = project.tasks.filter((task) => task.queue == 'Backlog')
-  const sprintTasks = project.tasks.filter((task) => task.queue == 'Sprint')
-  const inProgressTasks = project.tasks.filter((task) => task.queue == 'In Progress')
-  const completedTasks = project.tasks.filter((task) => task.queue == 'Completed')
-  const blockedTasks = project.tasks.filter((task) => task.queue == 'Blocked')
+  const backlogTasks = project.tasks ? project.tasks.filter((task) => task.queue == 'Backlog') : 0
+  const sprintTasks = project.tasks ? project.tasks.filter((task) => task.queue == 'Sprint') : 0
+  const inProgressTasks = project.tasks ? project.tasks.filter((task) => task.queue == 'In Progress') : 0
+  const completedTasks = project.tasks ? project.tasks.filter((task) => task.queue == 'Completed') : 0
+  const blockedTasks = project.tasks ? project.tasks.filter((task) => task.queue == 'Blocked') : 0
 
   const taskGenerator = (task) => {
     return {
@@ -67,31 +67,31 @@ export default function Tasks() {
         id: 'Backlog',
         title: 'Backlog',
         label: `${backlogTasks.length}`,
-        cards: backlogTasks.map((task) => taskGenerator(task))
+        cards: backlogTasks ? backlogTasks.map((task) => taskGenerator(task)) : ''
       },
       {
         id: 'Sprint',
         title: 'Sprint',
         label: `${sprintTasks.length}`,
-        cards: sprintTasks.map((task) => taskGenerator(task))
+        cards: sprintTasks ? sprintTasks.map((task) => taskGenerator(task)) : ''
       },
       {
         id: 'Blocked',
         title: 'Blocked ',
         label: `${blockedTasks.length}`,
-        cards: blockedTasks.map((task) => taskGenerator(task))
+        cards: blockedTasks ? blockedTasks.map((task) => taskGenerator(task)) : ''
       },
       {
         id: 'In Progress',
         title: `In Progress`,
         label: `${inProgressTasks.length}`,
-        cards: inProgressTasks.map((task) => taskGenerator(task))
+        cards: inProgressTasks ? inProgressTasks.map((task) => taskGenerator(task)) : ''
       },
       {
         id: 'Completed',
         title: 'Completed',
         label: `${completedTasks.length}`,
-        cards: completedTasks.map((task) => taskGenerator(task))
+        cards: completedTasks ? completedTasks.map((task) => taskGenerator(task)) : ''
       }
     ]
   }

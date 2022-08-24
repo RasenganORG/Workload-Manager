@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux"
 import { CloseOutlined } from '@ant-design/icons';
 import { addTask } from "../../../../../../../features/projects/projectsSlice"
 import { getAllUsers } from "../../../../../../../features/users/userSlice"
-import { getProjectItem } from "../../../../../../../features/projects/projectsSlice"
 
 export default function NewTask() {
   const [formData, setFormData] = useState({

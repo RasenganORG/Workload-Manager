@@ -1,13 +1,12 @@
 import { Card, Row, Col, Form, Button, Select, Input, Tooltip, Comment, Avatar, Popconfirm, Modal } from 'antd';
 import { useNavigate, useParams } from 'react-router';
-import { EditOutlined, LeftCircleOutlined, CloseOutlined } from '@ant-design/icons';
+import { EditOutlined, LeftCircleOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { updateTask, deleteTask } from '../../../../../../../features/projects/projectsSlice';
-import { reset } from '../../../../../../../features/users/userSlice';
 import { getAllUsers } from '../../../../../../../features/users/userSlice';
 import moment from 'moment';
-import { time } from 'highcharts';
+
 export default function Task() {
   const [currentTask, setCurrentTask] = useState('')
   const [showSaveButton, setShowSaveButton] = useState(false)
@@ -62,6 +61,7 @@ export default function Task() {
     })
     return usersArr
   }
+
   useEffect(() => {
     setCurrentTask(getTask(project.tasks))
     dispatch(getAllUsers())
@@ -70,6 +70,7 @@ export default function Task() {
     }
 
   }, [])
+
   useEffect(() => {
     if (userList) {
       setUsersAssigned(getAssignedUsers(userList))
@@ -104,12 +105,11 @@ export default function Task() {
       [inputName]: value
     }))
   }
-  //event handlers
+  //input event handlers
   const handleSave = (e) => {
     const newTask = formData;
     setViewMode('readOnly')
     dispatch(updateTask({ data: { newTask, currentTask }, projectId: params.projectId, taskId: params.taskId }))
-    dispatch(reset())
     navigate('../')
   }
   const handleEditButton = () => {
@@ -156,6 +156,7 @@ export default function Task() {
     setViewMode('edit')
     setShowSaveButton(true)
     const comment = {
+      id: Date.now(),
       user: user.name,
       comment: newComment,
       timestamp: moment().format('YYYY-MM-DD HH:mm')
@@ -178,10 +179,27 @@ export default function Task() {
     setIsModalVisible(false);
   };
 
-  const generateComment = (user, comment, timestamp) => {
+  const deleteComment = (commentId) => {
+    setShowSaveButton(true)
+
+    //find the comment that we want to deleted using the comment id
+    const indexToBeDeleted = formData.comments.findIndex(comment => {
+      return commentId === comment.id
+    })
+    let updatedComments = [...formData.comments]
+    updatedComments.splice(indexToBeDeleted, 1)
+    setFormData((prevState) => ({
+      ...prevState,
+      comments: updatedComments
+    }))
+
+    // formData.comments.splice(indexToBeDeleted, 0)
+  }
+
+  const generateComment = (user, comment, timestamp, index, id) => {
     return (
-      <Col span={12} style={{ textAlign: 'left' }}>
-        <Card>
+      <Col key={index} span={12} style={{ textAlign: 'left' }} >
+        <div style={{ border: '1px solid #eee', display: 'flex', justifyContent: 'space-between' }}>
           <Comment
             author={user}
             avatar={<Avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo" />}
@@ -192,8 +210,17 @@ export default function Task() {
               </Tooltip>
             }
           />
-        </Card>
-      </Col>)
+
+          {/* todo add a wrapper for DeleteOutline as when cliking the element we can either click on the span or thhe svg elem */}
+          <div>
+            <DeleteOutlined style={{ padding: 8, cursor: 'pointer' }} onClick={() => deleteComment(id)} />
+          </div>
+
+
+        </div >
+
+      </Col>
+    )
   }
 
   return (
@@ -216,7 +243,7 @@ export default function Task() {
             style={{ textAlign: 'left ' }}
           >
             <Form.Item label="Status:" >
-              <Select onChange={(e) => { onSelectChange(e, 'queue') }} placeholder={queue}>
+              <Select onChange={(e) => { onSelectChange(e, 'queue') }} value={formData.queue}>
                 <Select.Option value="Sprint">Sprint</Select.Option>
                 <Select.Option value="In Progress">In Progress</Select.Option>
                 <Select.Option value="Blocked">Blocked</Select.Option>
@@ -225,17 +252,13 @@ export default function Task() {
               </Select>
             </Form.Item>
             <Form.Item label="Complexity:" >
-              <Select onChange={(e) => { onSelectChange(e, 'complexity') }} placeholder={currentTask.complexity}>
+              <Select onChange={(e) => { onSelectChange(e, 'complexity') }} value={formData.complexity}>
                 <Select.Option value="Low complexity">Low complexity</Select.Option>
                 <Select.Option value="Medium complexity">Medium complexity</Select.Option>
                 <Select.Option value="High complexity">High complexity</Select.Option>
               </Select>
             </Form.Item>
-
-
-
           </Form>
-
 
         </Col>
 
@@ -245,14 +268,14 @@ export default function Task() {
             style={{ textAlign: 'left ' }}
           >
             <Form.Item label="Priority:" >
-              <Select onChange={(e) => { onSelectChange(e, 'priority') }} placeholder={priority}>
+              <Select onChange={(e) => { onSelectChange(e, 'priority') }} value={formData.priority}>
                 <Select.Option value="Low priority">Low priority</Select.Option>
                 <Select.Option value="Medium priority">Medium priority</Select.Option>
                 <Select.Option value="High Priority">High Priority</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item label="Assigned:">
-              <Select placeholder={asignee} onChange={(e) => { onSelectChange(e, 'asignee') }}>
+              <Select value={formData.asignee} onChange={(e) => { onSelectChange(e, 'asignee') }}>
                 {usersAssigned ? usersAssigned.map((user, index) => {
                   return <Select.Option key={index} value={user.name}>{user.name}</Select.Option>
                 }) : ''}
@@ -265,10 +288,14 @@ export default function Task() {
 
       <Row gutter={[16, 16]}>
         <Col span={24} style={{ textAlign: 'left' }}>
-          {formData.comments ? <p>Comments</p> : ''}
+          {comments ?
+            comments.length != 0 ? <p>Comments</p> : ''
+            :
+            ''
+          }
         </Col>
-        {formData.comments ? formData.comments.map((comment) => {
-          return generateComment(comment.user, comment.comment, comment.timestamp)
+        {formData.comments ? formData.comments.map((comment, index) => {
+          return generateComment(comment.user, comment.comment, comment.timestamp, index, comment.id)
         })
           : ''}
 
@@ -277,7 +304,6 @@ export default function Task() {
 
           <Modal title="Comment" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
             <Input.TextArea allowClear name='newComment' autoSize={true} onChange={(e) => setNewComment(e.target.value)} value={newComment} />
-
           </Modal>
         </Col>
       </Row>

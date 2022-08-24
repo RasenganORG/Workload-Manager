@@ -5,6 +5,7 @@ import { getProjectItem } from '../../../../../features/projects/projectsSlice';
 import Spinner from '../../../../Spinner';
 import { Layout, Menu, Row, PageHeader, Button, Breadcrumb } from 'antd';
 import { Outlet, Link } from "react-router-dom";
+import { getAllUsers } from '../../../../../features/users/userSlice';
 
 export default function ProjectItem() {
   const pathParams = useParams()
@@ -14,8 +15,10 @@ export default function ProjectItem() {
     (state) => state.projects
   )
   const { project } = currentProject
+
   useEffect(() => {
     dispatch(getProjectItem(pathParams.projectId))
+    dispatch(getAllUsers())
 
 
   }, [currentProject.isSuccess])
