@@ -47,9 +47,7 @@ export default function ProjectStatistics() {
     );
   };
 
-  const monthCellRender = (value) => [
-    console.log(value)
-  ]
+
 
   const highchartOptions = {
     title: {
@@ -66,9 +64,7 @@ export default function ProjectStatistics() {
       }
     ],
     yAxis: {
-
     },
-
     xAxis: {
       categories: ["January", "February", "March", "April", "May", "June", "July"]
     }
@@ -82,7 +78,7 @@ export default function ProjectStatistics() {
               className="site-page-header"
               title="Project Calendar"
             />
-            <Calendar dateCellRender={dateCellRender} monthCellRender={monthCellRender} />
+            <Calendar dateCellRender={dateCellRender} />
           </div>
           <div>
             <PageHeader
@@ -93,7 +89,6 @@ export default function ProjectStatistics() {
               highcharts={Highcharts}
               options={highchartOptions}
             />
-
           </div>
         </Card>
       </Layout.Content>

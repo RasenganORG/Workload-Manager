@@ -79,7 +79,6 @@ export const addTask = createAsyncThunk('projects/addTask', async (taskInfo, thu
 export const updateTask = createAsyncThunk('projects/updateTask', async (taskInfo, thunkAPI) => {
   try {
     const { data, projectId, taskId } = taskInfo
-    console.log(data)
     return await projectsService.updateTask(data, projectId, taskId)
   } catch (error) {
     const message =
