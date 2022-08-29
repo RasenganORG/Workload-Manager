@@ -20,6 +20,7 @@ import ProjectStatistics from './components/LayoutPage/pages/Projects/ProjectIte
 import NewTask from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/newTask';
 import Tasks from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/tasks';
 import Task from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/task';
+import EditProject from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/editProject';
 function App() {
   return (
 
@@ -37,6 +38,7 @@ function App() {
               <Route path="statistics" element={<ProjectStatistics />} />
               <Route path="tasks" element={<Tasks />} />
               <Route path="tasks/:taskId" element={<Task />} />
+              <Route path="edit-project" element={<EditProject />} />
 
 
             </Route>

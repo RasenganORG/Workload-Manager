@@ -46,10 +46,39 @@ export const getProjects = createAsyncThunk('projects/getProjects', async (proje
     return thunkAPI.rejectWithValue(message)
   }
 })
-//TODO projecitem in loc de 
+
 export const getProjectItem = createAsyncThunk('projects/getProjectItem', async (projectId, thunkAPI) => {
   try {
     return await projectsService.getProjectItem(projectId)
+  } catch (error) {
+    const message =
+      (error.response &&
+        error.response.data &&
+        error.response.data.message) ||
+      error.message ||
+      error.toString()
+    return thunkAPI.rejectWithValue(message)
+  }
+})
+
+export const updateProject = createAsyncThunk('projects/updateProject', async (projectInfo, thunkAPI) => {
+  try {
+    const { projectData, projectId } = projectInfo
+    return await projectsService.updateProject(projectData, projectId)
+  } catch (error) {
+    const message =
+      (error.response &&
+        error.response.data &&
+        error.response.data.message) ||
+      error.message ||
+      error.toString()
+    return thunkAPI.rejectWithValue(message)
+  }
+})
+
+export const deleteProject = createAsyncThunk('projects/deleteProject', async (projectId, thunkAPI) => {
+  try {
+    return await projectsService.deleteProject(projectId)
   } catch (error) {
     const message =
       (error.response &&
@@ -164,6 +193,30 @@ export const projectsSlice = createSlice({
         state.isError = true
         state.message = action.payload
         state.currentProject.project = null
+      })
+      .addCase(updateProject.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(updateProject.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+      })
+      .addCase(updateProject.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(deleteProject.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(deleteProject.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+      })
+      .addCase(deleteProject.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
       })
       .addCase(addTask.pending, (state) => {
         state.isLoading = true

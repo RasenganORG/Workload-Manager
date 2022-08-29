@@ -1,30 +1,34 @@
-import { Layout, Card, Form, Input, Button, Select, DatePicker } from "antd"
+import { Layout, Card, Form, Input, Button, Select, DatePicker, Popconfirm } from "antd"
 import TextArea from "antd/lib/input/TextArea"
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
-import { addProject } from "../../../../../features/projects/projectsSlice"
-import { getAllUsers } from "../../../../../features/users/userSlice"
-import { getBillingOptions } from "../../../../../features/billing/billingSlice"
+import { updateProject, deleteProject } from "../../../../../../features/projects/projectsSlice"
+import { getAllUsers } from "../../../../../../features/users/userSlice"
+import { getBillingOptions } from "../../../../../../features/billing/billingSlice"
+import moment from "moment"
 
-export default function NewProject() {
+export default function EditProject() {
+
+  const params = useParams()
+  const currentProject = useSelector(
+    (state) => state.projects.currentProject.project
+  )
+  const { title, description, dueDate, usersAssigned, status, colorLabel, billingOption } = currentProject
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    usersAssigned: [],
-    creationDate: '',
-    dueDate: '',
-    colorLabel: 'none',
-    billingOption: '',
-    status: 'active',
-    tasks: null
+    title: title,
+    description: description,
+    usersAssigned: usersAssigned,
+    dueDate: dueDate,
+    colorLabel: colorLabel,
+    billingOption: billingOption,
+    status: status,
+
   })
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
-
   useEffect(() => {
-    dispatch(getAllUsers())
     dispatch(getBillingOptions())
   }, [])
 
@@ -34,6 +38,8 @@ export default function NewProject() {
   const billing = useSelector(
     (state) => state.billing
   )
+
+
   const onInputChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -49,13 +55,17 @@ export default function NewProject() {
   }
 
   const onSubmit = () => {
-    dispatch(addProject(formData))
+    dispatch(updateProject({ projectData: formData, projectId: params.projectId }))
+    navigate('/')
+  }
+  const handleDelete = () => {
+    dispatch(deleteProject(params.projectId))
     navigate('/')
   }
   return (
     <Layout>
       <Layout.Content style={{ margin: "16px 0" }}>
-        <Card title="Create a new project">
+        <Card title={'Update project'}>
           <Form
             layout="vertical"
             onFinish={() => onSubmit()}
@@ -75,13 +85,13 @@ export default function NewProject() {
             >
               <Input
                 name='title'
-                placeholder="Title"
                 onChange={(onInputChange)}
+                defaultValue={formData.title}
               />
             </Form.Item>
             <Form.Item
-              name="descriptionWrapper"
               label="Project description"
+              name="description"
               rules={[
                 {
                   required: true,
@@ -93,24 +103,19 @@ export default function NewProject() {
               <TextArea
                 name='description'
                 rows={4}
-                placeholder="Description"
+                defaultValue={formData.description}
                 onChange={onInputChange}
               />
             </Form.Item>
             <Form.Item
               label="Add users"
               name="usersAssignedWrapper"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please add at lease one user to your project!',
-                },
-              ]}
               data-cy="addUsers"
             >
               <Select
                 mode="multiple"
                 name="usersAssigned"
+                defaultValue={formData.usersAssigned}
                 onChange={(value) => {
                   onSelectChange(value, 'usersAssigned')
                 }}
@@ -124,17 +129,10 @@ export default function NewProject() {
 
             <Form.Item
               label="Due date"
-              name="dueDateWrapper"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please add a due date for your project!'
-                }
-              ]}
               data-cy="dueDateSelector"
-
             >
               <DatePicker
+                value={moment(formData.dueDate)}
                 name='dueDate'
                 style={{ width: '100%' }}
                 onChange={(value) => {
@@ -150,7 +148,7 @@ export default function NewProject() {
               <Select
                 placeholder="Select a color label option"
                 name="colorLabel"
-                defaultValue="none"
+                value={formData.colorLabel}
                 onChange={(value) => {
                   onSelectChange(value, 'colorLabel')
                 }}
@@ -164,17 +162,10 @@ export default function NewProject() {
             </Form.Item>
             <Form.Item
               label="Billing"
-              name="billingSelectorWrapper"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please select a billing option!',
-                },
-              ]}
               data-cy="billingSelector"
             >
               <Select
-                placeholder="Select a billing option"
+                value={formData.billingOption}
                 name='billingOption'
                 onChange={(value) => {
                   onSelectChange(value, 'billingOption')
@@ -186,7 +177,17 @@ export default function NewProject() {
               </Select>
             </Form.Item>
             <Form.Item data-cy="newProjectSubmitButton" >
-              <Button type="primary" htmlType="submit">Create project</Button>
+              <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+                <Button type="primary" htmlType="submit">Edit project</Button>
+                <Popconfirm
+                  title="Are you sure to delete this project?"
+                  onConfirm={handleDelete}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button type="danger" >Delete project</Button>
+                </Popconfirm>
+              </div>
             </Form.Item>
           </Form>
         </Card>

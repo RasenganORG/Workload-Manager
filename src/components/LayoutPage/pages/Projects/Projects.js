@@ -41,6 +41,7 @@ export default function Projects() {
 
       return Math.ceil(completedTasks.length / (pendingTasks.length + completedTasks.length) * 100)
     }
+
     return (
       <Col key={id} span={8}>
         <Badge.Ribbon text={status} color="green">

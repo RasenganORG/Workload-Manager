@@ -21,6 +21,18 @@ const getProjectItem = async (projectId) => {
 
   return response.data
 }
+//update project 
+const updateProject = async (projectData, projectId) => {
+  const response = await axios.put(`${PROJECT_URL}${projectId}`, projectData)
+
+  return response.data
+}
+//delete project 
+const deleteProject = async (projectId) => {
+  const response = await axios.delete(`${PROJECT_URL}${projectId}`)
+
+  return response.data
+}
 
 //add a task
 const addTask = async (taskData, projectId) => {
@@ -28,22 +40,27 @@ const addTask = async (taskData, projectId) => {
 
   return response.data
 }
+
 //update a task
 const updateTask = async (data, projectId, taskId) => {
   const response = await axios.put(`${PROJECT_URL}${projectId}/tasks/${taskId}`, data)
 
   return response.data
 }
+
 //delete a task
 const deleteTask = async (taskData, projectId, taskID) => {
   const response = await axios.put(`${PROJECT_URL}${projectId}/tasks/${taskID}/delete`, taskData)
 
   return response.data
 }
+
 const projectsService = {
   getProjects,
   addProject,
   getProjectItem,
+  updateProject,
+  deleteProject,
   addTask,
   updateTask,
   deleteTask

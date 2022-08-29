@@ -4,6 +4,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getProjectItem } from '../../../../../features/projects/projectsSlice';
 import Spinner from '../../../../Spinner';
 import { Layout, Menu, Row, PageHeader, Button, Breadcrumb } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
+
 import { Outlet, Link } from "react-router-dom";
 import { getAllUsers } from '../../../../../features/users/userSlice';
 
@@ -80,6 +82,13 @@ export default function ProjectItem() {
 
             <Row>
               <Menu defaultSelectedKeys={'tasks'} style={{ flex: 'auto' }} mode='horizontal' items={menuItems} />
+              <Menu mode='horizontal' selectable={false} items={
+                [{
+                  key: "ye",
+                  label: <Link to="edit-project">Edit project <EditOutlined /></Link>,
+                }]
+              } />
+
             </Row>
 
             <Row className="projectContent">
