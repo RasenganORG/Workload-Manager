@@ -5,6 +5,7 @@ import { useNavigate } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { addProject } from "../../../../../features/projects/projectsSlice"
 import { getAllUsers } from "../../../../../features/users/userSlice"
+import { getBillingOptions } from "../../../../../features/billing/billingSlice"
 
 export default function NewProject() {
   const [formData, setFormData] = useState({
@@ -24,12 +25,15 @@ export default function NewProject() {
 
   useEffect(() => {
     dispatch(getAllUsers())
+    dispatch(getBillingOptions())
   }, [])
 
   const { userList } = useSelector(
     (state) => state.users
   )
-
+  const billing = useSelector(
+    (state) => state.billing
+  )
   const onInputChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -48,7 +52,6 @@ export default function NewProject() {
     dispatch(addProject(formData))
     navigate('/')
   }
-
   return (
     <Layout>
       <Layout.Content style={{ margin: "16px 0" }}>
@@ -56,6 +59,7 @@ export default function NewProject() {
           <Form
             layout="vertical"
             onFinish={() => onSubmit()}
+            style={{ textAlign: 'left' }}
           >
 
             <Form.Item
@@ -176,9 +180,9 @@ export default function NewProject() {
                   onSelectChange(value, 'billingOption')
                 }}
               >
-                <Select.Option value="1">Billing 1</Select.Option>
-                <Select.Option value="2">Billing 2</Select.Option>
-                <Select.Option value="3">Billing 3</Select.Option>
+                {billing.billingOptions ? billing.billingOptions.map((billingOption, index) => {
+                  return <Select.Option key={index} value={billingOption.id}>{billingOption.billing}</Select.Option>
+                }) : ''}
               </Select>
             </Form.Item>
             <Form.Item data-cy="newProjectSubmitButton" >

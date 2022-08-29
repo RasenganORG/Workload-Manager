@@ -13,8 +13,6 @@ export default function Task() {
   const [currentTask, setCurrentTask] = useState('')
   const [showSaveButton, setShowSaveButton] = useState(false)
   const [viewMode, setViewMode] = useState('readOnly')
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [newComment, setNewComment] = useState('')
   const { title, description, asignee, queue, priority, complexity, creationDate, dueDate, id, comments } = currentTask
   const [formData, setFormData] = useState({
     title: title,
@@ -32,8 +30,6 @@ export default function Task() {
   const form = { formData, setFormData }
   const displaySaveButton = { showSaveButton, setShowSaveButton }
   const display = { viewMode, setViewMode }
-  const modalStatus = { isModalVisible, setIsModalVisible }
-  const commentState = { newComment, setNewComment }
 
   const params = useParams()
   const navigate = useNavigate()
@@ -138,8 +134,6 @@ export default function Task() {
       <Comments
         saveButton={displaySaveButton}
         display={display}
-        modalStatus={modalStatus}
-        commentState={commentState}
         form={form}
       />
 

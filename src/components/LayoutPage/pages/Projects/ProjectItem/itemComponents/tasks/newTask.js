@@ -217,6 +217,7 @@ export default function NewTask() {
             >
               <Select
                 placeholder="Select the task complexity"
+                label=""
                 name='priority'
                 onChange={(value) => {
                   onSelectChange(value, 'complexity')

@@ -1,48 +1,18 @@
-import { Row, Col, Button, Input, Tooltip, Comment, Avatar, Modal } from 'antd';
+import { Row, Col, Button, Input, Tooltip, Comment, Avatar, Modal, Form } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
-
+import { useState } from 'react';
 
 import moment from 'moment';
 export default function Comments(props) {
+  const [newComment, setNewComment] = useState("")
+
   const { formData, setFormData } = props.form
   const { showSaveButton, setShowSaveButton } = props.saveButton
   const { viewMode, setViewMode } = props.display
-  const { isModalVisible, setIsModalVisible } = props.modalStatus
-  const { newComment, setNewComment } = props.commentState
   const { user } = useSelector(
     (state) => state.auth
   )
-
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleOk = () => {
-    setViewMode('edit')
-    setShowSaveButton(true)
-    const comment = {
-      id: Date.now(),
-      user: user.name,
-      comment: newComment,
-      timestamp: moment().format('YYYY-MM-DD HH:mm')
-    }
-
-    setFormData((prevState) => ({
-      ...prevState,
-      comments: [
-        ...prevState.comments,
-        comment
-      ]
-    }))
-    setNewComment('')
-    setIsModalVisible(false);
-  };
-
-  const handleCancel = () => {
-    setNewComment('')
-    setIsModalVisible(false);
-  };
 
   const deleteComment = (commentId) => {
     setShowSaveButton(true)
@@ -60,7 +30,29 @@ export default function Comments(props) {
 
   }
 
+  const handleChange = (comment) => {
+    setNewComment(comment)
+  }
+  const handleCommentSubmit = (e) => {
+    setNewComment('')
+    if (!newComment) return
+    setViewMode('edit')
+    setShowSaveButton(true)
+    const comment = {
+      id: Date.now(),
+      user: user.name,
+      comment: newComment,
+      timestamp: moment().format('YYYY-MM-DD HH:mm')
+    }
 
+    setFormData((prevState) => ({
+      ...prevState,
+      comments: [
+        ...prevState.comments,
+        comment
+      ]
+    }))
+  }
   const generateComment = (user, comment, timestamp, index, id) => {
     return (
       <Col key={index} span={24} style={{ textAlign: 'left' }} >
@@ -96,13 +88,34 @@ export default function Comments(props) {
       })
         : ''}
 
-      <Col span={12} className="test" style={{ margin: '2rem 0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Button type="primary" size="small" onClick={showModal}>Add comment</Button>
-        <Modal title="Comment" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
-          <Input.TextArea allowClear name='newComment' autoSize={true} onChange={(e) => setNewComment(e.target.value)} value={newComment} />
-        </Modal>
+      <Col span={12} style={{ margin: '2rem 0' }}>
+        <Form
+          style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}
+          layout="vertical"
+          onFinish={handleCommentSubmit}
+        >
+          <Form.Item
+            style={{ width: '100%' }}
+            name="commentText"
+            rules={[
+              {
+                required: true,
+                message: 'Please add a valid comment!',
+              },
+            ]}>
+
+            <Input.TextArea rows={3} type='text' onChange={(e) => handleChange(e.target.value)} value={newComment} />
+          </Form.Item>
+          <Form.Item>
+            <Button style={{ textAlign: 'left' }} htmlType='submit' type="primary">
+              Add Comment
+            </Button>
+            <p>{newComment}</p>
+            <button onClick={() => setNewComment("")}>reset</button>
+          </Form.Item>
+        </Form>
       </Col>
-    </Row>
+    </Row >
   )
 }
 
