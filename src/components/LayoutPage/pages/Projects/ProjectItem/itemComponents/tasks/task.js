@@ -8,6 +8,8 @@ import Comments from './task components/comments';
 import Content from './task components/content';
 import Title from './task components/title';
 import UpdateButtons from './task components/updateButtons';
+import { deleteUTP, updateUTP } from '../../../../../../../features/users_tasks_projects/user_task_projectSlice';
+import { current } from '@reduxjs/toolkit';
 
 export default function Task() {
   const [currentTask, setCurrentTask] = useState('')
@@ -36,14 +38,11 @@ export default function Task() {
   const dispatch = useDispatch()
 
 
-  const { project } = useSelector(
-    (state) => state.projects.currentProject
-  )
-  const { userList } = useSelector(
-    (state) => state.users
-  )
-  const { user } = useSelector(
-    (state) => state.auth
+  const { project } = useSelector((state) => state.projects.currentProject)
+  const { userList } = useSelector(state => state.users)
+  const { user } = useSelector(state => state.auth)
+  const users_tasks_projects = useSelector(
+    (state) => state.users_tasks_projects.users_tasks_projects
   )
   const getTask = (tasks) => {
     return tasks.find((task) => {
@@ -103,9 +102,12 @@ export default function Task() {
   }
   // event handlers
   const handleSave = (e) => {
+    const utp_item = users_tasks_projects.find(utp => utp.taskId === currentTask.id)
+
     const newTask = formData;
     setViewMode('readOnly')
     dispatch(updateTask({ data: { newTask, currentTask }, projectId: params.projectId, taskId: params.taskId }))
+    dispatch(updateUTP({ utpData: { userId: formData.asignee }, utpId: utp_item.id }))
     navigate('../')
   }
   const handleEditButton = () => {
@@ -113,6 +115,10 @@ export default function Task() {
     setViewMode('edit')
   }
   const handleDelete = () => {
+    //get the user_task_project item id to delete
+    const utp_item = users_tasks_projects.find(utp => utp.taskId === currentTask.id)
+
+    dispatch(deleteUTP(utp_item.id))
     dispatch(deleteTask({ data: currentTask, projectId: params.projectId, taskId: params.taskId }))
     navigate('../')
   }

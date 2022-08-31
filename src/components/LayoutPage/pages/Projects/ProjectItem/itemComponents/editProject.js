@@ -4,12 +4,13 @@ import { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { updateProject, deleteProject } from "../../../../../../features/projects/projectsSlice"
-import { getAllUsers } from "../../../../../../features/users/userSlice"
 import { getBillingOptions } from "../../../../../../features/billing/billingSlice"
+import { deleteProjectUTP } from "../../../../../../features/users_tasks_projects/user_task_projectSlice"
 import moment from "moment"
 
 export default function EditProject() {
-
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   const params = useParams()
   const currentProject = useSelector(
     (state) => state.projects.currentProject.project
@@ -23,22 +24,13 @@ export default function EditProject() {
     colorLabel: colorLabel,
     billingOption: billingOption,
     status: status,
-
   })
+  const { userList } = useSelector(state => state.users)
+  const billing = useSelector(state => state.billing)
 
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
   useEffect(() => {
     dispatch(getBillingOptions())
   }, [])
-
-  const { userList } = useSelector(
-    (state) => state.users
-  )
-  const billing = useSelector(
-    (state) => state.billing
-  )
-
 
   const onInputChange = (e) => {
     setFormData((prevState) => ({
@@ -58,10 +50,13 @@ export default function EditProject() {
     dispatch(updateProject({ projectData: formData, projectId: params.projectId }))
     navigate('/')
   }
+
   const handleDelete = () => {
     dispatch(deleteProject(params.projectId))
+    dispatch(deleteProjectUTP(params.projectId))
     navigate('/')
   }
+
   return (
     <Layout>
       <Layout.Content style={{ margin: "16px 0" }}>

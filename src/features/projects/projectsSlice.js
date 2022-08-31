@@ -12,13 +12,7 @@ const initialState = {
   isLoading: true,
   message: ''
 }
-// TODO
-// -projectList
-// -currentProject(tasks to be deleted from here)
-// -tasks
-// remove context from outlet and use nested loading inside tasks
-// use dependency[tasksDone] for tasks success
-// change name of getProjec to getProjectItem to avoid mixins with getProgentS
+
 export const addProject = createAsyncThunk('projects/addProject', async (project, thunkAPI) => {
   try {
     return await projectsService.addProject(project)

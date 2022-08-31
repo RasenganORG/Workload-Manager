@@ -92,7 +92,7 @@ export default function Content(props) {
             <Form.Item label="Assigned:">
               <Select value={formData.asignee} onChange={(e) => { onSelectChange(e, 'asignee') }}>
                 {usersAssigned ? usersAssigned.map((user, index) => {
-                  return <Select.Option key={index} value={user.name}>{user.name}</Select.Option>
+                  return <Select.Option key={index} value={user.id}>{user.name}</Select.Option>
                 }) : ''}
               </Select>
             </Form.Item>

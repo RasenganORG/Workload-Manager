@@ -15,6 +15,8 @@ export default function LayoutPage() {
     navigate("/")
   }
 
+  let href = window.location.href.split('/')
+  href = href[3]
 
   const menuItems = [
     {
@@ -23,7 +25,7 @@ export default function LayoutPage() {
     },
     {
       label: <Link to="user-list">User list</Link>,
-      key: 'userlist'
+      key: 'user-list'
     },
     {
       label: <Link to="concedii">Concedii</Link>,
@@ -75,7 +77,7 @@ export default function LayoutPage() {
               </div>
             </Col>
             <Col span={16}>
-              <Menu defaultSelectedKeys={'projects'} theme="dark" mode="horizontal" items={menuItems} />
+              <Menu defaultSelectedKeys={href} theme="dark" mode="horizontal" items={menuItems} />
             </Col>
 
             <Col span={4}>

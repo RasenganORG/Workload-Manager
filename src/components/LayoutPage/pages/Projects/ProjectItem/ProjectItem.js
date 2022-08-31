@@ -5,8 +5,8 @@ import { getProjectItem } from '../../../../../features/projects/projectsSlice';
 import Spinner from '../../../../Spinner';
 import { Layout, Menu, Row, PageHeader, Button, Breadcrumb } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
-
 import { Outlet, Link } from "react-router-dom";
+import { getUTP } from '../../../../../features/users_tasks_projects/user_task_projectSlice';
 import { getAllUsers } from '../../../../../features/users/userSlice';
 
 export default function ProjectItem() {
@@ -21,7 +21,7 @@ export default function ProjectItem() {
   useEffect(() => {
     dispatch(getProjectItem(pathParams.projectId))
     dispatch(getAllUsers())
-
+    dispatch(getUTP())
 
   }, [currentProject.isSuccess])
   const menuItems = [

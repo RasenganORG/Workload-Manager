@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { CloseOutlined } from '@ant-design/icons';
 import { addTask } from "../../../../../../../features/projects/projectsSlice"
 import { getAllUsers } from "../../../../../../../features/users/userSlice"
+import { addUTP } from "../../../../../../../features/users_tasks_projects/user_task_projectSlice"
 
 export default function NewTask() {
   const [formData, setFormData] = useState({
@@ -39,7 +40,6 @@ export default function NewTask() {
   const { project } = useSelector(
     (state) => state.projects.currentProject
   )
-
   useEffect(() => {
     dispatch(getAllUsers())
 
@@ -54,6 +54,12 @@ export default function NewTask() {
   }
   const onSubmit = () => {
     dispatch(addTask({ taskData: formData, projectId: params.projectId }))
+    const user_task_project = {
+      userId: formData.asignee,
+      taskId: formData.id,
+      projectId: params.projectId
+    }
+    dispatch(addUTP(user_task_project))
     navigate(-1)
   }
 
@@ -132,7 +138,7 @@ export default function NewTask() {
               >
 
                 {assignedUsers ? assignedUsers.map((user, index) => {
-                  return <Select.Option key={index} value={user.name}>{user.name}</Select.Option>
+                  return <Select.Option key={index} value={user.id}>{user.name}</Select.Option>
                 }) : ''}
 
 
