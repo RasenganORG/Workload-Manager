@@ -19,7 +19,7 @@ export default function NewTask() {
     complexity: '',
     creationDate: new Date(),
     id: Date.now(),
-    comments: []
+    comments: [],
   })
 
   const navigate = useNavigate()

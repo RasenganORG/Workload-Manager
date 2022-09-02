@@ -5,17 +5,16 @@ import { useNavigate, useParams } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { updateProject, deleteProject } from "../../../../../../features/projects/projectsSlice"
 import { getBillingOptions } from "../../../../../../features/billing/billingSlice"
-import { deleteProjectUTP } from "../../../../../../features/users_tasks_projects/user_task_projectSlice"
+import { deleteProjectUTP, removeUsersFromUTPs } from "../../../../../../features/users_tasks_projects/user_task_projectSlice"
 import moment from "moment"
+import { updateUser, updateUsersProject } from "../../../../../../features/users/userSlice"
 
 export default function EditProject() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const params = useParams()
-  const currentProject = useSelector(
-    (state) => state.projects.currentProject.project
-  )
-  const { title, description, dueDate, usersAssigned, status, colorLabel, billingOption } = currentProject
+  const currentProject = useSelector((state) => state.projects.currentProject.project)
+  const { title, description, dueDate, usersAssigned, status, colorLabel, billingOption, tasks } = currentProject
   const [formData, setFormData] = useState({
     title: title,
     description: description,
@@ -24,13 +23,47 @@ export default function EditProject() {
     colorLabel: colorLabel,
     billingOption: billingOption,
     status: status,
+    tasks: tasks
   })
+  const [dispatchUpdates, setDispatchUpdates] = useState(false)
   const { userList } = useSelector(state => state.users)
   const billing = useSelector(state => state.billing)
 
   useEffect(() => {
     dispatch(getBillingOptions())
   }, [])
+
+  //returns an arr with the user ids that were removed from the project
+  const getRemovedUsers = () => {
+    return usersAssigned.filter(x => !formData.usersAssigned.includes(x))
+  }
+
+  //returns an arr with the user ids that were added to the project
+  const getAddedUsers = () => {
+    return formData.usersAssigned.filter(x => !usersAssigned.includes(x))
+  }
+
+  //take
+  const updatedTasksWithRemovedUsers = (removedUsers) => {
+    const updatedTasks = [...formData.tasks]
+    removedUsers.forEach((removedUser) => {
+      formData.tasks.forEach((task, index) => {
+        if (removedUser === task.asignee) {
+          const newTask = { ...updatedTasks[index] }
+          newTask.asignee = ''
+          updatedTasks.splice(index, 1, newTask)
+        }
+      })
+    })
+    return updatedTasks
+  }
+
+  const usersToUpdate = () => {
+    return {
+      usersToAddProject: getAddedUsers(),
+      usersToRemoveProject: getRemovedUsers()
+    }
+  }
 
   const onInputChange = (e) => {
     setFormData((prevState) => ({
@@ -46,9 +79,30 @@ export default function EditProject() {
     }))
   }
 
+  useEffect(() => {
+    if (dispatchUpdates) {
+      dispatch(updateProject({ projectData: formData, projectId: params.projectId }))
+      dispatch(removeUsersFromUTPs({ usersArr: usersToUpdate(), projectId: params.projectId }))
+      navigate('/')
+      dispatch(updateUsersProject({
+        data: { ...usersToUpdate() }
+        , projectId: params.projectId
+      }))
+      setDispatchUpdates(false)
+
+    }
+  }, [dispatchUpdates])
+
   const onSubmit = () => {
-    dispatch(updateProject({ projectData: formData, projectId: params.projectId }))
-    navigate('/')
+
+    if (formData.usersAssigned !== currentProject.usersAssigned) {
+      setFormData((prevState) => ({
+        ...prevState,
+        tasks: updatedTasksWithRemovedUsers(getRemovedUsers())
+      }))
+
+    }
+    setDispatchUpdates(true)
   }
 
   const handleDelete = () => {
@@ -57,9 +111,12 @@ export default function EditProject() {
     navigate('/')
   }
 
+
+
   return (
     <Layout>
       <Layout.Content style={{ margin: "16px 0" }}>
+
         <Card title={'Update project'}>
           <Form
             layout="vertical"

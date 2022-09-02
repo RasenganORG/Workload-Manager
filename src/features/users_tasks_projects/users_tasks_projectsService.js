@@ -39,12 +39,22 @@ const deleteProjectUTP = async (projectId) => {
 
 }
 
+//update the task entries so that all the tasks assigned to a user that was deleted from a project
+//would be moved to unassigned
+const removeUsersFromUTPs = async (usersArr, projectId) => {
+  const response = await axios.put(`${UTP_URL}remove-users/${projectId}`, usersArr)
+
+  return response.data
+
+}
+
 const utpService = {
   getUTP,
   addUTP,
   updateUTP,
   deleteUTP,
-  deleteProjectUTP
+  deleteProjectUTP,
+  removeUsersFromUTPs
 }
 
 export default utpService

@@ -80,6 +80,22 @@ export const deleteProjectUTP = createAsyncThunk('user_task_project/deleteProjec
   }
 })
 
+export const removeUsersFromUTPs = createAsyncThunk('user_task_project/removeUsers', async (data, thunkAPI) => {
+  try {
+    const { usersArr, projectId } = data
+
+    return await utpService.removeUsersFromUTPs(usersArr, projectId)
+  } catch (error) {
+    const message =
+      (error.response &&
+        error.response.data &&
+        error.response.data.message) ||
+      error.message ||
+      error.toString()
+    return thunkAPI.rejectWithValue(message)
+  }
+})
+
 export const utpSlice = createSlice({
   name: 'users_tasks_projects',
   initialState,
@@ -143,7 +159,18 @@ export const utpSlice = createSlice({
         state.isError = true
         state.message = action.payload
       })
-
+      .addCase(removeUsersFromUTPs.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(removeUsersFromUTPs.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+      })
+      .addCase(removeUsersFromUTPs.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
 
   }
 })
