@@ -144,6 +144,9 @@ export const projectsSlice = createSlice({
     },
     resetCurrentProjectSuccess: (state) => {
       state.currentProject.isSuccess = false
+    },
+    resetProjectsLoading: (state) => {
+      state.isLoading = false
     }
   },
   extraReducers: (builder) => {
@@ -248,11 +251,9 @@ export const projectsSlice = createSlice({
         state.isError = true
         state.message = action.payload
       })
-
-
   },
 })
 
 export const projectsActions = projectsSlice.actions;
-export const { reset, resetCurrentProjectSuccess } = projectsSlice.actions
+export const { reset, resetCurrentProjectSuccess, resetProjectsLoading } = projectsSlice.actions
 export default projectsSlice.reducer

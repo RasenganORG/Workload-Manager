@@ -32,25 +32,18 @@ export default function Task() {
   const form = { formData, setFormData }
   const displaySaveButton = { showSaveButton, setShowSaveButton }
   const display = { viewMode, setViewMode }
-
   const params = useParams()
   const navigate = useNavigate()
   const dispatch = useDispatch()
-
-
   const { project } = useSelector((state) => state.projects.currentProject)
   const { userList } = useSelector(state => state.users)
   const { user } = useSelector(state => state.auth)
-
-  const users_tasks_projects = useSelector(
-    (state) => state.users_tasks_projects.users_tasks_projects
-  )
+  const users_tasks_projects = useSelector(state => state.users_tasks_projects.users_tasks_projects)
   const getTask = (tasks) => {
     return tasks.find((task) => {
       return task.id == params.taskId
     })
   }
-
   //we verify the user that are assign to the project and return an array with all the users assigned
   const getAssignedUsers = (users) => {
     let usersArr = []
@@ -61,6 +54,49 @@ export default function Task() {
     })
     return usersArr
   }
+  //form handlers
+  const onInputChange = (e) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }))
+
+  }
+  const onSelectChange = (value, inputName) => {
+    setShowSaveButton(true)
+    setFormData((prevState) => ({
+      ...prevState,
+      [inputName]: value
+    }))
+  }
+  // event handlers
+  const handleSave = (e) => {
+    const utp_item = users_tasks_projects.find(utp => utp.taskId === currentTask.id)
+    const newTask = formData;
+    const wasTaskCompleted = formData.queue === "Completed" ? true : false
+
+    setViewMode('readOnly')
+
+    dispatch(updateTask({ data: { newTask, currentTask }, projectId: params.projectId, taskId: params.taskId }))
+    dispatch(updateUTP({ utpData: { userId: formData.asignee, taskCompleted: wasTaskCompleted }, utpId: utp_item.id }))
+    navigate('../')
+  }
+
+  const handleEditButton = () => {
+    setShowSaveButton(true)
+    setViewMode('edit')
+  }
+
+  const handleDelete = () => {
+    //get the user_task_project item id to delete
+    const utp_item = users_tasks_projects.find(utp => utp.taskId === currentTask.id)
+
+    dispatch(deleteUTP(utp_item.id))
+    dispatch(deleteTask({ data: currentTask, projectId: params.projectId, taskId: params.taskId }))
+    navigate('../')
+  }
+
+  const eventHandlers = { onInputChange, onSelectChange, handleSave, handleEditButton, handleDelete }
 
   useEffect(() => {
     setCurrentTask(getTask(project.tasks))
@@ -86,51 +122,8 @@ export default function Task() {
 
   }, [userList])
 
-  //form handlers
-  const onInputChange = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }))
-
-  }
-  const onSelectChange = (value, inputName) => {
-    setShowSaveButton(true)
-    setFormData((prevState) => ({
-      ...prevState,
-      [inputName]: value
-    }))
-  }
-  // event handlers
-  const handleSave = (e) => {
-    const utp_item = users_tasks_projects.find(utp => utp.taskId === currentTask.id)
-
-    const newTask = formData;
-    setViewMode('readOnly')
-    dispatch(updateTask({ data: { newTask, currentTask }, projectId: params.projectId, taskId: params.taskId }))
-    dispatch(updateUTP({ utpData: { userId: formData.asignee }, utpId: utp_item.id }))
-    navigate('../')
-  }
-  const handleEditButton = () => {
-    setShowSaveButton(true)
-    setViewMode('edit')
-  }
-  const handleDelete = () => {
-    //get the user_task_project item id to delete
-    const utp_item = users_tasks_projects.find(utp => utp.taskId === currentTask.id)
-
-    dispatch(deleteUTP(utp_item.id))
-    dispatch(deleteTask({ data: currentTask, projectId: params.projectId, taskId: params.taskId }))
-    navigate('../')
-  }
-
-  const eventHandlers = { onInputChange, onSelectChange, handleSave, handleEditButton, handleDelete }
-
-
-
   return (
     <Card title={<Title display={display} eventHandlers={eventHandlers} form={form} />} style={{ width: "100%", margin: "16px 0" }}>
-
       <Content
         display={display}
         form={form}
@@ -146,11 +139,8 @@ export default function Task() {
 
       <UpdateButtons
         saveButton={displaySaveButton}
-
         eventHandlers={eventHandlers}
-
       />
-
     </Card >
   )
 }

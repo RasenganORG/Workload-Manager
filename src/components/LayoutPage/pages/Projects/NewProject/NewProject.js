@@ -19,39 +19,32 @@ export default function NewProject() {
     status: 'active',
     tasks: null
   })
-
   const navigate = useNavigate()
   const dispatch = useDispatch()
-
-  useEffect(() => {
-    dispatch(getAllUsers())
-    dispatch(getBillingOptions())
-  }, [])
-
-  const { userList } = useSelector(
-    (state) => state.users
-  )
-  const billing = useSelector(
-    (state) => state.billing
-  )
+  const { userList } = useSelector(state => state.users)
+  const billing = useSelector(state => state.billing)
   const onInputChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }))
   }
-
   const onSelectChange = (value, inputName) => {
     setFormData((prevState) => ({
       ...prevState,
       [inputName]: value
     }))
   }
-
   const onSubmit = () => {
     dispatch(addProject(formData))
     navigate('/')
   }
+
+  useEffect(() => {
+    dispatch(getAllUsers())
+    dispatch(getBillingOptions())
+  }, [])
+
   return (
     <Layout>
       <Layout.Content style={{ margin: "16px 0" }}>

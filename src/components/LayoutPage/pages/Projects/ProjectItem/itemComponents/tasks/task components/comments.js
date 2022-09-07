@@ -6,30 +6,27 @@ import { useState } from 'react';
 import moment from 'moment';
 export default function Comments(props) {
   const [newComment, setNewComment] = useState("")
-
   const { formData, setFormData } = props.form
-  const { showSaveButton, setShowSaveButton } = props.saveButton
-  const { viewMode, setViewMode } = props.display
-  const { user } = useSelector(
-    (state) => state.auth
-  )
+  const { setShowSaveButton } = props.saveButton
+  const { setViewMode } = props.display
+  const { user } = useSelector(state => state.auth)
 
   const deleteComment = (commentId) => {
     setShowSaveButton(true)
-
     //find the comment that we want to deleted using the comment id
     const indexToBeDeleted = formData.comments.findIndex(comment => {
       return commentId === comment.id
     })
-    let updatedComments = [...formData.comments]
+    const updatedComments = [...formData.comments]
+
     updatedComments.splice(indexToBeDeleted, 1)
+
     setFormData((prevState) => ({
       ...prevState,
       comments: updatedComments
     }))
 
   }
-
   const handleChange = (comment) => {
     setNewComment(comment)
   }
@@ -44,7 +41,6 @@ export default function Comments(props) {
       comment: newComment,
       timestamp: moment().format('YYYY-MM-DD HH:mm')
     }
-
     setFormData((prevState) => ({
       ...prevState,
       comments: [
@@ -74,6 +70,7 @@ export default function Comments(props) {
       </Col>
     )
   }
+
   return (
     <Row gutter={[16, 16]}>
       <Col span={24} style={{ textAlign: 'left' }}>
@@ -103,15 +100,12 @@ export default function Comments(props) {
                 message: 'Please add a valid comment!',
               },
             ]}>
-
             <Input.TextArea rows={3} type='text' onChange={(e) => handleChange(e.target.value)} value={newComment} />
           </Form.Item>
           <Form.Item>
             <Button style={{ textAlign: 'left' }} htmlType='submit' type="primary">
               Add Comment
             </Button>
-            <p>{newComment}</p>
-            <button onClick={() => setNewComment("")}>reset</button>
           </Form.Item>
         </Form>
       </Col>

@@ -7,9 +7,7 @@ import { getProjects, reset } from '../../../../features/projects/projectsSlice'
 import { getAllUsers } from '../../../../features/users/userSlice';
 import { getUTP } from '../../../../features/users_tasks_projects/user_task_projectSlice';
 export default function Projects() {
-  const { projectList, isLoading, isError, isSuccess, message } = useSelector(
-    (state) => state.projects
-  )
+  const { projectList, isLoading, isError, isSuccess, message } = useSelector(state => state.projects)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -17,6 +15,7 @@ export default function Projects() {
     dispatch(getAllUsers())
     dispatch(getUTP())
   }, [dispatch])
+
 
   const generateProjectCard = (project, iterationId) => {
     const { id, title, description, tasks, status } = project

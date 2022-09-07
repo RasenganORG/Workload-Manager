@@ -28,26 +28,19 @@ export default function EditProject() {
   const [dispatchUpdates, setDispatchUpdates] = useState(false)
   const { userList } = useSelector(state => state.users)
   const billing = useSelector(state => state.billing)
-
-  useEffect(() => {
-    dispatch(getBillingOptions())
-  }, [])
-
   //returns an arr with the user ids that were removed from the project
   const getRemovedUsers = () => {
     return usersAssigned.filter(x => !formData.usersAssigned.includes(x))
   }
-
   //returns an arr with the user ids that were added to the project
   const getAddedUsers = () => {
     return formData.usersAssigned.filter(x => !usersAssigned.includes(x))
   }
-
   //take
   const updatedTasksWithRemovedUsers = (removedUsers) => {
-    const updatedTasks = [...formData.tasks]
+    const updatedTasks = formData.tasks ? [...formData.tasks] : []
     removedUsers.forEach((removedUser) => {
-      formData.tasks.forEach((task, index) => {
+      formData.tasks?.forEach((task, index) => {
         if (removedUser === task.asignee) {
           const newTask = { ...updatedTasks[index] }
           newTask.asignee = ''
@@ -57,42 +50,24 @@ export default function EditProject() {
     })
     return updatedTasks
   }
-
   const usersToUpdate = () => {
     return {
       usersToAddProject: getAddedUsers(),
       usersToRemoveProject: getRemovedUsers()
     }
   }
-
   const onInputChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }))
   }
-
   const onSelectChange = (value, inputName) => {
     setFormData((prevState) => ({
       ...prevState,
       [inputName]: value
     }))
   }
-
-  useEffect(() => {
-    if (dispatchUpdates) {
-      dispatch(updateProject({ projectData: formData, projectId: params.projectId }))
-      dispatch(removeUsersFromUTPs({ usersArr: usersToUpdate(), projectId: params.projectId }))
-      navigate('/')
-      dispatch(updateUsersProject({
-        data: { ...usersToUpdate() }
-        , projectId: params.projectId
-      }))
-      setDispatchUpdates(false)
-
-    }
-  }, [dispatchUpdates])
-
   const onSubmit = () => {
 
     if (formData.usersAssigned !== currentProject.usersAssigned) {
@@ -104,19 +79,32 @@ export default function EditProject() {
     }
     setDispatchUpdates(true)
   }
-
   const handleDelete = () => {
     dispatch(deleteProject(params.projectId))
     dispatch(deleteProjectUTP(params.projectId))
+    dispatch(updateUsersProject({ data: { usersToAddProject: [], usersToRemoveProject: usersAssigned }, projectId: params.projectId }))
     navigate('/')
   }
 
+  useEffect(() => {
+    dispatch(getBillingOptions())
+  }, [])
 
+  useEffect(() => {
+    if (dispatchUpdates) {
+      dispatch(updateProject({ projectData: formData, projectId: params.projectId }))
+      dispatch(removeUsersFromUTPs({ usersArr: getRemovedUsers(), projectId: params.projectId }))
+      dispatch(updateUsersProject({ data: { ...usersToUpdate() }, projectId: params.projectId }))
+      navigate('/')
+
+      setDispatchUpdates(false)
+
+    }
+  }, [dispatchUpdates])
 
   return (
     <Layout>
       <Layout.Content style={{ margin: "16px 0" }}>
-
         <Card title={'Update project'}>
           <Form
             layout="vertical"
@@ -125,37 +113,23 @@ export default function EditProject() {
           >
 
             <Form.Item
-              name="titleWrapper"
               label="Project title"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input the title of your project!',
-                },
-              ]}
               data-cy="projectTitle"
             >
               <Input
                 name='title'
                 onChange={(onInputChange)}
-                defaultValue={formData.title}
+                value={formData.title}
               />
             </Form.Item>
             <Form.Item
               label="Project description"
-              name="description"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please add a project description!'
-                }
-              ]}
               data-cy="projectDescription"
             >
               <TextArea
                 name='description'
                 rows={4}
-                defaultValue={formData.description}
+                value={formData.description}
                 onChange={onInputChange}
               />
             </Form.Item>

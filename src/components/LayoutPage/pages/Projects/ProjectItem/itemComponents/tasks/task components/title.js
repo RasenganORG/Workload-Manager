@@ -7,8 +7,8 @@ export default function Title(props) {
   const { viewMode, setViewMode } = props.display
   const { formData, setFormData } = props.form
   const { title } = formData
-  const navigate = useNavigate()
   const { Meta } = Card;
+  const navigate = useNavigate()
 
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -17,7 +17,6 @@ export default function Title(props) {
           <>
             <p style={{ margin: 0 }}>{title}</p>
             <EditOutlined onClick={handleEditButton} style={{ cursor: 'pointer' }} />
-
           </>
           :
           <>
@@ -28,8 +27,6 @@ export default function Title(props) {
       </div>
       <div onClick={() => navigate(-1)}>
         <Button><LeftCircleOutlined />Go back</Button>
-
-
       </div>
     </div>
   )

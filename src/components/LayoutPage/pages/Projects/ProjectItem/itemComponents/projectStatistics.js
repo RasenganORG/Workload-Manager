@@ -1,37 +1,110 @@
-import { Layout, Card, Badge, Calendar, PageHeader } from "antd"
+import { Layout, Card, Badge, Calendar, PageHeader, Col, Avatar, Row, Button, Divider } from "antd"
 import HighchartsReact from "highcharts-react-official";
 import Highcharts from 'highcharts'
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { getProjectItem } from "../../../../../../features/projects/projectsSlice";
-import { resetCurrentProjectSuccess } from "../../../../../../features/projects/projectsSlice";
+import { resetCurrentProjectSuccess, resetProjectsLoading } from "../../../../../../features/projects/projectsSlice";
 import moment from "moment";
-export default function ProjectStatistics() {
 
+export default function ProjectStatistics() {
+  const [filteredUsers, setFilteredUsers] = useState([])
   const params = useParams()
   const dispatch = useDispatch()
-
-  const { project, isSuccess } = useSelector(
-    (state) => state.projects.currentProject
-  )
-
-  useEffect(() => {
-    if (isSuccess) {
-      dispatch(getProjectItem(params.projectId))
-      dispatch(resetCurrentProjectSuccess())
-    }
-  }, [])
-
+  const { project, isSuccess } = useSelector(state => state.projects.currentProject)
+  const { users_tasks_projects } = useSelector(state => state.users_tasks_projects)
+  const userList = useSelector(state => state.users.userList)
+  const [highchartValues, setHighchartValues] = useState({})
   //https://stackoverflow.com/questions/72393755/calendar-ant-design-how-to-show-events-with-variable-datesco
-  const formattedTasks = project.tasks.map(task => {
+  const formattedTasks = project.tasks ? project.tasks.map(task => {
     return {
       id: task.id,
       content: task.title,
       date: moment(task.creationDate).format("DD/MM/YYYY")
     }
-  })
+  }) : []
+  const getFilteredUsers = () => {
+    let newArray = []
+    if (project.usersAssigned.length >= 1) {
+      project.usersAssigned.forEach((userId) => {
+        const userObject = userList?.find(user => user.id === userId)
+        newArray.push(userObject)
+      })
+    }
+    return newArray
+  }
+  const getTasksByUser = (userId) => {
+    const userTasks = {
+      completedTasks: [],
+      pendingTasks: []
+    }
 
+    users_tasks_projects.forEach((utp) => {
+      if (utp.userId === userId) {
+        if (utp.taskStatus === true) {
+          userTasks.completedTasks.push(utp)
+        } else {
+          userTasks.pendingTasks.push(utp)
+        }
+      }
+    })
+    return userTasks
+  }
+
+  const generateHighchartsValues = () => {
+    const totalTasks = [];
+    const completedTasks = [];
+    const pendingTasks = []
+    const users = getFilteredUsers()
+
+    if (users.every(user => user !== undefined)) {
+      users.forEach(user => {
+        const userTasks = getTasksByUser(user.id);
+        const projectTasks = { completedTasks: [], pendingTasks: [] }
+
+        userTasks.pendingTasks.forEach(task => {
+          if (task.projectId === params.projectId) {
+            projectTasks.pendingTasks.push(task)
+          }
+        })
+        userTasks.completedTasks.forEach(task => {
+          if (task.projectId === params.projectId) {
+            projectTasks.completedTasks.push(task)
+          }
+        })
+        pendingTasks.push(projectTasks.pendingTasks.length)
+        completedTasks.push(projectTasks.completedTasks.length)
+        totalTasks.push((projectTasks.pendingTasks.length + projectTasks.completedTasks.length))
+      })
+
+      setHighchartValues({
+        chart: {
+          type: 'column'
+        },
+        title: {
+          text: 'Task status statistics'
+        },
+        series: [
+          {
+            name: "Total tasks",
+            data: totalTasks
+          },
+          {
+            name: "Completed tasks",
+            data: completedTasks
+          }
+          , {
+            name: "Pending tasks",
+            data: pendingTasks
+          }
+        ],
+        xAxis: {
+          categories: users.map(user => user.name)
+        }
+      })
+    }
+  }
   const dateCellRender = (value) => {
     const stringValue = value.format("DD/MM/yyyy");
     const listData = formattedTasks.filter(task => task.date === stringValue)
@@ -46,49 +119,72 @@ export default function ProjectStatistics() {
       </ul>
     );
   };
+  const userGenerator = (name, phoneNumber, email, id, index) => {
+    const userTasks = getTasksByUser(id)
 
+    return (
+      <Card key={index} style={{ textAlign: 'left' }} >
+        <Row >
+          <Col span={4}>
+            <p> <Avatar src="https://joeschmoe.io/api/v1/random" /> {name}</p >
+          </Col>
+          <Col span={20}>
+            <div style={{ gap: "1rem" }}>
+              <p>Tasks completed: {userTasks.completedTasks.length}</p>
+              <p>Tasks pending: {userTasks.pendingTasks.length}</p>
+            </div>
+          </Col>
+        </Row>
+      </Card >
+    )
+  }
 
-
-  const highchartOptions = {
-    title: {
-      text: "Project statistics"
-    },
-    series: [
-      {
-        name: "Total tasks",
-        data: [23, 43, 60, 95, 150, 160, 200]
-      },
-      {
-        name: "Total worked tasks",
-        data: [20, 38, 54, 65, 100, 145, 190]
-      }
-    ],
-    yAxis: {
-    },
-    xAxis: {
-      categories: ["January", "February", "March", "April", "May", "June", "July"]
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(getProjectItem(params.projectId))
+      dispatch(resetCurrentProjectSuccess())
     }
-  };
+    dispatch(resetProjectsLoading())
+    generateHighchartsValues()
+  }, [])
+
+  useEffect(() => {
+    if (project.usersAssigned && userList) {
+      setFilteredUsers(getFilteredUsers)
+    }
+  }, [])
+
   return (
     <Layout>
       <Layout.Content style={{ margin: "16px 0" }}>
         <Card title="Statistics">
           <div>
             <PageHeader
-              className="site-page-header"
+              className="project-calendar-header"
               title="Project Calendar"
             />
             <Calendar dateCellRender={dateCellRender} />
           </div>
           <div>
             <PageHeader
-              className="site-page-header"
+              className="project-chart-header"
               title="Project chart"
             />
             <HighchartsReact
               highcharts={Highcharts}
-              options={highchartOptions}
+              options={highchartValues}
             />
+          </div>
+          <div>
+            <PageHeader
+              className="user-statistics-header"
+              title="User statistics"
+            />
+
+            {/* <UserStatistics />  to create a components*/}
+            {userList && project.usersAssigned && users_tasks_projects ? filteredUsers.map((user, index) => {
+              return userGenerator(user.name, user.phoneNumber, user.email, user.id, index)
+            }) : <p>No users added yet</p>}
           </div>
         </Card>
       </Layout.Content>

@@ -14,13 +14,9 @@ export default function Content(props) {
   const { viewMode } = props.display
   const { onInputChange, onSelectChange } = props.eventHandlers
   const { description, creationDate } = formData
-  const { userList } = useSelector(
-    (state) => state.users
-  )
-  const { project } = useSelector(
-    (state) => state.projects.currentProject
-  )
-  //we verify the user that are assign to the project and return an array with all the users assigned
+  const { userList } = useSelector(state => state.users)
+  const { project } = useSelector(state => state.projects.currentProject)
+  //we filter the users that are assign to the project and return an array with all the users assigned
   const getAssignedUsers = (users) => {
     let usersArr = []
     users.forEach(user => {
@@ -36,6 +32,7 @@ export default function Content(props) {
       setUsersAssigned(getAssignedUsers(userList))
     }
   }, [formData])
+
   return (
     <>
       <Row gutter={32}>

@@ -7,21 +7,21 @@ import { deleteTask } from '../../../../../../../features/projects/projectsSlice
 import { updateTask } from '../../../../../../../features/projects/projectsSlice';
 import { useEffect } from 'react';
 import { getProjectItem } from '../../../../../../../features/projects/projectsSlice';
-import { resetCurrentProjectSuccess } from '../../../../../../../features/projects/projectsSlice';
-
+import { resetCurrentProjectSuccess, resetProjectsLoading } from '../../../../../../../features/projects/projectsSlice';
+import { updateUTP } from '../../../../../../../features/users_tasks_projects/user_task_projectSlice';
 export default function Tasks() {
   const params = useParams()
   const navigate = useNavigate();
   const dispatch = useDispatch()
-
-  const { project, isSuccess } = useSelector(
-    (state) => state.projects.currentProject
-  )
+  const users_tasks_projects = useSelector(state => state.users_tasks_projects.users_tasks_projects)
+  const { project, isSuccess } = useSelector(state => state.projects.currentProject)
+  const { userList } = useSelector(state => state.users)
 
   useEffect(() => {
     if (isSuccess) {
       dispatch(getProjectItem(params.projectId))
       dispatch(resetCurrentProjectSuccess())
+      dispatch(resetProjectsLoading())
     }
   }, [isSuccess, dispatch, params.id])
 
@@ -32,35 +32,36 @@ export default function Tasks() {
   const completedTasks = project.tasks ? project.tasks.filter((task) => task.queue === 'Completed') : 0
   const blockedTasks = project.tasks ? project.tasks.filter((task) => task.queue === 'Blocked') : 0
 
-  const taskGenerator = (task) => {
-    return {
-      id: task.id.toString(),
-      title: task.title,
-      description: task.description,
-      label: task.asignee,
-      metadata: {
-        taskInfo: 'asdsa'
-      }
-    }
-  }
-
   const handleCardDelete = (taskId) => {
     let taskToDelete = project.tasks.find(task => task.id == taskId)
     dispatch(deleteTask({ data: taskToDelete, projectId: params.projectId, taskId: params.taskId }))
-
   }
-
   const handleLaneChange = (fromLaneId, toLaneId, cardId) => {
     const currentTask = project.tasks.find(task => task.id == cardId)
+    const utp_item = users_tasks_projects.find(utp => utp.taskId === parseInt(cardId))
     const newTask = {
       ...currentTask,
       queue: toLaneId,
     }
-    dispatch(updateTask({ data: { newTask, currentTask }, projectId: params.projectId, taskId: cardId }))
+    const checkIfTaskIsCompleted = () => {
+      return newTask.queue === "Completed" ? true : false
+    }
 
+    dispatch(updateTask({ data: { newTask, currentTask }, projectId: params.projectId, taskId: cardId }));
+    dispatch(updateUTP({ utpData: { userId: newTask.asignee, taskCompleted: checkIfTaskIsCompleted() }, utpId: utp_item.id }))
   }
+  const taskGenerator = (task) => {
+    //the taskAsignee property is the user's ID, the following fuction takes the userID and returns the full user object, 
+    //so that the name can be displayed on the task 
+    const userObject = userList?.find(user => user.id === task.asignee)
 
-
+    return {
+      id: task.id.toString(),
+      title: task.title,
+      description: task.description,
+      label: userObject?.name,
+    }
+  }
   const data = {
     lanes: [
       {
@@ -95,7 +96,6 @@ export default function Tasks() {
       }
     ]
   }
-
 
   return (
     <Layout>

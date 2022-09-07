@@ -21,31 +21,17 @@ export default function NewTask() {
     id: Date.now(),
     comments: [],
   })
-
   const navigate = useNavigate()
   const dispatch = useDispatch()
-
   const params = useParams()
-
-
+  const { userList } = useSelector(state => state.users)
+  const { project } = useSelector(state => state.projects.currentProject)
   const onInputChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }))
   }
-  const { userList } = useSelector(
-    (state) => state.users
-  )
-  const { project } = useSelector(
-    (state) => state.projects.currentProject
-  )
-  useEffect(() => {
-    dispatch(getAllUsers())
-
-  }, [])
-
-
   const onSelectChange = (value, inputName) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -57,12 +43,12 @@ export default function NewTask() {
     const user_task_project = {
       userId: formData.asignee,
       taskId: formData.id,
-      projectId: params.projectId
+      projectId: params.projectId,
+      taskCompleted: false
     }
     dispatch(addUTP(user_task_project))
     navigate(-1)
   }
-
   //we verify the user that are assign to the project and return an array with all the users assigned
   const getAssignedUsers = (users) => {
     let usersArr = []
@@ -76,6 +62,10 @@ export default function NewTask() {
   // can only assign the task to an user assigned to the project
   const assignedUsers = getAssignedUsers(userList)
 
+  useEffect(() => {
+    dispatch(getAllUsers())
+  }, [])
+
   return (
     <Layout>
       <Layout.Content style={{ margin: "16px 0" }}>
@@ -88,7 +78,6 @@ export default function NewTask() {
               onSubmit()
             }}
           >
-
             <Form.Item
               label="Task title"
               name="taskTitle"
@@ -141,12 +130,8 @@ export default function NewTask() {
                   return <Select.Option key={index} value={user.id}>{user.name}</Select.Option>
                 }) : ''}
 
-
-
-
               </Select>
             </Form.Item>
-
             <Form.Item
               label="Due date"
               name="dueDate"
@@ -239,7 +224,6 @@ export default function NewTask() {
               <Button htmlType="submit" type="primary">Create task</Button>
             </Form.Item>
           </Form>
-
         </Card>
       </Layout.Content>
     </Layout >
