@@ -1,4 +1,4 @@
-import { Card } from 'antd';
+import { Card, Row, Col } from 'antd';
 import { useNavigate, useParams } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
@@ -9,7 +9,7 @@ import Content from './task components/content';
 import Title from './task components/title';
 import UpdateButtons from './task components/updateButtons';
 import { deleteUTP, updateUTP } from '../../../../../../../features/users_tasks_projects/user_task_projectSlice';
-import { current } from '@reduxjs/toolkit';
+import { TimeTracker } from './timeTracker';
 
 export default function Task() {
   const [currentTask, setCurrentTask] = useState('')
@@ -26,7 +26,11 @@ export default function Task() {
     creationDate: creationDate,
     dueDate: dueDate,
     id: id,
-    comments: comments
+    comments: comments,
+    workload: {
+      loggedWorload: [],
+      plannedWorkload: {}
+    }
   })
 
   const form = { formData, setFormData }
@@ -107,6 +111,7 @@ export default function Task() {
     setCurrentTask(getTask(project.tasks))
     if (userList) {
       setFormData({
+        ...formData,
         title: title,
         description: description,
         asignee: asignee,
@@ -116,7 +121,7 @@ export default function Task() {
         creationDate: creationDate,
         dueDate: dueDate,
         id: id,
-        comments: comments
+        comments: comments,
       })
     }
 
@@ -130,13 +135,22 @@ export default function Task() {
         eventHandlers={eventHandlers}
         getAssignedUsers={getAssignedUsers}
       />
-
-      <Comments
-        saveButton={displaySaveButton}
-        display={display}
-        form={form}
-      />
-
+      <Row>
+        <Col span={12}>
+          <Comments
+            saveButton={displaySaveButton}
+            display={display}
+            form={form}
+          />
+        </Col>
+        <Col span={12}>
+          <TimeTracker
+            saveButton={displaySaveButton}
+            display={display}
+            form={form}
+          />
+        </Col>
+      </Row>
       <UpdateButtons
         saveButton={displaySaveButton}
         eventHandlers={eventHandlers}

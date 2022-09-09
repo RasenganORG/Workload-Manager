@@ -85,7 +85,7 @@ export default function Comments(props) {
       })
         : ''}
 
-      <Col span={12} style={{ margin: '2rem 0' }}>
+      <Col span={24} style={{ margin: '2rem 0' }}>
         <Form
           style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}
           layout="vertical"

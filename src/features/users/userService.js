@@ -11,7 +11,7 @@ const getAllUsers = async () => {
 
 //get an individual user
 const getUser = async (userId) => {
-  const response = await axios.get(`${USERS_URL}${userId}`);
+  const response = await axios.get(`${USER_URL}${userId}`);
 
   return response.data
 }
