@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { updateTask, deleteTask } from '../../../../../../../features/projects/projectsSlice';
-import { getAllUsers } from '../../../../../../../features/users/userSlice';
+import { getAllUsers, updateUser } from '../../../../../../../features/users/userSlice';
 import Comments from './task components/comments';
 import Content from './task components/content';
 import Title from './task components/title';
@@ -14,6 +14,7 @@ import { TimeTracker } from './timeTracker';
 export default function Task() {
   const [currentTask, setCurrentTask] = useState('')
   const [showSaveButton, setShowSaveButton] = useState(false)
+  const [userPlannedWork, setUserPlannedWork] = useState([])
   const [viewMode, setViewMode] = useState('readOnly')
   const { title, description, asignee, queue, priority, complexity, creationDate, dueDate, id, comments } = currentTask
   const [formData, setFormData] = useState({
@@ -33,6 +34,7 @@ export default function Task() {
     }
   })
 
+  const userPlannedWorkInfo = { userPlannedWork, setUserPlannedWork }
   const form = { formData, setFormData }
   const displaySaveButton = { showSaveButton, setShowSaveButton }
   const display = { viewMode, setViewMode }
@@ -80,7 +82,7 @@ export default function Task() {
     const wasTaskCompleted = formData.queue === "Completed" ? true : false
 
     setViewMode('readOnly')
-
+    dispatch(updateUser({ data: { plannedWorkload: userPlannedWork }, userId: user.id }))
     dispatch(updateTask({ data: { newTask, currentTask }, projectId: params.projectId, taskId: params.taskId }))
     dispatch(updateUTP({ utpData: { userId: formData.asignee, taskCompleted: wasTaskCompleted }, utpId: utp_item.id }))
     navigate('../')
@@ -145,6 +147,7 @@ export default function Task() {
         </Col>
         <Col span={12}>
           <TimeTracker
+            userPlannedWorkInfo={userPlannedWorkInfo}
             saveButton={displaySaveButton}
             display={display}
             form={form}
