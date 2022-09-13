@@ -76,11 +76,14 @@ export default function LayoutPage() {
               <div className="logo">
               </div>
             </Col>
-            <Col span={16}>
+            <Col span={10}>
               <Menu defaultSelectedKeys={href} theme="dark" mode="horizontal" items={menuItems} />
             </Col>
-
+            <Col span={6}>
+              {user ? <p style={{ color: 'white' }}>welcome back, {user.name}</p> : ''}
+            </Col>
             <Col span={4}>
+
               <Menu defaultSelectedKeys={["1"]} theme="dark" mode="horizontal" items={authItems} />
             </Col>
 

@@ -8,17 +8,21 @@ import { updateTask } from '../../../../../../../features/projects/projectsSlice
 import { useEffect } from 'react';
 import { getProjectItem } from '../../../../../../../features/projects/projectsSlice';
 import { resetCurrentProjectSuccess, resetProjectsLoading } from '../../../../../../../features/projects/projectsSlice';
-import { updateUTP } from '../../../../../../../features/users_tasks_projects/user_task_projectSlice';
+import { updateUTP, getAllUTPs } from '../../../../../../../features/users_tasks_projects/user_task_projectSlice';
 
 export default function Tasks() {
   const params = useParams()
   const navigate = useNavigate();
   const dispatch = useDispatch()
-  const users_tasks_projects = useSelector(state => state.users_tasks_projects.users_tasks_projects)
+  const { users_tasks_projects } = useSelector(state => state.users_tasks_projects)
   const { project, isSuccess } = useSelector(state => state.projects.currentProject)
   const { userList } = useSelector(state => state.users)
 
   useEffect(() => {
+    if (!users_tasks_projects) {
+      dispatch(getAllUTPs())
+
+    }
     if (isSuccess) {
       dispatch(getProjectItem(params.projectId))
       dispatch(resetCurrentProjectSuccess())

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Layout, Card } from 'antd'
+import { Layout, Row, Col, Card, Select } from 'antd'
 import HighchartsReact from "highcharts-react-official";
 import Highcharts, { format } from 'highcharts'
 import moment from 'moment';
@@ -11,52 +11,87 @@ import { getAllUTPs } from '../../../../features/users_tasks_projects/user_task_
 export default function Statistics() {
   const dispatch = useDispatch()
   const [selectedUsers, setSelectedUsers] = useState([])
+  const [displayedTimePeriod, setDisplayedTimePeriod] = useState('currentWeek')
   const { userList } = useSelector(state => state.users)
   const { users_tasks_projects } = useSelector(state => state.users_tasks_projects)
 
   useEffect(() => {
     dispatch(getAllUsers())
     dispatch(getAllUTPs())
-
   }, [])
   useEffect(() => {
     if (userList) {
       if (selectedUsers.length === 0) {
         //if no users are selected, we show all users by default
-        const allUsers = []
-        userList?.forEach(user => allUsers.push(user))
-        setSelectedUsers(allUsers)
+        const defaultSelectedUsers = []
+        userList.slice(0, 3)?.forEach(user => defaultSelectedUsers.push(user.id))
+        setSelectedUsers(defaultSelectedUsers)
       }
     }
-
   }, [userList])
 
-  const getNextWeek = () => {
-    //returns an array containing the next week in Date.UTC format, format that is used by Highcharts
+  const getTimePeriod = () => {
+    //returns an array containing the time period in Date.UTC format, format that is used by Highcharts
     const date = new Date()
-    const nextWeek = [];
+    const timePeriod = [];
+    let selectedTimePeriod = {
+      days: 7,
+      displayFutureDates: true,
+    };
 
-    //we use Array 7 for the loop to iterate 7 tunes
-    [...Array(7)].forEach((_, i) => {
+    switch (displayedTimePeriod) {
+      case 'currentWeek':
+        selectedTimePeriod = {
+          days: 7,
+          displayFutureDates: true
+        };
+        break;
+
+      case 'currentMonth':
+        selectedTimePeriod = {
+          days: 30,
+          displayFutureDates: true
+        };
+        break;
+      case 'pastWeek':
+        selectedTimePeriod = {
+          days: 7,
+          displayFutureDates: false
+        };
+        break;
+      case 'pastMonth':
+        selectedTimePeriod = {
+          days: 30,
+          displayFutureDates: false
+        };
+        break;
+
+    }
+    //we use an array contructor to iterara a number of $days times and generate the requested date
+    [...Array(selectedTimePeriod.days)].forEach((_, i) => {
+      const day = selectedTimePeriod.displayFutureDates ? date.getUTCDate() + i : date.getUTCDate() - i;
+
       const utcDate = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(),
-        date.getUTCDate() + i);
-      nextWeek.push(utcDate)
+        day);
+      timePeriod.push(utcDate)
     });
 
-    return nextWeek
+    return timePeriod
   }
   const getTasksByUser = () => {
     const tasksByUser = []
-    selectedUsers.forEach((user) => {
-      // console.log(user.id)
+    const users = userList?.filter(user => selectedUsers.includes(user.id))
+
+    users?.forEach((user) => {
       const userTasks = users_tasks_projects?.filter(utp => utp.userId === user.id)
       tasksByUser.push({ name: user.name, userId: user.id, tasks: userTasks })
     })
+
     return tasksByUser
   }
   const generateData = () => {
     const series = []
-    const week = getNextWeek()
+    const timePeriod = getTimePeriod()
     const tasksByUser = getTasksByUser()
 
     tasksByUser.forEach((user, userIndex) => {
@@ -65,7 +100,7 @@ export default function Statistics() {
         data: []
       }
 
-      week.forEach((day, dayIndex) => {
+      timePeriod.forEach((day, dayIndex) => {
         const formattedDay = moment(day).format('DD-MM-YYYY') //format day for the week so that we can compare it against the days where user has plannedWorkload saved 
         const dailyTasks = user.tasks?.filter((task) => formattedDay === moment(task.timeTracker.plannedWorkingTime.date).format('DD-MM-YYYY'))
 
@@ -74,6 +109,7 @@ export default function Statistics() {
           const workinghours = dailyTasks.reduce((totalTime, currentTask) => {
             return totalTime + parseInt(currentTask.timeTracker.plannedWorkingTime.duration)
           }, 0)
+
           userStatistic.data.push([day, workinghours])
         }
       })
@@ -120,14 +156,11 @@ export default function Statistics() {
         }
       }
     },
-
     colors: ["#fd7f6f", "#7eb0d5", "#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"],
-
     // Define the data points. All series have a dummy year of 2010/71 in order
     // to be compared on the same x axis. Note that in JavaScript, months start
     // at 0 for January, 1 for February etc.
     series: generateData()
-
     //     name: "Teodor",
     //     data: 
     //     //  [
@@ -141,7 +174,12 @@ export default function Statistics() {
     //     // ]
     //   } 
   }
-
+  const handleUserSelection = (value) => {
+    setSelectedUsers(value);
+  };
+  const handlePeriodChange = (value) => {
+    setDisplayedTimePeriod(value)
+  };
 
   return (
     <Layout
@@ -154,7 +192,35 @@ export default function Statistics() {
           highcharts={Highcharts}
           options={chartDefaultValue}
         />
+        <Row style={{ fontWeight: 'bold' }}>
+          <Col span={18}>
+            <p>Users to display</p>
+            <Select
+              mode="multiple"
+              allowClear
+              style={{
+                width: '100%',
+              }}
+              placeholder="Please select"
+              value={selectedUsers}
+              onChange={handleUserSelection}
+            >
+              {userList?.map((user, index) => {
+                return <Select.Option key={index} value={user.id}>{user.name}</Select.Option>
+              })}
+            </Select>
+          </Col>
+          <Col span={6}>
+            <p>Time  period</p>
+            <Select defaultValue="currentWeek" style={{ width: '100%' }} onChange={handlePeriodChange}>
+              <Select.Option value="currentWeek">Current Week</Select.Option>
+              <Select.Option value="currentMonth">Current Month</Select.Option>
+              <Select.Option value="pastWeek" >Past week</Select.Option>
+              <Select.Option value="pastMonth">Past Month</Select.Option>
+            </Select>
 
+          </Col>
+        </Row>
       </Card>
     </Layout >
   )

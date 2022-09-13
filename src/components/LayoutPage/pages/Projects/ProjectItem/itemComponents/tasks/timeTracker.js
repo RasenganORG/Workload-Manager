@@ -64,7 +64,6 @@ export function TimeTracker(props) {
 
   return (
     <div>
-      <Button onClick={() => { console.log(formData) }}>asd</Button>
       <Row style={{ padding: '1rem 0 0 0', textAlign: 'left' }} justify={'end'}>
         <Col span={12}>
           <p style={{ fontWeight: 'bold' }}><ClockCircleOutlined /> Time tracker</p>
