@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import { getProjectItem } from '../../../../../../../features/projects/projectsSlice';
 import { resetCurrentProjectSuccess, resetProjectsLoading } from '../../../../../../../features/projects/projectsSlice';
 import { updateUTP } from '../../../../../../../features/users_tasks_projects/user_task_projectSlice';
+
 export default function Tasks() {
   const params = useParams()
   const navigate = useNavigate();

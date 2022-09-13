@@ -28,13 +28,11 @@ export default function Task() {
     dueDate: dueDate,
     id: id,
     comments: comments,
-    workload: {
+    timeTracker: {
       loggedWorload: [],
-      plannedWorkload: {}
+      plannedWorkingTime: {}
     }
   })
-
-  const userPlannedWorkInfo = { userPlannedWork, setUserPlannedWork }
   const form = { formData, setFormData }
   const displaySaveButton = { showSaveButton, setShowSaveButton }
   const display = { viewMode, setViewMode }
@@ -43,7 +41,6 @@ export default function Task() {
   const dispatch = useDispatch()
   const { project } = useSelector((state) => state.projects.currentProject)
   const { userList } = useSelector(state => state.users)
-  const { user } = useSelector(state => state.auth)
   const users_tasks_projects = useSelector(state => state.users_tasks_projects.users_tasks_projects)
   const getTask = (tasks) => {
     return tasks.find((task) => {
@@ -82,9 +79,8 @@ export default function Task() {
     const wasTaskCompleted = formData.queue === "Completed" ? true : false
 
     setViewMode('readOnly')
-    dispatch(updateUser({ data: { plannedWorkload: userPlannedWork }, userId: user.id }))
     dispatch(updateTask({ data: { newTask, currentTask }, projectId: params.projectId, taskId: params.taskId }))
-    dispatch(updateUTP({ utpData: { userId: formData.asignee, taskCompleted: wasTaskCompleted }, utpId: utp_item.id }))
+    dispatch(updateUTP({ utpData: { userId: formData.asignee, taskCompleted: wasTaskCompleted, timeTracker: formData.timeTracker }, utpId: utp_item.id }))
     navigate('../')
   }
 
@@ -111,6 +107,7 @@ export default function Task() {
 
   useEffect(() => {
     setCurrentTask(getTask(project.tasks))
+
     if (userList) {
       setFormData({
         ...formData,
@@ -147,7 +144,6 @@ export default function Task() {
         </Col>
         <Col span={12}>
           <TimeTracker
-            userPlannedWorkInfo={userPlannedWorkInfo}
             saveButton={displaySaveButton}
             display={display}
             form={form}

@@ -1,7 +1,8 @@
 import axios from "axios";
 const UTP_URL = "http://localhost:8080/api/user_task_project/"
+const ALL_UTP_URL = "http://localhost:8080/api/user_task_project/get-all"
 
-//UTP = user_task_prokect
+//UTP = user_task_project
 
 //get all entries
 const getUTP = async () => {
@@ -10,6 +11,11 @@ const getUTP = async () => {
   return response.data
 }
 
+const getAllUTPs = async () => {
+  const response = await axios.get(ALL_UTP_URL)
+
+  return response.data
+}
 //add utp
 const addUTP = async (data) => {
   const response = await axios.post(UTP_URL, data)
@@ -51,6 +57,7 @@ const removeUsersFromUTPs = async (usersArr, projectId) => {
 const utpService = {
   getUTP,
   addUTP,
+  getAllUTPs,
   updateUTP,
   deleteUTP,
   deleteProjectUTP,

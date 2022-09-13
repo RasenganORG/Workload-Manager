@@ -23,6 +23,20 @@ export const addUTP = createAsyncThunk('user_task_project/add', async (utp, thun
   }
 })
 
+export const getAllUTPs = createAsyncThunk('user_task_project/getAll', async (utp, thunkAPI) => {
+  try {
+    return await utpService.getAllUTPs()
+  } catch (error) {
+    const message =
+      (error.response &&
+        error.response.data &&
+        error.response.data.message) ||
+      error.message ||
+      error.toString()
+    return thunkAPI.rejectWithValue(message)
+  }
+})
+
 export const getUTP = createAsyncThunk('user_task_project/get', async (utp, thunkAPI) => {
   try {
     return await utpService.getUTP()
@@ -122,15 +136,15 @@ export const utpSlice = createSlice({
         state.isError = true
         state.message = action.payload
       })
-      .addCase(getUTP.pending, (state) => {
+      .addCase(getAllUTPs.pending, (state) => {
         state.isLoading = true
       })
-      .addCase(getUTP.fulfilled, (state, action) => {
+      .addCase(getAllUTPs.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
         state.users_tasks_projects = action.payload
       })
-      .addCase(getUTP.rejected, (state, action) => {
+      .addCase(getAllUTPs.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload

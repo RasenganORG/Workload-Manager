@@ -15,81 +15,56 @@ export function TimeTracker(props) {
   const { viewMode, setViewMode } = props.display
   const { setShowSaveButton } = props.saveButton
   const { formData, setFormData } = props.form
-  const { userPlannedWork, setUserPlannedWork } = props.userPlannedWorkInfo;
   const [isLogWorkModalOpen, setIsLogWorkModalOpen] = useState(false);
   const [isPlanningModalOpen, setIsPlanningModalOpen] = useState(false);
-  const [taskCompletationData, setTaskCompletationData] = useState({
+  const [plannedWorkingTimeForm, setPlannedWorkingTimeForm] = useState({
     date: '',
-    duration: ''
+    duration: '',
   })
   const logWorkModal = {
     showModal: () => setIsLogWorkModalOpen(true),
     handleCancel: () => setIsLogWorkModalOpen(false),
     handleOk: () => setIsLogWorkModalOpen(false),
   }
-  const updatePlannedWorkload = (newWorkload) => {
-    const updatedWorkload = userPlannedWork
-    const taskId = parseInt(params.taskId)
-    const newDate = moment(taskCompletationData.date).format('DD-MM-YYYY')
-
-    for (let i = 0; i < updatedWorkload.length; i++) {
-      const plannedItemDate = moment(updatedWorkload[i].date).format('DD-MM-YYYY')
-
-      if (plannedItemDate == newDate) {
-        for (let taskIndex = 0; taskIndex < updatedWorkload[i].plannedWork.length; taskIndex++) {
-          const wasTaskAlreadyAdded = updatedWorkload[i].plannedWork.find(item => {
-            return item.taskId === taskId
-          })
-          if (wasTaskAlreadyAdded) {
-            if (updatedWorkload[i].plannedWork[taskIndex].taskId === taskId) {
-              updatedWorkload[i].plannedWork[taskIndex].workDuration = parseInt(newWorkload.duration)
-            }
-          } else {
-            updatedWorkload[i].plannedWork.push({ taskId: taskId, workDuration: parseInt(newWorkload.duration) })
-          }
-        }
-      } else {
-        const wasDateAlreadyAdded = updatedWorkload.find(workLoadItem => {
-          return moment(workLoadItem.date).format('DD-MM-YYYY') === newDate
-        })
-        if (!wasDateAlreadyAdded) {
-          const newWorkloadDay = {
-            date: newWorkload.date,
-            plannedWork: [{ taskId: taskId, workDuration: newWorkload.duration }]
-          }
-          updatedWorkload.push(newWorkloadDay)
-        }
-      }
+  const updatePlannedWorkingTime = () => {
+    const updatedItem = {
+      date: plannedWorkingTimeForm.date,
+      duration: plannedWorkingTimeForm.duration
     }
-    setUserPlannedWork([...updatedWorkload])
+    setFormData((prevData) => ({
+      ...prevData,
+      timeTracker: {
+        ...prevData.timeTracker,
+        plannedWorkingTime: updatedItem
+      }
+    }))
   }
   const planningModal = {
     showModal: () => setIsPlanningModalOpen(true),
     handleCancel: () => setIsPlanningModalOpen(false),
     handleOk: () => {
-      if (!taskCompletationData.date || !taskCompletationData.duration) {
+      if (!plannedWorkingTimeForm.date || !plannedWorkingTimeForm.duration) {
         toast.error("Please complete all fields", { position: "top-center", autoClose: 2000 })
-      } else if (isNaN(taskCompletationData.duration) || taskCompletationData.duration > 8) {
+      } else if (isNaN(plannedWorkingTimeForm.duration) || plannedWorkingTimeForm.duration > 8) {
         toast.error("Duration time must be less than 8 hours and it must be a valid number", { position: "top-center", autoClose: 2000 })
       } else {
         setViewMode('edit')
         setShowSaveButton(true)
         setIsPlanningModalOpen(false)
-        updatePlannedWorkload(taskCompletationData)
+        updatePlannedWorkingTime()
         toast.success("Press 'Save Changes' to update the task", { position: "top-center", autoClose: 2000 })
       }
     },
     resetState: () => { setIsPlanningModalOpen({ date: '', duration: '' }) },
-    onDateChange: (date) => setTaskCompletationData({ ...taskCompletationData, date: date.toString() }),
-    onDurationchange: (e) => setTaskCompletationData({ ...taskCompletationData, duration: e.target.value })
+    onDateChange: (date) => setPlannedWorkingTimeForm({ ...plannedWorkingTimeForm, date: date.toString() }),
+    onDurationchange: (e) => setPlannedWorkingTimeForm({ ...plannedWorkingTimeForm, duration: e.target.value })
   }
 
-  useEffect(() => {
-    dispatch(getUser(loggedUserId)).then((res) => { setUserPlannedWork(res.payload.plannedWorkload) })
-  }, [])
+
 
   return (
     <div>
+      <Button onClick={() => { console.log(formData) }}>asd</Button>
       <Row style={{ padding: '1rem 0 0 0', textAlign: 'left' }} justify={'end'}>
         <Col span={12}>
           <p style={{ fontWeight: 'bold' }}><ClockCircleOutlined /> Time tracker</p>
@@ -145,5 +120,4 @@ export function TimeTracker(props) {
     </div >
   )
 }
-
 

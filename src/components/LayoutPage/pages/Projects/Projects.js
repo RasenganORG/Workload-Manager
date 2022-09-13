@@ -5,16 +5,18 @@ import { useSelector, useDispatch } from 'react-redux';
 import Spinner from '../../../Spinner';
 import { getProjects, reset } from '../../../../features/projects/projectsSlice';
 import { getAllUsers } from '../../../../features/users/userSlice';
-import { getUTP } from '../../../../features/users_tasks_projects/user_task_projectSlice';
+import { getAllUTPs } from '../../../../features/users_tasks_projects/user_task_projectSlice';
 export default function Projects() {
   const { projectList, isLoading, isError, isSuccess, message } = useSelector(state => state.projects)
   const dispatch = useDispatch()
+  const { users_tasks_projects } = useSelector(state => state.users_tasks_projects)
 
   useEffect(() => {
     dispatch(getProjects())
     dispatch(getAllUsers())
-    dispatch(getUTP())
+    dispatch(getAllUTPs())
   }, [dispatch])
+
 
 
   const generateProjectCard = (project, iterationId) => {

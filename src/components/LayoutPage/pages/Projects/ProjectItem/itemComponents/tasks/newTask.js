@@ -20,6 +20,13 @@ export default function NewTask() {
     creationDate: new Date(),
     id: Date.now(),
     comments: [],
+    timeTracker: {
+      loggedWorload: [],
+      plannedWorkingTime: {
+        date: 'none',
+        duration: ''
+      }
+    }
   })
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -44,7 +51,8 @@ export default function NewTask() {
       userId: formData.asignee,
       taskId: formData.id,
       projectId: params.projectId,
-      taskCompleted: false
+      taskCompleted: false,
+      timeTracker: formData.timeTracker
     }
     dispatch(addUTP(user_task_project))
     navigate(-1)
