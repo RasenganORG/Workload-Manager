@@ -6,7 +6,7 @@ export default function Title(props) {
   const { onInputChange, onSelectChange, handleSave, handleEditButton, handleDelete } = props.eventHandlers
   const { viewMode, setViewMode } = props.display
   const { formData, setFormData } = props.form
-  const { title } = formData
+  const { title } = formData.taskData
   const { Meta } = Card;
   const navigate = useNavigate()
 

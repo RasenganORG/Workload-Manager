@@ -4,22 +4,27 @@ import { useEffect, useState } from "react"
 import { useNavigate, useOutletContext, useParams } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { CloseOutlined } from '@ant-design/icons';
-import { addTask } from "../../../../../../../features/projects/projectsSlice"
 import { getAllUsers } from "../../../../../../../features/users/userSlice"
-import { addUTP } from "../../../../../../../features/users_tasks_projects/user_task_projectSlice"
+import { addTask } from "../../../../../../../features/tasks/tasksSlice"
 
 export default function NewTask() {
+  const params = useParams()
+  const { user } = useSelector(state => state.auth)
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    asignee: '',
-    dueDate: '',
-    queue: '',
-    priority: '',
-    complexity: '',
-    creationDate: new Date(),
-    id: Date.now(),
-    comments: [],
+    asigneeId: '',
+    projectId: params.projectId,
+    taskData: {
+      title: '',
+      description: '',
+      creatorId: user?.id,
+      dueDate: '',
+      isTaskCompleted: false,
+      queue: '',
+      priority: '',
+      complexity: '',
+      creationDate: Date.now(),
+      comments: [],
+    },
     timeTracker: {
       loggedWorload: [],
       plannedWorkingTime: {
@@ -30,37 +35,43 @@ export default function NewTask() {
   })
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const params = useParams()
   const { userList } = useSelector(state => state.users)
   const { project } = useSelector(state => state.projects.currentProject)
+
   const onInputChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
-      [e.target.name]: e.target.value,
+      taskData: {
+        ...prevState.taskData,
+        [e.target.name]: e.target.value,
+      }
     }))
+
   }
   const onSelectChange = (value, inputName) => {
     setFormData((prevState) => ({
       ...prevState,
-      [inputName]: value
+      taskData: {
+        ...prevState.taskData,
+        [inputName]: value
+
+      }
     }))
+    if (inputName === 'asignee') {
+      setFormData((prevState) => ({
+        ...prevState,
+        asigneeId: value
+      }))
+    }
   }
   const onSubmit = () => {
-    dispatch(addTask({ taskData: formData, projectId: params.projectId }))
-    const user_task_project = {
-      userId: formData.asignee,
-      taskId: formData.id,
-      projectId: params.projectId,
-      taskCompleted: false,
-      timeTracker: formData.timeTracker
-    }
-    dispatch(addUTP(user_task_project))
+    dispatch(addTask(formData))
     navigate(-1)
   }
   //we verify the user that are assign to the project and return an array with all the users assigned
   const getAssignedUsers = (users) => {
     let usersArr = []
-    users.forEach(user => {
+    users?.forEach(user => {
       if (project.usersAssigned.includes(user.id)) {
         usersArr.push(user)
       }

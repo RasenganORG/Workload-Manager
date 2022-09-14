@@ -5,7 +5,8 @@ import { useNavigate, useParams } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { updateProject, deleteProject } from "../../../../../../features/projects/projectsSlice"
 import { getBillingOptions } from "../../../../../../features/billing/billingSlice"
-import { deleteProjectUTP, removeUsersFromUTPs } from "../../../../../../features/users_tasks_projects/user_task_projectSlice"
+import { deleteProjectTasks, removeUsersFromTasks } from "../../../../../../features/tasks/tasksSlice"
+
 import moment from "moment"
 import { updateUser, updateUsersProject } from "../../../../../../features/users/userSlice"
 
@@ -81,7 +82,7 @@ export default function EditProject() {
   }
   const handleDelete = () => {
     dispatch(deleteProject(params.projectId))
-    dispatch(deleteProjectUTP(params.projectId))
+    dispatch(deleteProjectTasks(params.projectId))
     dispatch(updateUsersProject({ data: { usersToAddProject: [], usersToRemoveProject: usersAssigned }, projectId: params.projectId }))
     navigate('/')
   }
@@ -93,7 +94,7 @@ export default function EditProject() {
   useEffect(() => {
     if (dispatchUpdates) {
       dispatch(updateProject({ projectData: formData, projectId: params.projectId }))
-      dispatch(removeUsersFromUTPs({ usersArr: getRemovedUsers(), projectId: params.projectId }))
+      dispatch(removeUsersFromTasks({ usersArr: getRemovedUsers(), projectId: params.projectId }))
       dispatch(updateUsersProject({ data: { ...usersToUpdate() }, projectId: params.projectId }))
       navigate('/')
 

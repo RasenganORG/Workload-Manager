@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateUser, getUser } from '../../../../../../../features/users/userSlice';
 
 export function TimeTracker(props) {
   const dispatch = useDispatch()
@@ -21,21 +20,19 @@ export function TimeTracker(props) {
     date: '',
     duration: '',
   })
+
   const logWorkModal = {
     showModal: () => setIsLogWorkModalOpen(true),
     handleCancel: () => setIsLogWorkModalOpen(false),
     handleOk: () => setIsLogWorkModalOpen(false),
   }
   const updatePlannedWorkingTime = () => {
-    const updatedItem = {
-      date: plannedWorkingTimeForm.date,
-      duration: plannedWorkingTimeForm.duration
-    }
+
     setFormData((prevData) => ({
       ...prevData,
       timeTracker: {
         ...prevData.timeTracker,
-        plannedWorkingTime: updatedItem
+        plannedWorkingTime: plannedWorkingTimeForm
       }
     }))
   }
@@ -60,8 +57,6 @@ export function TimeTracker(props) {
     onDurationchange: (e) => setPlannedWorkingTimeForm({ ...plannedWorkingTimeForm, duration: e.target.value })
   }
 
-
-
   return (
     <div>
       <Row style={{ padding: '1rem 0 0 0', textAlign: 'left' }} justify={'end'}>
@@ -74,7 +69,7 @@ export function TimeTracker(props) {
             <p>Logged time: X hours</p>
           </Row>
           {/* only an user assigned to a task would have the option to plan working the task */}
-          {loggedUserId === formData.asignee ?
+          {loggedUserId === formData.asigneeId ?
             <div>
               <Row style={{ justifyContent: 'space-between' }}>
                 <Button type="primary" onClick={planningModal.showModal}>Plan task completation time</Button>
@@ -86,7 +81,7 @@ export function TimeTracker(props) {
               </Modal>
 
               <Modal title="Add the task completation time" visible={isPlanningModalOpen} onOk={planningModal.handleOk} onCancel={planningModal.handleCancel}>
-                <Form onFinish={() => { alert('bine ba') }} layout={'vertical'}>
+                <Form layout={'vertical'}>
                   <Form.Item>
                     <Input
                       suffix='hours'
@@ -97,6 +92,7 @@ export function TimeTracker(props) {
                       placeholder="Number of hours"
                       type='number'
                       max={8}
+                      value={plannedWorkingTimeForm.duration}
                       onChange={planningModal.onDurationchange}
                     />
                   </Form.Item>

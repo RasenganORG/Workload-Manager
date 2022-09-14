@@ -14,16 +14,19 @@ export default function Comments(props) {
   const deleteComment = (commentId) => {
     setShowSaveButton(true)
     //find the comment that we want to deleted using the comment id
-    const indexToBeDeleted = formData.comments.findIndex(comment => {
+    const indexToBeDeleted = formData.taskData.comments.findIndex(comment => {
       return commentId === comment.id
     })
-    const updatedComments = [...formData.comments]
+    const updatedComments = [...formData.taskData.comments]
 
     updatedComments.splice(indexToBeDeleted, 1)
 
     setFormData((prevState) => ({
       ...prevState,
-      comments: updatedComments
+      taskData: {
+        ...prevState.taskData,
+        comments: updatedComments
+      }
     }))
 
   }
@@ -41,12 +44,16 @@ export default function Comments(props) {
       comment: newComment,
       timestamp: moment().format('YYYY-MM-DD HH:mm')
     }
+    const updatedComments = [...formData.taskData.comments];
+
+    updatedComments.push(comment)
+
     setFormData((prevState) => ({
       ...prevState,
-      comments: [
-        ...prevState.comments,
-        comment
-      ]
+      taskData: {
+        ...prevState.taskData,
+        comments: updatedComments
+      }
     }))
   }
   const generateComment = (user, comment, timestamp, index, id) => {
@@ -74,13 +81,13 @@ export default function Comments(props) {
   return (
     <Row gutter={[16, 16]}>
       <Col span={24} style={{ textAlign: 'left' }}>
-        {formData.comments ?
-          formData.comments.length != 0 ? <p>Comments</p> : ''
+        {formData.taskData.comments ?
+          formData.taskData.comments.length != 0 ? <p>Comments</p> : ''
           :
           ''
         }
       </Col>
-      {formData.comments ? formData.comments.map((comment, index) => {
+      {formData.taskData.comments ? formData.taskData.comments.map((comment, index) => {
         return generateComment(comment.user, comment.comment, comment.timestamp, index, comment.id)
       })
         : ''}

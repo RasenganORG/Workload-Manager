@@ -6,18 +6,18 @@ import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { getAllUsers } from '../../../../features/users/userSlice';
-import { getAllUTPs } from '../../../../features/users_tasks_projects/user_task_projectSlice';
+import { getAllTasks } from '../../../../features/tasks/tasksSlice';
 
 export default function Statistics() {
   const dispatch = useDispatch()
   const [selectedUsers, setSelectedUsers] = useState([])
   const [displayedTimePeriod, setDisplayedTimePeriod] = useState('currentWeek')
   const { userList } = useSelector(state => state.users)
-  const { users_tasks_projects } = useSelector(state => state.users_tasks_projects)
+  const { tasks } = useSelector(state => state.tasks)
 
   useEffect(() => {
     dispatch(getAllUsers())
-    dispatch(getAllUTPs())
+    dispatch(getAllTasks())
   }, [])
   useEffect(() => {
     if (userList) {
@@ -81,9 +81,8 @@ export default function Statistics() {
   const getTasksByUser = () => {
     const tasksByUser = []
     const users = userList?.filter(user => selectedUsers.includes(user.id))
-
     users?.forEach((user) => {
-      const userTasks = users_tasks_projects?.filter(utp => utp.userId === user.id)
+      const userTasks = tasks?.filter(task => task.asigneeId === user.id)
       tasksByUser.push({ name: user.name, userId: user.id, tasks: userTasks })
     })
 

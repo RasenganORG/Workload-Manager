@@ -6,13 +6,12 @@ import Spinner from '../../../../Spinner';
 import { Layout, Menu, Row, PageHeader, Button, Breadcrumb } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { Outlet, Link } from "react-router-dom";
-import { getUTP } from '../../../../../features/users_tasks_projects/user_task_projectSlice';
 import { getAllUsers } from '../../../../../features/users/userSlice';
+import { getAllTasks } from '../../../../../features/tasks/tasksSlice';
 
 export default function ProjectItem() {
   const pathParams = useParams()
   const dispatch = useDispatch()
-
   const { currentProject, isLoading } = useSelector(
     (state) => state.projects
   )
@@ -21,7 +20,7 @@ export default function ProjectItem() {
   useEffect(() => {
     dispatch(getProjectItem(pathParams.projectId))
     dispatch(getAllUsers())
-    dispatch(getUTP())
+    dispatch(getAllTasks())
 
   }, [currentProject.isSuccess])
   const menuItems = [
@@ -39,7 +38,8 @@ export default function ProjectItem() {
     }
   ]
 
-
+  let href = window.location.href.split('/')
+  href = href[5]
 
   if (isLoading) {
     return <Spinner />
@@ -81,14 +81,13 @@ export default function ProjectItem() {
             </Row>
 
             <Row>
-              <Menu defaultSelectedKeys={'tasks'} style={{ flex: 'auto' }} mode='horizontal' items={menuItems} />
+              <Menu defaultSelectedKeys={href} style={{ flex: 'auto' }} mode='horizontal' items={menuItems} />
               <Menu mode='horizontal' selectable={false} items={
                 [{
                   key: "ye",
                   label: <Link to="edit-project">Edit project <EditOutlined /></Link>,
                 }]
               } />
-
             </Row>
 
             <Row className="projectContent">

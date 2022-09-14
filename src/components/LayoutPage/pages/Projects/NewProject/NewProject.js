@@ -3,7 +3,7 @@ import TextArea from "antd/lib/input/TextArea"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
-import { addProject } from "../../../../../features/projects/projectsSlice"
+import { addProject, getProjects } from "../../../../../features/projects/projectsSlice"
 import { getAllUsers } from "../../../../../features/users/userSlice"
 import { getBillingOptions } from "../../../../../features/billing/billingSlice"
 
@@ -37,6 +37,7 @@ export default function NewProject() {
   }
   const onSubmit = () => {
     dispatch(addProject(formData))
+    dispatch(getProjects())
     navigate('/')
   }
 

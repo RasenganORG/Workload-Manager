@@ -13,14 +13,14 @@ export default function ProjectStatistics() {
   const params = useParams()
   const dispatch = useDispatch()
   const { project, isSuccess } = useSelector(state => state.projects.currentProject)
-  const { users_tasks_projects } = useSelector(state => state.users_tasks_projects)
+  const { tasks } = useSelector(state => state.tasks)
   const userList = useSelector(state => state.users.userList)
   const [highchartValues, setHighchartValues] = useState({})
   //https://stackoverflow.com/questions/72393755/calendar-ant-design-how-to-show-events-with-variable-datesco
-  const formattedTasks = project.tasks ? project.tasks.map(task => {
+  const formattedTasks = tasks ? tasks.map(task => {
     return {
       id: task.id,
-      content: task.title,
+      content: task.taskData.title,
       date: moment(task.creationDate).format("DD/MM/YYYY")
     }
   }) : []
@@ -40,18 +40,17 @@ export default function ProjectStatistics() {
       pendingTasks: []
     }
 
-    users_tasks_projects.forEach((utp) => {
-      if (utp.userId === userId) {
-        if (utp.taskStatus === true) {
-          userTasks.completedTasks.push(utp)
+    tasks?.forEach((task) => {
+      if (task.asigneeId === userId) {
+        if (task.taskData.isTaskCompleted === true) {
+          userTasks.completedTasks.push(task)
         } else {
-          userTasks.pendingTasks.push(utp)
+          userTasks.pendingTasks.push(task)
         }
       }
     })
     return userTasks
   }
-
   const generateHighchartsValues = () => {
     const totalTasks = [];
     const completedTasks = [];
@@ -108,7 +107,6 @@ export default function ProjectStatistics() {
   const dateCellRender = (value) => {
     const stringValue = value.format("DD/MM/yyyy");
     const listData = formattedTasks.filter(task => task.date === stringValue)
-
     return (
       <ul className="events">
         {listData.map((item) => (
@@ -182,7 +180,7 @@ export default function ProjectStatistics() {
             />
 
             {/* <UserStatistics />  to create a components*/}
-            {userList && project.usersAssigned && users_tasks_projects ? filteredUsers.map((user, index) => {
+            {userList && project.usersAssigned && tasks ? filteredUsers.map((user, index) => {
               return userGenerator(user.name, user.phoneNumber, user.email, user.id, index)
             }) : <p>No users added yet</p>}
           </div>

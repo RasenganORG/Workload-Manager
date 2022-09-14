@@ -1,17 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import utpService from "./users_tasks_projectsService";
+import taskService from "./tasksService";
 
 const initialState = {
-  users_tasks_projects: null,
+  tasks: null,
   isError: false,
   isSuccess: false,
   isLoading: true,
+  reloadTasks: true,
   message: ''
 }
 
-export const addUTP = createAsyncThunk('user_task_project/add', async (utp, thunkAPI) => {
+export const addTask = createAsyncThunk('tasks/add', async (task, thunkAPI) => {
   try {
-    return await utpService.addUTP(utp)
+    return await taskService.addTask(task)
   } catch (error) {
     const message =
       (error.response &&
@@ -23,9 +24,9 @@ export const addUTP = createAsyncThunk('user_task_project/add', async (utp, thun
   }
 })
 
-export const getAllUTPs = createAsyncThunk('user_task_project/getAll', async (utp, thunkAPI) => {
+export const getAllTasks = createAsyncThunk('tasks/getAll', async (task, thunkAPI) => {
   try {
-    return await utpService.getAllUTPs()
+    return await taskService.getAllTasks()
   } catch (error) {
     const message =
       (error.response &&
@@ -37,9 +38,9 @@ export const getAllUTPs = createAsyncThunk('user_task_project/getAll', async (ut
   }
 })
 
-export const getUTP = createAsyncThunk('user_task_project/get', async (utp, thunkAPI) => {
+export const getTask = createAsyncThunk('tasks/get', async (task, thunkAPI) => {
   try {
-    return await utpService.getUTP()
+    return await taskService.getTask()
   } catch (error) {
     const message =
       (error.response &&
@@ -51,10 +52,10 @@ export const getUTP = createAsyncThunk('user_task_project/get', async (utp, thun
   }
 })
 
-export const updateUTP = createAsyncThunk('user_task_project/update', async (utpInfo, thunkAPI) => {
+export const updateTask = createAsyncThunk('tasks/update', async (taskInfo, thunkAPI) => {
   try {
-    const { utpData, utpId } = utpInfo
-    return await utpService.updateUTP(utpData, utpId)
+    const { taskData, taskId } = taskInfo
+    return await taskService.updateTask(taskData, taskId)
   } catch (error) {
     const message =
       (error.response &&
@@ -66,9 +67,9 @@ export const updateUTP = createAsyncThunk('user_task_project/update', async (utp
   }
 })
 
-export const deleteUTP = createAsyncThunk('user_task_project/delete', async (utpId, thunkAPI) => {
+export const deleteTask = createAsyncThunk('tasks/delete', async (taskId, thunkAPI) => {
   try {
-    return await utpService.deleteUTP(utpId)
+    return await taskService.deleteTask(taskId)
   } catch (error) {
     const message =
       (error.response &&
@@ -80,9 +81,9 @@ export const deleteUTP = createAsyncThunk('user_task_project/delete', async (utp
   }
 })
 
-export const deleteProjectUTP = createAsyncThunk('user_task_project/deleteProject', async (projectId, thunkAPI) => {
+export const deleteProjectTasks = createAsyncThunk('tasks/deleteProject', async (projectId, thunkAPI) => {
   try {
-    return await utpService.deleteProjectUTP(projectId)
+    return await taskService.deleteProjectTasks(projectId)
   } catch (error) {
     const message =
       (error.response &&
@@ -94,11 +95,11 @@ export const deleteProjectUTP = createAsyncThunk('user_task_project/deleteProjec
   }
 })
 
-export const removeUsersFromUTPs = createAsyncThunk('user_task_project/removeUsers', async (data, thunkAPI) => {
+export const removeUsersFromTasks = createAsyncThunk('tasks/removeUsers', async (data, thunkAPI) => {
   try {
     const { usersArr, projectId } = data
 
-    return await utpService.removeUsersFromUTPs(usersArr, projectId)
+    return await taskService.removeUsersFromTasks(usersArr, projectId)
   } catch (error) {
     const message =
       (error.response &&
@@ -110,8 +111,8 @@ export const removeUsersFromUTPs = createAsyncThunk('user_task_project/removeUse
   }
 })
 
-export const utpSlice = createSlice({
-  name: 'users_tasks_projects',
+export const tasksSlice = createSlice({
+  name: 'tasks',
   initialState,
   reducers: {
     reset: (state) => {
@@ -119,68 +120,78 @@ export const utpSlice = createSlice({
       state.isError = false
       state.isSuccess = false
       state.message = ''
-      state.users_tasks_projects = null
+      state.tasks = null
     },
+    resetReloadTasks: (state) => {
+      state.reloadTasks = false
+    },
+    resetTasksSuccess: (state) => {
+      state.isSuccess = false
+    }
   },
   extraReducers: (builder) => {
     builder
-      .addCase(addUTP.pending, (state) => {
+      .addCase(addTask.pending, (state) => {
         state.isLoading = true
       })
-      .addCase(addUTP.fulfilled, (state, action) => {
+      .addCase(addTask.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
+        state.reloadTasks = true
+
       })
-      .addCase(addUTP.rejected, (state, action) => {
+      .addCase(addTask.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload
       })
-      .addCase(getAllUTPs.pending, (state) => {
+      .addCase(getAllTasks.pending, (state) => {
         state.isLoading = true
       })
-      .addCase(getAllUTPs.fulfilled, (state, action) => {
+      .addCase(getAllTasks.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
-        state.users_tasks_projects = action.payload
+        state.tasks = action.payload
       })
-      .addCase(getAllUTPs.rejected, (state, action) => {
+      .addCase(getAllTasks.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload
       })
-      .addCase(deleteProjectUTP.pending, (state) => {
+      .addCase(deleteProjectTasks.pending, (state) => {
         state.isLoading = true
       })
-      .addCase(deleteProjectUTP.fulfilled, (state, action) => {
+      .addCase(deleteProjectTasks.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
       })
-      .addCase(deleteProjectUTP.rejected, (state, action) => {
+      .addCase(deleteProjectTasks.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload
       })
-      .addCase(updateUTP.pending, (state) => {
+      .addCase(updateTask.pending, (state) => {
         state.isLoading = true
+        state.reloadTasks = true
+
       })
-      .addCase(updateUTP.fulfilled, (state, action) => {
+      .addCase(updateTask.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
       })
-      .addCase(updateUTP.rejected, (state, action) => {
+      .addCase(updateTask.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload
       })
-      .addCase(removeUsersFromUTPs.pending, (state) => {
+      .addCase(removeUsersFromTasks.pending, (state) => {
         state.isLoading = true
       })
-      .addCase(removeUsersFromUTPs.fulfilled, (state, action) => {
+      .addCase(removeUsersFromTasks.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
       })
-      .addCase(removeUsersFromUTPs.rejected, (state, action) => {
+      .addCase(removeUsersFromTasks.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload
@@ -189,6 +200,7 @@ export const utpSlice = createSlice({
   }
 })
 
-export const utpActions = utpSlice.actions
-export const reset = utpService.actions
-export default utpSlice.reducer
+export const tasksActions = tasksSlice.actions
+export const { reset, resetReloadTasks, resetTasksSuccess } = tasksSlice.actions
+
+export default tasksSlice.reducer

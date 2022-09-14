@@ -13,7 +13,7 @@ export default function Content(props) {
   // const { comments } = formData
   const { viewMode } = props.display
   const { onInputChange, onSelectChange } = props.eventHandlers
-  const { description, creationDate } = formData
+  const { description, creationDate } = formData.taskData
   const { userList } = useSelector(state => state.users)
   const { project } = useSelector(state => state.projects.currentProject)
   //we filter the users that are assign to the project and return an array with all the users assigned
@@ -55,7 +55,7 @@ export default function Content(props) {
             style={{ textAlign: 'left ' }}
           >
             <Form.Item label="Status:" >
-              <Select onChange={(e) => { onSelectChange(e, 'queue') }} value={formData.queue}>
+              <Select onChange={(e) => { onSelectChange(e, 'queue') }} value={formData.taskData.queue}>
                 <Select.Option value="Sprint">Sprint</Select.Option>
                 <Select.Option value="In Progress">In Progress</Select.Option>
                 <Select.Option value="Blocked">Blocked</Select.Option>
@@ -64,7 +64,7 @@ export default function Content(props) {
               </Select>
             </Form.Item>
             <Form.Item label="Complexity:" >
-              <Select onChange={(e) => { onSelectChange(e, 'complexity') }} value={formData.complexity}>
+              <Select onChange={(e) => { onSelectChange(e, 'complexity') }} value={formData.taskData.complexity}>
                 <Select.Option value="Low complexity">Low complexity</Select.Option>
                 <Select.Option value="Medium complexity">Medium complexity</Select.Option>
                 <Select.Option value="High complexity">High complexity</Select.Option>
@@ -80,14 +80,14 @@ export default function Content(props) {
             style={{ textAlign: 'left ' }}
           >
             <Form.Item label="Priority:" >
-              <Select onChange={(e) => { onSelectChange(e, 'priority') }} value={formData.priority}>
+              <Select onChange={(e) => { onSelectChange(e, 'priority') }} value={formData.taskData.priority}>
                 <Select.Option value="Low priority">Low priority</Select.Option>
                 <Select.Option value="Medium priority">Medium priority</Select.Option>
                 <Select.Option value="High Priority">High Priority</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item label="Assigned:">
-              <Select value={formData.asignee} onChange={(e) => { onSelectChange(e, 'asignee') }}>
+              <Select value={formData.asigneeId} onChange={(e) => { onSelectChange(e, 'asigneeId') }}>
                 {usersAssigned ? usersAssigned.map((user, index) => {
                   return <Select.Option key={index} value={user.id}>{user.name}</Select.Option>
                 }) : ''}

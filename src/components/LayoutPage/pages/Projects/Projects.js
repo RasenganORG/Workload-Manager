@@ -5,35 +5,36 @@ import { useSelector, useDispatch } from 'react-redux';
 import Spinner from '../../../Spinner';
 import { getProjects, reset } from '../../../../features/projects/projectsSlice';
 import { getAllUsers } from '../../../../features/users/userSlice';
-import { getAllUTPs } from '../../../../features/users_tasks_projects/user_task_projectSlice';
+import { getAllTasks } from '../../../../features/tasks/tasksSlice';
 export default function Projects() {
   const { projectList, isLoading, isError, isSuccess, message } = useSelector(state => state.projects)
   const dispatch = useDispatch()
-  const { users_tasks_projects } = useSelector(state => state.users_tasks_projects)
+  const { tasks } = useSelector(state => state.tasks)
 
   useEffect(() => {
     dispatch(getProjects())
     dispatch(getAllUsers())
-    dispatch(getAllUTPs())
+    dispatch(getAllTasks())
   }, [dispatch])
 
 
 
   const generateProjectCard = (project, iterationId) => {
-    const { id, title, description, tasks, status } = project
+    const { id, title, description, status } = project
+
     const projectTasksData = [
       {
         title: "Backlog tasks",
-        taskNumber: tasks ? tasks.filter((task) => task.queue == 'Backlog').length : 0
+        taskNumber: tasks ? tasks.filter((task) => task.taskData.queue == 'Backlog').length : 0
       },
       {
         title: "Tasks left in Sprint",
-        taskNumber: tasks ? tasks.filter((task) => task.queue == 'Sprint').length : 0
+        taskNumber: tasks ? tasks.filter((task) => task.taskData.queue == 'Sprint').length : 0
 
       },
       {
         title: "Completed  tasks",
-        taskNumber: tasks ? tasks.filter((task) => task.queue == 'Completed').length : 0
+        taskNumber: tasks ? tasks.filter((task) => task.taskData.queue == 'Completed').length : 0
       }
 
     ];
