@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams, useOutletContext } from 'react-router'
 import { useSelector, useDispatch } from 'react-redux';
 import { getProjectItem } from '../../../../../features/projects/projectsSlice';
 import Spinner from '../../../../Spinner';
@@ -12,6 +12,8 @@ import { getAllTasks } from '../../../../../features/tasks/tasksSlice';
 export default function ProjectItem() {
   const pathParams = useParams()
   const dispatch = useDispatch()
+  const [projectTasks, setProjectTasks] = useState('')
+  const projectTasksData = { projectTasks, setProjectTasks }
   const { currentProject, isLoading } = useSelector(
     (state) => state.projects
   )
@@ -91,7 +93,7 @@ export default function ProjectItem() {
             </Row>
 
             <Row className="projectContent">
-              <Outlet />
+              <Outlet context={projectTasksData} />
             </Row>
           </Layout.Content>
         </Layout>

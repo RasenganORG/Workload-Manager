@@ -6,10 +6,12 @@ import { useDispatch, useSelector } from "react-redux"
 import { CloseOutlined } from '@ant-design/icons';
 import { getAllUsers } from "../../../../../../../features/users/userSlice"
 import { addTask } from "../../../../../../../features/tasks/tasksSlice"
-
+import { getAllTasks } from "../../../../../../../features/tasks/tasksSlice"
 export default function NewTask() {
   const params = useParams()
   const { user } = useSelector(state => state.auth)
+  const { tasks } = useSelector(state => state.tasks)
+
   const [formData, setFormData] = useState({
     asigneeId: '',
     projectId: params.projectId,
@@ -33,6 +35,8 @@ export default function NewTask() {
       }
     }
   })
+  const { projectTasks, setProjectTasks } = useOutletContext()
+
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { userList } = useSelector(state => state.users)
@@ -83,6 +87,8 @@ export default function NewTask() {
 
   useEffect(() => {
     dispatch(getAllUsers())
+    dispatch(getAllTasks()).then(setProjectTasks(tasks?.filter(task => task.projectId == params.projectId)))
+
   }, [])
 
   return (

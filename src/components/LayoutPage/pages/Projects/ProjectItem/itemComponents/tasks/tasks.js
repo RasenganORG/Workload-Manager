@@ -2,21 +2,21 @@ import Board from 'react-trello'
 import { Layout, Skeleton, Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons';
 
-import { Outlet, useNavigate, useParams } from 'react-router-dom'
+import { Outlet, useNavigate, useOutletContext, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from "react-redux"
-import { deleteTask } from '../../../../../../../features/projects/projectsSlice';
+import { deleteTask, updateProject } from '../../../../../../../features/projects/projectsSlice';
 // import { updateTask } from '../../../../../../../features/projects/projectsSlice';
 import { useEffect, useState } from 'react';
 import { updateTask, getAllTasks } from '../../../../../../../features/tasks/tasksSlice';
 import { resetReloadTasks, resetTasksSuccess } from '../../../../../../../features/tasks/tasksSlice';
 
-export default function Tasks() {
+export default function Tasks(props) {
   const params = useParams()
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const { tasks, isLoading, reloadTasks, isSuccess } = useSelector(state => state.tasks)
   const { userList } = useSelector(state => state.users)
-  const projectTasks = tasks?.filter(task => task.projectId == params.projectId)
+  const { projectTasks, setProjectTasks } = useOutletContext(); // <-- access context value
 
   //get project tasks and filter them by the queue
   const backlogTasks = projectTasks ? projectTasks.filter((task) => task.taskData.queue === 'Backlog') : 0
@@ -25,7 +25,12 @@ export default function Tasks() {
   const completedTasks = projectTasks ? projectTasks.filter((task) => task.taskData.queue === 'Completed') : 0
   const blockedTasks = projectTasks ? projectTasks.filter((task) => task.taskData.queue === 'Blocked') : 0
 
-
+  const updateProjectTasksLocally = (taskId, currentTask, newTask) => {
+    const updateProjectTasks = [...projectTasks]
+    const taskIndex = updateProjectTasks.findIndex(task => task.id === currentTask.id)
+    updateProjectTasks[taskIndex] = newTask
+    setProjectTasks(updateProjectTasks)
+  }
 
   const handleLaneChange = (fromLaneId, toLaneId, cardId) => {
     const currentTask = tasks.find(task => task.id == cardId)
@@ -40,6 +45,9 @@ export default function Tasks() {
         isTaskCompleted: isTaskCompleted()
       },
     }
+
+    updateProjectTasksLocally(cardId, currentTask, newTask)
+
     dispatch(updateTask({ taskData: newTask, taskId: cardId }))
   }
   const taskGenerator = (task) => {
@@ -47,14 +55,7 @@ export default function Tasks() {
     //so that the name can be displayed on the task 
     const userObject = userList?.find(user => user.id === task.asigneeId)
 
-    if (isLoading) {
-      return {
-        id: '',
-        title: '',
-        description: <Skeleton active paragraph={false} />,
-        label: ''
-      }
-    }
+
     return {
       id: task.id.toString(),
       title: task.taskData.title,
@@ -134,24 +135,12 @@ export default function Tasks() {
   }
   useEffect(() => {
     dispatch(getAllTasks())
-    if (reloadTasks) {
-      dispatch(resetReloadTasks())
-    }
-    if (isSuccess) {
-      dispatch(getAllTasks())
-      dispatch(resetTasksSuccess())
-    }
+  }, [dispatch, params.id, window.location.href])
 
+  useEffect(() => {
+    tasks ? setProjectTasks(tasks?.filter(task => task.projectId == params.projectId)) : setProjectTasks([]);
+  }, [tasks])
 
-  }, [dispatch, params.id, reloadTasks])
-
-  if (isLoading) {
-    return (
-      <Layout>
-        <Spin indicator={<LoadingOutlined style={{ marginTop: '5rem', fontSize: '5rem' }} spin />} />
-      </Layout>
-    )
-  }
   return (
     <Layout>
       <Board
