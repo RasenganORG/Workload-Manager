@@ -10,7 +10,7 @@ import Title from './task components/title';
 import UpdateButtons from './task components/updateButtons';
 import { deleteTask, updateTask } from '../../../../../../../features/tasks/tasksSlice';
 import { TimeTracker } from './timeTracker';
-import { current } from '@reduxjs/toolkit';
+import { addLoggedTime } from '../../../../../../../features/loggedTime/LoggedTimeSlice';
 
 export default function Task() {
   const [currentTask, setCurrentTask] = useState({
@@ -28,8 +28,15 @@ export default function Task() {
     asigneeId: currentTask?.asigneeId,
     taskData: currentTask?.taskData,
   })
+  const [loggedTimeForm, setLoggedTimeForm] = useState({
+    task: {
+      loggedHours: '',
+      message: ''
+    }
+  })
 
   const form = { formData, setFormData }
+  const logTimeForm = { loggedTimeForm, setLoggedTimeForm }
   const displaySaveButton = { showSaveButton, setShowSaveButton }
   const display = { viewMode, setViewMode }
   const params = useParams()
@@ -88,7 +95,7 @@ export default function Task() {
   // event handlers
   const handleSave = (e) => {
     dispatch(updateTask({ taskData: formData, taskId: formData.id }))
-
+    dispatch(addLoggedTime(loggedTimeForm))
     setViewMode('readOnly')
     navigate('../')
   }
@@ -139,6 +146,8 @@ export default function Task() {
     }
 
   }, [userList, currentTask])
+
+
   return (
     <Card title={<Title display={display} eventHandlers={eventHandlers} form={form} />} style={{ width: "100%", margin: "16px 0" }}>
       <Content
@@ -160,6 +169,7 @@ export default function Task() {
             saveButton={displaySaveButton}
             display={display}
             form={form}
+            logTimeForm={logTimeForm}
           />
         </Col>
       </Row>
