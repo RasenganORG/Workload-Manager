@@ -21,6 +21,7 @@ import NewTask from './components/LayoutPage/pages/Projects/ProjectItem/itemComp
 import Tasks from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/tasks';
 import Task from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/task';
 import EditProject from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/editProject';
+import LoggedTime from './components/LayoutPage/pages/Projects/LoggedTime';
 function App() {
   return (
 
@@ -36,8 +37,11 @@ function App() {
               <Route path="about" element={<AboutProject />} />
               <Route path="add-task" element={<NewTask />} />
               <Route path="statistics" element={<ProjectStatistics />} />
+              <Route path="time-log" element={<LoggedTime />} />
+
               <Route path="tasks" element={<Tasks />} />
               <Route path="tasks/:taskId" element={<Task />} />
+              <Route path="tasks/:taskId/time-log" element={<LoggedTime />} />
               <Route path="edit-project" element={<EditProject />} />
 
 

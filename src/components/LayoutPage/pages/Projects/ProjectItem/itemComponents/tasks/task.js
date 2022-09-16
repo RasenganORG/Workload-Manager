@@ -10,7 +10,7 @@ import Title from './task components/title';
 import UpdateButtons from './task components/updateButtons';
 import { deleteTask, updateTask } from '../../../../../../../features/tasks/tasksSlice';
 import { TimeTracker } from './timeTracker';
-import { addLoggedTime } from '../../../../../../../features/loggedTime/LoggedTimeSlice';
+import { addLoggedTime, getLoggedTimeByTask, getAllLoggedTime } from '../../../../../../../features/loggedTime/LoggedTimeSlice';
 
 export default function Task() {
   const [currentTask, setCurrentTask] = useState({
@@ -94,8 +94,9 @@ export default function Task() {
 
   // event handlers
   const handleSave = (e) => {
-    dispatch(updateTask({ taskData: formData, taskId: formData.id }))
     dispatch(addLoggedTime(loggedTimeForm))
+    dispatch(updateTask({ taskData: formData, taskId: formData.id }))
+    dispatch(getAllLoggedTime())
     setViewMode('readOnly')
     navigate('../')
   }
@@ -113,6 +114,8 @@ export default function Task() {
   const eventHandlers = { onInputChange, onSelectChange, handleSave, handleEditButton, handleDelete }
 
   useEffect(() => {
+    dispatch(getLoggedTimeByTask(params.taskId))
+
     setCurrentTask(getTask(tasks))
     dispatch(getAllUsers())
   }, [])

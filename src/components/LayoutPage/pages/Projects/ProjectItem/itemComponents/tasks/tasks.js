@@ -46,7 +46,7 @@ export default function Tasks(props) {
       },
     }
 
-    updateProjectTasksLocally(cardId, currentTask, newTask)
+    updateProjectTasksLocally(cardId, currentTask, newTask) //we store a local copy of the projects task locally in order to avoid fetching the tasks from back end once a task changes lanes
 
     dispatch(updateTask({ taskData: newTask, taskId: cardId }))
   }

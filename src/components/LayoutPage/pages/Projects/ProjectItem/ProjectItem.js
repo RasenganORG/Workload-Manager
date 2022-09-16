@@ -8,6 +8,7 @@ import { EditOutlined } from '@ant-design/icons';
 import { Outlet, Link } from "react-router-dom";
 import { getAllUsers } from '../../../../../features/users/userSlice';
 import { getAllTasks } from '../../../../../features/tasks/tasksSlice';
+import { getLoggedTimeByProject } from '../../../../../features/loggedTime/LoggedTimeSlice';
 
 export default function ProjectItem() {
   const pathParams = useParams()
@@ -20,6 +21,7 @@ export default function ProjectItem() {
   const { project } = currentProject
 
   useEffect(() => {
+    dispatch(getLoggedTimeByProject(pathParams.projectId))
     dispatch(getProjectItem(pathParams.projectId))
     dispatch(getAllUsers())
     dispatch(getAllTasks())
@@ -37,6 +39,10 @@ export default function ProjectItem() {
     {
       label: <Link to="statistics">Project statistics</Link>,
       key: 'statistics'
+    },
+    {
+      label: <Link to="time-log">Project time log</Link>,
+      key: 'time-log'
     }
   ]
 

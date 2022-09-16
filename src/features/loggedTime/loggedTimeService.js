@@ -9,14 +9,26 @@ const addLoggedTime = async (data) => {
 }
 
 const getAllLoggedTime = async () => {
-  const response = await axios.get(`${LOGGED_TIME_URL}get-all`)
+  const response = await axios.get(`${LOGGED_TIME_URL}getAll`)
 
   return response.data
 }
 
+const getLoggedTimeByTask = async (taskId) => {
+  const response = await axios.get(`${LOGGED_TIME_URL}byTask/${taskId}`)
+  return response.data
+}
+
+const getLoggedTimeByProject = async (projectId) => {
+  const response = await axios.get(`${LOGGED_TIME_URL}byProject/${projectId}`)
+
+  return response.data
+}
 const loggedTimeService = {
   addLoggedTime,
-  getAllLoggedTime
+  getAllLoggedTime,
+  getLoggedTimeByTask,
+  getLoggedTimeByProject
 }
 
 export default loggedTimeService

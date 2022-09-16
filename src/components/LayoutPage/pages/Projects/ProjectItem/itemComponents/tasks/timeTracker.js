@@ -31,7 +31,6 @@ export function TimeTracker(props) {
           ...prevState,
           userId: loggedUserId,
           projectId: params.projectId,
-          date: new Date(),
           billing: project.billingOption,
           task: {
             ...prevState.task,
@@ -42,7 +41,7 @@ export function TimeTracker(props) {
         setIsLogWorkModalOpen(false)
       }
     },
-    handleChange: (e) => {
+    onInputChange: (e) => {
       setLoggedTimeForm((prevState) => ({
         ...prevState,
         task: {
@@ -50,6 +49,14 @@ export function TimeTracker(props) {
           [e.target.name]: e.target.value
         }
       }))
+    },
+    onDateChange: (date) => {
+      console.log(date)
+      setLoggedTimeForm((prevState) => ({
+        ...prevState,
+        date: date
+      }))
+      console.log(loggedTimeForm)
     },
     resetState: () => { },
 
@@ -120,7 +127,16 @@ export function TimeTracker(props) {
                   name='loggedHours'
                   type='number'
                   value={loggedTimeForm.task.loggedHours}
-                  onChange={logWorkModal.handleChange}
+                  onChange={logWorkModal.onInputChange}
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <DatePicker
+                  style={{
+                    width: '100%',
+                  }}
+                  onChange={logWorkModal.onDateChange}
                 />
               </Form.Item>
               <Form.Item>
@@ -134,7 +150,7 @@ export function TimeTracker(props) {
                   type='number'
                   name='message'
                   value={loggedTimeForm.task.message}
-                  onChange={logWorkModal.handleChange}
+                  onChange={logWorkModal.onInputChange}
                 />
               </Form.Item>
             </Modal>
