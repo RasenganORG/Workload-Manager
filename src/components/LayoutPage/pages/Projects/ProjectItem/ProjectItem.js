@@ -9,6 +9,7 @@ import { Outlet, Link } from "react-router-dom";
 import { getAllUsers } from '../../../../../features/users/userSlice';
 import { getAllTasks } from '../../../../../features/tasks/tasksSlice';
 import { getLoggedTimeByProject } from '../../../../../features/loggedTime/LoggedTimeSlice';
+import { getProjectUsers } from '../../../../../features/userProject/userProjectSlice';
 
 export default function ProjectItem() {
   const pathParams = useParams()
@@ -23,6 +24,7 @@ export default function ProjectItem() {
   useEffect(() => {
     dispatch(getLoggedTimeByProject(pathParams.projectId))
     dispatch(getProjectItem(pathParams.projectId))
+    dispatch(getProjectUsers(pathParams.projectId))
     dispatch(getAllUsers())
     dispatch(getAllTasks())
 

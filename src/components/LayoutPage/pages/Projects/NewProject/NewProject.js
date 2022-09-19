@@ -1,28 +1,41 @@
-import { Layout, Card, Form, Input, Button, Select, DatePicker } from "antd"
+import { Layout, Card, Form, Input, Button, Select, DatePicker, Tag, Modal } from "antd"
+import { CloseOutlined } from '@ant-design/icons';
 import TextArea from "antd/lib/input/TextArea"
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { addProject, getProjects } from "../../../../../features/projects/projectsSlice"
 import { getAllUsers } from "../../../../../features/users/userSlice"
 import { getBillingOptions } from "../../../../../features/billing/billingSlice"
+import moment from "moment"
+import { addUserProject } from "../../../../../features/userProject/userProjectSlice";
+import { toast } from "react-toastify"
 
 export default function NewProject() {
+  const params = useParams()
+  let temporaryId = Date.now()
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    usersAssigned: [],
-    creationDate: '',
-    dueDate: '',
+    creationDate: moment(),
+    estimatedWorkingTime: [],
     colorLabel: 'none',
     billingOption: '',
     status: 'active',
-    tasks: null
+    temporaryId: temporaryId
+  })
+  const [assignedUsers, setAssignedUsers] = useState([])
+  const [currentUserAdded, setCurrentUserAdded] = useState({
+    userId: '',
+    availability: '',
+    projectId: '',
+    temporaryId: temporaryId
   })
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { userList } = useSelector(state => state.users)
   const billing = useSelector(state => state.billing)
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const onInputChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -35,12 +48,100 @@ export default function NewProject() {
       [inputName]: value
     }))
   }
+  const onDateRangeChange = (value) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      estimatedWorkingTime: {
+        start: value[0],
+        end: value[1]
+      }
+    }))
+  }
+
   const onSubmit = () => {
     dispatch(addProject(formData))
+    dispatch(addUserProject(assignedUsers))
     dispatch(getProjects())
     navigate('/')
   }
 
+  const userModal = {
+    showModal: () => {
+      setIsUserModalOpen(true);
+    },
+    handleOk: () => {
+      if (currentUserAdded.userId && currentUserAdded.availability) {
+        const newUserArr = assignedUsers;
+        newUserArr.push(currentUserAdded)
+        setAssignedUsers(newUserArr)
+        userModal.resetCurrentUser()
+        setIsUserModalOpen(false);
+
+      } else {
+        toast.error("Please complete all fields")
+      }
+    },
+    handleCancel: () => {
+      setIsUserModalOpen(false)
+      userModal.resetCurrentUser()
+    },
+    onChange: (value, inputName) => {
+      setCurrentUserAdded((prevState) => ({
+        ...prevState,
+        [inputName]: value
+      }))
+    },
+    resetCurrentUser: () => {
+      setCurrentUserAdded({ userId: '', availability: '' })
+    },
+    handleUserRemoval: (userId) => {
+      console.log(userId)
+      const newArray = [...assignedUsers]
+      const indexToRemove = newArray.findIndex(user => user.userId === userId)
+      newArray.splice(indexToRemove, 1)
+      setAssignedUsers(newArray)
+      console.log(newArray)
+    }
+
+
+  }
+  const generateUserSelect = () => {
+    const wasUserSelected = (userId) => {
+      const found = assignedUsers.find(user => user.userId === userId)
+      return found
+    }
+    const generateSelect = (key, userId, userName) => {
+      if (wasUserSelected(userId)) {
+        return (
+          <Select.Option disabled key={key} value={userId}>{userName}</Select.Option>
+        )
+      } else {
+        return (
+          <Select.Option key={key} value={userId}>{userName} </Select.Option>
+        )
+      }
+
+    }
+    return (
+      <Select
+        name="usersAssigned"
+        placeholder="User"
+        onChange={(value) => {
+          userModal.onChange(value, 'userId')
+        }}
+        style={{ width: '100%' }}
+        value={currentUserAdded.userId}
+      >
+        {userList ? userList.map((user, index) => {
+          return generateSelect(index, user.id, user.name)
+        }) : ''}
+      </Select>
+    )
+  }
+  const translatedUserIdToName = (userId) => {
+    const user = userList.find(user => user.id === userId)
+    return user.name
+  }
   useEffect(() => {
     dispatch(getAllUsers())
     dispatch(getBillingOptions())
@@ -50,6 +151,7 @@ export default function NewProject() {
     <Layout>
       <Layout.Content style={{ margin: "16px 0" }}>
         <Card title="Create a new project">
+          <button onClick={() => { console.log(formData); console.log(assignedUsers) }}></button>
           <Form
             layout="vertical"
             onFinish={() => onSubmit()}
@@ -94,30 +196,55 @@ export default function NewProject() {
             <Form.Item
               label="Add users"
               name="usersAssignedWrapper"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please add at lease one user to your project!',
-                },
-              ]}
+
               data-cy="addUsers"
             >
-              <Select
-                mode="multiple"
-                name="usersAssigned"
-                onChange={(value) => {
-                  onSelectChange(value, 'usersAssigned')
-                }}
-              >
-                {userList ? userList.map((user, index) => {
-                  return <Select.Option key={index} value={user.id}>{user.name}</Select.Option>
-                }) : ''}
-              </Select>
+
+              <div>
+                {assignedUsers.map((user, index) => {
+                  return <Tag
+                    style={{ fontSize: "1.1em", padding: "0.25em" }}
+                    key={index}
+                    data-id={user.userId}
+                    closable={false}
+                  >
+                    {translatedUserIdToName(user.userId)}
+                    <CloseOutlined style={{ marginLeft: '4px', cursor: 'pointer' }} onClick={(e) => userModal.handleUserRemoval(e.target.parentNode.parentNode.dataset.id)} />
+                  </Tag>
+                })}
+                <Button type="primary" onClick={() => userModal.showModal()}>Add user</Button>
+
+              </div>
+
+              <Modal title="Add user" visible={isUserModalOpen} onOk={userModal.handleOk} onCancel={userModal.handleCancel}>
+                <Form layout='vertical'>
+                  <Form.Item label="User to be added">
+                    {generateUserSelect()}
+                  </Form.Item>
+                  <Form.Item label="User availability for this project">
+                    <Input
+                      suffix='hours'
+                      style={{
+                        width: '100%',
+                        appearance: 'textfield !important'
+                      }}
+                      placeholder="Number of hours"
+                      type='number'
+                      max={8}
+                      min={1}
+                      value={currentUserAdded.availability}
+                      onChange={(e) => userModal.onChange(e.target.value, 'availability')}
+                    />
+                  </Form.Item>
+                </Form>
+              </Modal>
+
+
 
             </Form.Item>
 
             <Form.Item
-              label="Due date"
+              label="Estimated completation time"
               name="dueDateWrapper"
               rules={[
                 {
@@ -128,13 +255,12 @@ export default function NewProject() {
               data-cy="dueDateSelector"
 
             >
-              <DatePicker
-                name='dueDate'
-                style={{ width: '100%' }}
-                onChange={(value) => {
-                  onSelectChange(value.toDate(), 'dueDate')
-                }}
+              <DatePicker.RangePicker
+                defaultValue={[moment(), '']}
+                format={"DD/MM/YYYY"}
+                onChange={(value) => { onDateRangeChange(value) }}
               />
+
             </Form.Item>
             <Form.Item
               label="Color label"
@@ -178,6 +304,7 @@ export default function NewProject() {
                   return <Select.Option key={index} value={billingOption.billing}>{billingOption.billing}</Select.Option>
                 }) : ''}
               </Select>
+
             </Form.Item>
             <Form.Item data-cy="newProjectSubmitButton" >
               <Button type="primary" htmlType="submit">Create project</Button>
@@ -185,6 +312,6 @@ export default function NewProject() {
           </Form>
         </Card>
       </Layout.Content>
-    </Layout>
+    </Layout >
   )
 }
