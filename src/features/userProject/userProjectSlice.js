@@ -53,7 +53,6 @@ export const removeProjectUsers = createAsyncThunk('userProject/removeProjectUse
 
 export const removeUsersFromProject = createAsyncThunk('userProject/removeUsersFromProject', async (userData, thunkAPI) => {
   try {
-    console.log(userData)
     return await userProjectService.removeUsersFromProject(userData)
   } catch (error) {
     const message =

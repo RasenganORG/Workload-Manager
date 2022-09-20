@@ -230,6 +230,7 @@ export default function NewProject() {
                       onChange={(e) => userModal.onChange(e.target.value, 'availability')}
                     />
                   </Form.Item>
+
                 </Form>
               </Modal>
 
@@ -250,6 +251,7 @@ export default function NewProject() {
 
             >
               <DatePicker.RangePicker
+                allowClear={false}
                 defaultValue={[moment(), '']}
                 format={"DD/MM/YYYY"}
                 onChange={(value) => { onDateRangeChange(value) }}

@@ -292,6 +292,7 @@ export default function EditProject() {
               data-cy="dueDateSelector"
             >
               <DatePicker.RangePicker
+                allowClear={false}
                 value={[moment(formData.estimatedWorkingTime.start), moment(formData.estimatedWorkingTime.end)]}
                 format={"DD/MM/YYYY"}
                 onChange={(value) => { onDateRangeChange(value) }}

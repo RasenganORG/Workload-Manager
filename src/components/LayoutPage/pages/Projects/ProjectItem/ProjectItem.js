@@ -1,34 +1,119 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, useOutletContext } from 'react-router'
+import { useParams } from 'react-router'
 import { useSelector, useDispatch } from 'react-redux';
 import { getProjectItem } from '../../../../../features/projects/projectsSlice';
 import Spinner from '../../../../Spinner';
-import { Layout, Menu, Row, PageHeader, Button, Breadcrumb } from 'antd';
+import { Layout, Menu, Row, PageHeader, Button, Breadcrumb, Select, Col, Modal, Form, DatePicker, Input } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { Outlet, Link } from "react-router-dom";
 import { getAllUsers } from '../../../../../features/users/userSlice';
 import { getAllTasks } from '../../../../../features/tasks/tasksSlice';
 import { getLoggedTimeByProject } from '../../../../../features/loggedTime/LoggedTimeSlice';
 import { getProjectUsers } from '../../../../../features/userProject/userProjectSlice';
+import { addSprint, getSprintsByProject, updateCurrentSprintId } from '../../../../../features/sprint/sprintSlice';
+import { getBacklogItems } from '../../../../../features/backlog/backlogSlice';
+import moment from 'moment';
 
 export default function ProjectItem() {
   const pathParams = useParams()
   const dispatch = useDispatch()
   const [projectTasks, setProjectTasks] = useState('')
   const projectTasksData = { projectTasks, setProjectTasks }
-  const { currentProject, isLoading } = useSelector(
-    (state) => state.projects
-  )
+  const { currentProject, isLoading } = useSelector(state => state.projects)
+  const { sprints, currentSprintId } = useSelector(state => state.sprint)
   const { project } = currentProject
+  const [newSprint, setNewSprint] = useState({
+    projectId: pathParams.projectId,
+    name: '',
+    startDate: moment(),
+    endDate: null,
+    started: false
+  })
+
+  const onInputChange = (value) => {
+    setNewSprint((prevState) => ({
+      ...prevState,
+      name: value
+    }))
+    console.log(newSprint)
+  }
+
+  const onDateRangeChange = (value) => {
+    setNewSprint((prevState) => ({
+      ...prevState,
+      startDate: value[0],
+      endDate: value[1]
+    }))
+  }
+  const handleSprintChange = (e) => {
+    dispatch(updateCurrentSprintId(e))
+  }
 
   useEffect(() => {
     dispatch(getLoggedTimeByProject(pathParams.projectId))
     dispatch(getProjectItem(pathParams.projectId))
     dispatch(getProjectUsers(pathParams.projectId))
+    dispatch(getSprintsByProject(pathParams.projectId))
     dispatch(getAllUsers())
     dispatch(getAllTasks())
+    dispatch(getBacklogItems())
 
   }, [currentProject.isSuccess])
+
+  const updateRenderedSprints = async () => {
+    dispatch(addSprint(newSprint)).then(getSprintsByProject(pathParams.projectId))
+
+
+  }
+  useEffect(() => {
+    console.log("changed")
+  }, [currentSprintId])
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const generateSprintSelect = () => {
+
+    return (
+      <Select
+        style={{
+          width: '100%',
+          textAlign: 'left'
+        }}
+        onChange={handleSprintChange}
+      >
+        {sprints ? sprints.map((sprint, index) => {
+          return <Select.Option key={index} value={sprint.sprintId}>{sprint.name}</Select.Option>
+
+        }) : 'No sprints added'}
+
+      </Select>
+    )
+  }
+
+  const sprintModal = {
+    showModal: () => {
+      setIsModalOpen(true);
+    },
+    handleOk: () => {
+      updateRenderedSprints()
+      sprintModal.resetNewSprintForm()
+      setIsModalOpen(false);
+    },
+    handleCancel: () => {
+      sprintModal.resetNewSprintForm();
+      setIsModalOpen(false);
+    },
+    resetNewSprintForm: () => {
+      setNewSprint({
+        projectId: pathParams.projectId,
+        name: '',
+        startDate: moment(),
+        endDate: null,
+        started: false
+      })
+    }
+  }
+
   const menuItems = [
     {
       label: <Link to="tasks">Tasks</Link>,
@@ -80,7 +165,6 @@ export default function ProjectItem() {
               <PageHeader
                 className="site-page-header"
                 title={project ? project?.title : ''}
-              // subTitle={"Last updated: " + "2 hours ago"}
               />
 
               <Button type="primary" style={{ margin: "16px", display: "flex" }}>
@@ -98,8 +182,61 @@ export default function ProjectItem() {
                   label: <Link to="edit-project">Edit project <EditOutlined /></Link>,
                 }]
               } />
-            </Row>
 
+            </Row>
+            <Row>
+              <Col span={12} >
+                {generateSprintSelect()}
+              </Col>
+              <Col
+                span={6}
+                style={{ background: 'white', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', padding: '0 8px' }}
+              >
+                Select Sprint
+              </Col>
+              <Col
+                span={6}
+                style={{
+                  background: 'white', display: 'flex', justifyContent: 'flex-end', alignItems: 'center'
+                }}
+              >
+                <Button onClick={sprintModal.showModal}> Add a Sprint </Button>
+              </Col>
+
+              <Modal destroyOnClose={true} title="Create Sprint" visible={isModalOpen} onOk={sprintModal.handleOk} onCancel={sprintModal.handleCancel}>
+                <Form layout='vertical'>
+                  <button onClick={() => console.log(newSprint)}>test</button>
+                  <Form.Item label="Sprint name">
+                    <Input
+                      placeholder="Sprint name"
+                      value={newSprint.name}
+                      onChange={(e) => onInputChange(e.target.value)}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label="Estimated completation time"
+                    name="dueDateWrapper"
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Please add a due date for your project!'
+                      }
+                    ]}
+                    data-cy="dueDateSelector"
+
+                  >
+                    <DatePicker.RangePicker
+                      allowClear={false}
+                      defaultValue={[moment(), '']}
+                      format={"DD/MM/YYYY"}
+                      onChange={(value) => { onDateRangeChange(value) }}
+                    />
+
+                  </Form.Item>
+                </Form>
+              </Modal>
+
+            </Row>
             <Row className="projectContent">
               <Outlet context={projectTasksData} />
             </Row>
@@ -107,7 +244,7 @@ export default function ProjectItem() {
         </Layout>
       </Layout>
 
-    </div>
+    </div >
 
   )
 }

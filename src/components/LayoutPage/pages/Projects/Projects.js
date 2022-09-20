@@ -8,6 +8,8 @@ import { getAllUsers } from '../../../../features/users/userSlice';
 import { getAllTasks } from '../../../../features/tasks/tasksSlice';
 import { getAllProjectUserEntries } from '../../../../features/userProject/userProjectSlice';
 import { useState } from 'react';
+import { getBacklogItems } from '../../../../features/backlog/backlogSlice';
+
 import moment from 'moment';
 
 export default function Projects() {
@@ -23,6 +25,7 @@ export default function Projects() {
     dispatch(getAllUsers())
     dispatch(getAllTasks())
     dispatch(getAllProjectUserEntries())
+    dispatch(getBacklogItems())
   }, [dispatch])
 
 
@@ -33,7 +36,7 @@ export default function Projects() {
     const getAssignedUsers = () => {
       const users = [];
       userProjectEntriesAssigned?.forEach((userProject) => {
-        const fullUser = userList.find(user => user.id === userProject.userId)
+        const fullUser = userList?.find(user => user.id === userProject.userId)
         if (fullUser) {
           users.push(fullUser)
         }
@@ -57,7 +60,6 @@ export default function Projects() {
 
       return Math.round(parseInt(daysSinceProjectStarted) / parseInt(estimatedProjectDuration) * 100)
     }
-    console.log(title, getProjectCompletationPercent(), moment(estimatedWorkingTime.start).format('DD/MM/YYYY'), moment(estimatedWorkingTime.end).format('DD/MM/YYYY'))
     const generateUserAvatars = (user) => {
 
       return (

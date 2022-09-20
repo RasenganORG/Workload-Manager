@@ -11,6 +11,7 @@ export default function NewTask() {
   const params = useParams()
   const { user } = useSelector(state => state.auth)
   const { tasks } = useSelector(state => state.tasks)
+  const { backlogItems } = useSelector(state => state.backlog)
 
   const [formData, setFormData] = useState({
     asigneeId: '',
@@ -21,11 +22,13 @@ export default function NewTask() {
       creatorId: user?.id,
       dueDate: '',
       isTaskCompleted: false,
-      queue: '',
+      queue: 'Backlog',
       priority: '',
       complexity: '',
       creationDate: Date.now(),
       comments: [],
+      backlogId: '',
+      sprintId: '',
     },
     timeTracker: {
       loggedWorload: [],
@@ -76,7 +79,7 @@ export default function NewTask() {
   const getAssignedUsers = (users) => {
     let usersArr = []
     users?.forEach(user => {
-      if (project.usersAssigned.includes(user.id)) {
+      if (project.usersAssigned?.includes(user.id)) {
         usersArr.push(user)
       }
     })
@@ -89,6 +92,18 @@ export default function NewTask() {
     dispatch(getAllUsers())
     dispatch(getAllTasks()).then(setProjectTasks(tasks?.filter(task => task.projectId == params.projectId)))
 
+    if (backlogItems) {
+      const projectBacklog = backlogItems?.find(backlogItem => backlogItem.projectId === params.projectId)
+
+      setFormData((prevState) => ({
+        ...prevState,
+        taskData: {
+          ...prevState.taskData,
+          backlogId: projectBacklog.projectId
+
+        }
+      }))
+    }
   }, [])
 
   return (
@@ -138,7 +153,7 @@ export default function NewTask() {
                 onChange={(e) => onInputChange(e)}
               />
             </Form.Item>
-            <Form.Item
+            {/* <Form.Item
               label="Asignee"
               data-cy="taskAsignee"
             >
@@ -156,7 +171,7 @@ export default function NewTask() {
                 }) : ''}
 
               </Select>
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item
               label="Due date"
               name="dueDate"
@@ -176,27 +191,7 @@ export default function NewTask() {
                 }}
               />
             </Form.Item>
-            <Form.Item
-              label="Queue"
-              name="queueSelector"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select a queue"
-                }
-              ]}
-            >
-              <Select
-                placeholder="Select a queue for the task"
-                name='queue'
-                onChange={(value) => {
-                  onSelectChange(value, 'queue')
-                }}
-              >
-                <Select.Option value="Sprint">Sprint</Select.Option>
-                <Select.Option value="Backlog">Backlog</Select.Option>
-              </Select>
-            </Form.Item>
+
             <Form.Item
               label="Priority"
               name="taskPriority"

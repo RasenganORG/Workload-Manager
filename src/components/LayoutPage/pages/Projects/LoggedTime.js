@@ -12,10 +12,12 @@ function LoggedTime() {
   const currentProject = useSelector(state => state.projects.currentProject.project)
   const loggedTime = useSelector(state => state.loggedTime.loggedTime)
   const allUsers = useSelector(state => state.users.userList)
+  const { tasks } = useSelector(state => state.tasks)
 
   useEffect(() => {
     if (params.taskId) {
-      setTitle('Task time log')
+      const task = tasks.find(task => task.id === params.taskId)
+      setTitle(task.taskData.title)
     } else {
       setTitle(currentProject.title)
     }
@@ -60,7 +62,7 @@ function LoggedTime() {
 
   return (
     <Card title={getTitle()} style={{ width: "100%", margin: "16px 0" }} >
-      {loggedTime.length === 0 ? 'No time logged yet' : ''}
+      {loggedTime?.length === 0 ? 'No time logged yet' : ''}
       {loggedTime?.map((item, index) => generateTimeLogItem(item.userId, item.task.loggedHours, item.task.message, item.date, index))}
     </ Card >
   )

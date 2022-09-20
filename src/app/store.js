@@ -6,6 +6,8 @@ import billingReducer from "../features/billing/billingSlice"
 import tasksReducer from "../features/tasks/tasksSlice"
 import loggedTimeReducer from '../features/loggedTime/LoggedTimeSlice'
 import userProjecReducer from '../features/userProject/userProjectSlice'
+import backlogReducer from '../features/backlog/backlogSlice'
+import sprintReducer from '../features/sprint/sprintSlice'
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +17,8 @@ export const store = configureStore({
     billing: billingReducer,
     tasks: tasksReducer,
     loggedTime: loggedTimeReducer,
-    userProjectEntries: userProjecReducer
+    userProjectEntries: userProjecReducer,
+    backlog: backlogReducer,
+    sprint: sprintReducer
   }
 })
