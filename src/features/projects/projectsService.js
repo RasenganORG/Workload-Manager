@@ -9,8 +9,8 @@ const getProjects = async () => {
 }
 
 //add a project
-const addProject = async (taskData) => {
-  const response = await axios.post(PROJECT_URL, taskData)
+const addProject = async (data) => {
+  const response = await axios.post(PROJECT_URL, data)
 
   return response.data
 }

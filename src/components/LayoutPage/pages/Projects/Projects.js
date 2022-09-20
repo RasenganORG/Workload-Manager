@@ -1,4 +1,4 @@
-import { Breadcrumb, Layout, Col, Row, Card, Progress, Button, List, badge, Badge } from 'antd';
+import { Breadcrumb, Layout, Col, Row, Card, Progress, Button, Avatar, Tooltip, Badge } from 'antd';
 import { useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -6,43 +6,65 @@ import Spinner from '../../../Spinner';
 import { getProjects, reset } from '../../../../features/projects/projectsSlice';
 import { getAllUsers } from '../../../../features/users/userSlice';
 import { getAllTasks } from '../../../../features/tasks/tasksSlice';
+import { getAllProjectUserEntries } from '../../../../features/userProject/userProjectSlice';
+import { useState } from 'react';
+import moment from 'moment';
+
 export default function Projects() {
-  const { projectList, isLoading, isError, isSuccess, message } = useSelector(state => state.projects)
+  const { projectList, isLoading } = useSelector(state => state.projects)
   const dispatch = useDispatch()
   const { tasks } = useSelector(state => state.tasks)
+  const { userProjectEntries } = useSelector(state => state.userProjectEntries)
+  const [assignedUsers, setAssignedUsers] = useState([])
+  const { userList } = useSelector(state => state.users)
 
   useEffect(() => {
     dispatch(getProjects())
     dispatch(getAllUsers())
     dispatch(getAllTasks())
+    dispatch(getAllProjectUserEntries())
   }, [dispatch])
 
 
-
   const generateProjectCard = (project, iterationId) => {
-    const { id, title, description, status } = project
+    const { id, title, description, status, estimatedWorkingTime } = project
+    const userProjectEntriesAssigned = userProjectEntries?.filter(userProjectEntry => userProjectEntry.projectId === id)
 
-    const projectTasksData = [
-      {
-        title: "Backlog tasks",
-        taskNumber: tasks ? tasks.filter((task) => task.taskData.queue == 'Backlog').length : 0
-      },
-      {
-        title: "Tasks left in Sprint",
-        taskNumber: tasks ? tasks.filter((task) => task.taskData.queue == 'Sprint').length : 0
+    const getAssignedUsers = () => {
+      const users = [];
+      userProjectEntriesAssigned?.forEach((userProject) => {
+        const fullUser = userList.find(user => user.id === userProject.userId)
+        if (fullUser) {
+          users.push(fullUser)
+        }
+      })
+      return users
+    }
+    const getUserInitials = (userName) => {
+      const matches = userName.match(/\b(\w)/g);
+      return matches.join('')
+    }
 
-      },
-      {
-        title: "Completed  tasks",
-        taskNumber: tasks ? tasks.filter((task) => task.taskData.queue == 'Completed').length : 0
+    const assignedUsers = getAssignedUsers()
+    const getProjectCompletationPercent = () => {
+      const { start, end } = estimatedWorkingTime
+      const estimatedProjectDuration = moment(end).diff(moment(start), 'days')
+      const daysSinceProjectStarted = moment().diff(moment(start), 'days')
+
+      if (moment(start) > moment()) {
+        return 0
       }
 
-    ];
-    const getProjectCompletationPercent = (tasks) => {
-      const completedTasks = tasks ? tasks.filter(task => task.queue == 'Completed') : 0
-      const pendingTasks = tasks ? tasks.filter(task => task.queue !== 'Completed') : 0
+      return Math.round(parseInt(daysSinceProjectStarted) / parseInt(estimatedProjectDuration) * 100)
+    }
+    console.log(title, getProjectCompletationPercent(), moment(estimatedWorkingTime.start).format('DD/MM/YYYY'), moment(estimatedWorkingTime.end).format('DD/MM/YYYY'))
+    const generateUserAvatars = (user) => {
 
-      return Math.ceil(completedTasks.length / (pendingTasks.length + completedTasks.length) * 100)
+      return (
+        <Tooltip title={user.name} placement="top">
+          <Avatar src={user.avatar}>{getUserInitials(user.name)}</Avatar>
+        </Tooltip>
+      )
     }
 
     return (
@@ -51,19 +73,13 @@ export default function Projects() {
           <Card title={<Link to={id}>{title}</Link>} bordered={false}>
             <p>{description}</p>
             <Row gutter={4}>
-              <Col span={12}>
-                <h3>Statistics</h3>
-                <List
-                  itemLayout="horizontal"
-                  dataSource={projectTasksData}
-                  renderItem={(item) => (
-                    <List.Item>
-                      <List.Item.Meta
-                        title={<a href="#">{item.title + ": " + item.taskNumber}</a>}
-                      />
-                    </List.Item>
-                  )}
-                />
+              <Col span={12} style={{ display: 'flex', justifyContent: 'center', alignItems: "center" }} >
+                <Avatar.Group  >
+                  {assignedUsers ? assignedUsers.map(user => {
+                    return generateUserAvatars(user)
+                  }) : ''}
+
+                </Avatar.Group>
               </Col>
               <Col span={12} style={{
                 display: "flex",

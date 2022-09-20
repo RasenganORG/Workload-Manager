@@ -11,7 +11,7 @@ import { deleteProjectTasks, removeUsersFromTasks } from "../../../../../../feat
 import { toast } from "react-toastify";
 import moment from "moment"
 import { updateUser, updateUsersProject } from "../../../../../../features/users/userSlice"
-import { getProjectUsers } from "../../../../../../features/userProject/userProjectSlice";
+import { getProjectUsers, addUserProject, removeUsersFromProject } from "../../../../../../features/userProject/userProjectSlice";
 
 export default function EditProject() {
   const navigate = useNavigate()
@@ -20,15 +20,13 @@ export default function EditProject() {
   const currentProject = useSelector((state) => state.projects.currentProject.project)
   const { title, description, estimatedWorkingTime, usersAssigned, status, colorLabel, billingOption } = currentProject
   const { userProjectEntries, isLoading } = useSelector(state => state.userProjectEntries)
-  const [usersToAdd, setUsersToAdd] = useState([])
-  const [usersToRemove, setUsersToRemove] = useState([])
   const [assignedUsers, setAssignedUsers] = useState([])
   const [filteredUsers, setFilteredUsers] = useState([])
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [newUser, setNewUser] = useState({
     userId: '',
     availability: '',
-    projectId: '',
+    projectId: params.projectId,
   })
   const [formData, setFormData] = useState({
     title: title,
@@ -45,29 +43,11 @@ export default function EditProject() {
   //returns an arr with the user ids that were removed from the project
 
   //returns an arr with the user ids that were added to the project
-  const getAddedUsers = () => {
-    return formData.usersAssigned.filter(x => !usersAssigned.includes(x))
-  }
-  //take
-  const updatedTasksWithRemovedUsers = (removedUsers) => {
-    const updatedTasks = formData.tasks ? [...formData.tasks] : []
-    removedUsers.forEach((removedUser) => {
-      formData.tasks?.forEach((task, index) => {
-        if (removedUser === task.asignee) {
-          const newTask = { ...updatedTasks[index] }
-          newTask.asignee = ''
-          updatedTasks.splice(index, 1, newTask)
-        }
-      })
-    })
-    return updatedTasks
-  }
-  // const usersToUpdate = () => {
-  //   return {
-  //     usersToAddProject: getAddedUsers(),
-  //     // usersToRemoveProject: getRemovedUsers()
-  //   }
+  // const getAddedUsers = () => {
+  //   return formData.usersAssigned.filter(x => !usersAssigned.includes(x))
   // }
+  //take
+
   const onInputChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -94,27 +74,38 @@ export default function EditProject() {
 
   const handleUserDelete = (userId) => {
     const updatedArray = [...assignedUsers]
-    const usersToRemoveArray = [...usersToRemove]
     const indexToRemove = assignedUsers.findIndex(user => user.userId === userId)
-    usersToRemoveArray.push(updatedArray[indexToRemove])
-    console.log()
-    setUsersToRemove(usersToRemoveArray)
 
     updatedArray.splice(indexToRemove, 1)
 
     setAssignedUsers(updatedArray)
-    console.log(usersToRemove)
   }
   const onSubmit = () => {
 
-    // if (formData.usersAssigned !== currentProject.usersAssigned) {
-    //   setFormData((prevState) => ({
-    //     ...prevState,
-    //     tasks: updatedTasksWithRemovedUsers(getRemovedUsers())
-    //   }))
 
-    // }
     setDispatchUpdates(true)
+  }
+  const getRemovedUsers = () => {
+    const removedUsers = userProjectEntries?.filter(function (userProjectObj) {
+      return !assignedUsers?.some(function (assignedUserObj) {
+        return userProjectObj.userId === assignedUserObj.userId
+      })
+    })
+    return removedUsers
+  }
+  const getAddedUsers = () => {
+    let addedUsers
+    if (assignedUsers) {
+      addedUsers = assignedUsers.filter(function (assignedUserObj) {
+        return !userProjectEntries?.some(function (userProjectObj) {
+          return assignedUserObj.userId === userProjectObj.userId
+        })
+      })
+    } else {
+      addedUsers = assignedUsers
+    }
+
+    return addedUsers
   }
   const handleDelete = () => {
     dispatch(deleteProject(params.projectId))
@@ -129,12 +120,10 @@ export default function EditProject() {
     },
     handleOk: () => {
       if (newUser.userId && newUser.availability) {
-        const newUserArr = [...assignedUsers];
-        const usersToAddArray = [...usersToAdd];
+        let newUserArr = []
+        if (assignedUsers) { newUserArr = [...assignedUsers] }
         newUserArr.push(newUser)
-        usersToAddArray.push(newUser)
         setAssignedUsers(newUserArr)
-        setUsersToAdd(usersToAddArray)
         userModal.resetCurrentUser()
         setIsUserModalOpen(false);
 
@@ -153,15 +142,13 @@ export default function EditProject() {
       }))
     },
     resetCurrentUser: () => {
-      setNewUser({ userId: '', availability: '' })
+      setNewUser({ userId: '', availability: '', projectId: params.projectId })
     },
     handleUserRemoval: (userId) => {
-      console.log(userId)
       const newArray = [...assignedUsers]
       const indexToRemove = newArray.findIndex(user => user.userId === userId)
       newArray.splice(indexToRemove, 1)
       setAssignedUsers(newArray)
-      console.log(newArray)
     }
 
 
@@ -222,8 +209,9 @@ export default function EditProject() {
 
     if (dispatchUpdates) {
       dispatch(updateProject({ projectData: formData, projectId: params.projectId }))
-      // dispatch(removeUsersFromTasks({ usersArr: getRemovedUsers(), projectId: params.projectId }))
-      // dispatch(updateUsersProject({ data: { ...usersToUpdate() }, projectId: params.projectId }))
+      dispatch(removeUsersFromProject({ usersToRemove: getRemovedUsers(), projectId: params.projectId }))
+      dispatch(addUserProject(getAddedUsers()))
+
       navigate('/')
 
       setDispatchUpdates(false)
@@ -233,8 +221,6 @@ export default function EditProject() {
 
   return (
     <Layout>
-      <button onClick={() => { console.log('toRemove:', usersToRemove); console.log('to add:', usersToAdd) }}> ttttest</button>
-
       <Layout.Content style={{ margin: "16px 0" }}>
         <Card title={'Update project'}>
           <Form

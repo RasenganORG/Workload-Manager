@@ -13,7 +13,6 @@ import { toast } from "react-toastify"
 
 export default function NewProject() {
   const params = useParams()
-  let temporaryId = Date.now()
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -22,14 +21,12 @@ export default function NewProject() {
     colorLabel: 'none',
     billingOption: '',
     status: 'active',
-    temporaryId: temporaryId
   })
   const [assignedUsers, setAssignedUsers] = useState([])
   const [currentUserAdded, setCurrentUserAdded] = useState({
     userId: '',
     availability: '',
     projectId: '',
-    temporaryId: temporaryId
   })
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -59,8 +56,11 @@ export default function NewProject() {
   }
 
   const onSubmit = () => {
-    dispatch(addProject(formData))
-    dispatch(addUserProject(assignedUsers))
+    //even though the the assignedUsers belong to a separate backend entity, userProject,
+    //we send through the addProject function, as at the submission time we don't have access 
+    //to the project id yet, therefore we perform a batch update in backend where we add the project
+    //annd using the returned projectId we send the assignedUsers to the appropiate entity
+    dispatch(addProject({ projectData: formData, userData: assignedUsers }))
     dispatch(getProjects())
     navigate('/')
   }
@@ -95,15 +95,11 @@ export default function NewProject() {
       setCurrentUserAdded({ userId: '', availability: '' })
     },
     handleUserRemoval: (userId) => {
-      console.log(userId)
       const newArray = [...assignedUsers]
       const indexToRemove = newArray.findIndex(user => user.userId === userId)
       newArray.splice(indexToRemove, 1)
       setAssignedUsers(newArray)
-      console.log(newArray)
     }
-
-
   }
   const generateUserSelect = () => {
     const wasUserSelected = (userId) => {
@@ -120,7 +116,6 @@ export default function NewProject() {
           <Select.Option key={key} value={userId}>{userName} </Select.Option>
         )
       }
-
     }
     return (
       <Select
@@ -151,7 +146,6 @@ export default function NewProject() {
     <Layout>
       <Layout.Content style={{ margin: "16px 0" }}>
         <Card title="Create a new project">
-          <button onClick={() => { console.log(formData); console.log(assignedUsers) }}></button>
           <Form
             layout="vertical"
             onFinish={() => onSubmit()}

@@ -51,6 +51,21 @@ export const removeProjectUsers = createAsyncThunk('userProject/removeProjectUse
   }
 })
 
+export const removeUsersFromProject = createAsyncThunk('userProject/removeUsersFromProject', async (userData, thunkAPI) => {
+  try {
+    console.log(userData)
+    return await userProjectService.removeUsersFromProject(userData)
+  } catch (error) {
+    const message =
+      (error.response &&
+        error.response.data &&
+        error.response.data.message) ||
+      error.message ||
+      error.toString()
+    return thunkAPI.rejectWithValue(message)
+  }
+})
+
 export const getUserProjects = createAsyncThunk('userProject/getUserProjects', async (userId, thunkAPI) => {
   try {
     return await userProjectService.getUserProjects(userId)
@@ -68,6 +83,20 @@ export const getUserProjects = createAsyncThunk('userProject/getUserProjects', a
 export const getProjectUsers = createAsyncThunk('userProject/getProjectUsers', async (projectId, thunkAPI) => {
   try {
     return await userProjectService.getProjectUsers(projectId)
+  } catch (error) {
+    const message =
+      (error.response &&
+        error.response.data &&
+        error.response.data.message) ||
+      error.message ||
+      error.toString()
+    return thunkAPI.rejectWithValue(message)
+  }
+})
+
+export const getAllProjectUserEntries = createAsyncThunk('userProject/getAll', async (_, thunkAPI) => {
+  try {
+    return await userProjectService.getAllProjectUserEntries()
   } catch (error) {
     const message =
       (error.response &&
@@ -130,6 +159,18 @@ export const userProjectSlice = createSlice({
         state.isError = true
         state.message = action.payload
       })
+      .addCase(removeUsersFromProject.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(removeUsersFromProject.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+      })
+      .addCase(removeUsersFromProject.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
       .addCase(getUserProjects.pending, (state) => {
         state.isLoading = true
       })
@@ -152,6 +193,19 @@ export const userProjectSlice = createSlice({
         state.userProjectEntries = action.payload
       })
       .addCase(getProjectUsers.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(getAllProjectUserEntries.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(getAllProjectUserEntries.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.userProjectEntries = action.payload
+      })
+      .addCase(getAllProjectUserEntries.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload

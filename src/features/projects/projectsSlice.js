@@ -13,9 +13,9 @@ const initialState = {
   message: ''
 }
 
-export const addProject = createAsyncThunk('projects/addProject', async (project, thunkAPI) => {
+export const addProject = createAsyncThunk('projects/addProject', async (data, thunkAPI) => {
   try {
-    return await projectsService.addProject(project)
+    return await projectsService.addProject(data)
   } catch (error) {
     const message =
       (error.response &&
