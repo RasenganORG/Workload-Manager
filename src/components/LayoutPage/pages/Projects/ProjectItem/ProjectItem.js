@@ -18,7 +18,9 @@ export default function ProjectItem() {
   const pathParams = useParams()
   const dispatch = useDispatch()
   const [projectTasks, setProjectTasks] = useState('')
+  const [wasTaskEdited, setWasTaskEdited] = useState(false)
   const projectTasksData = { projectTasks, setProjectTasks }
+  const taskEditTrigger = { wasTaskEdited, setWasTaskEdited }
   const { currentProject, isLoading } = useSelector(state => state.projects)
   const { sprints, currentSprintId } = useSelector(state => state.sprint)
   const { project } = currentProject
@@ -35,7 +37,6 @@ export default function ProjectItem() {
       ...prevState,
       name: value
     }))
-    console.log(newSprint)
   }
 
   const onDateRangeChange = (value) => {
@@ -63,10 +64,9 @@ export default function ProjectItem() {
   const updateRenderedSprints = async () => {
     dispatch(addSprint(newSprint)).then(getSprintsByProject(pathParams.projectId))
 
-
   }
   useEffect(() => {
-    console.log("changed")
+    console.log("Sprint was changed")
   }, [currentSprintId])
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -185,15 +185,16 @@ export default function ProjectItem() {
 
             </Row>
             <Row>
-              <Col span={12} >
+              <Col
+                span={2}
+                style={{ background: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 8px' }}
+              >
+                <b> Select Sprint</b>
+              </Col>
+              <Col span={16}   >
                 {generateSprintSelect()}
               </Col>
-              <Col
-                span={6}
-                style={{ background: 'white', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', padding: '0 8px' }}
-              >
-                Select Sprint
-              </Col>
+
               <Col
                 span={6}
                 style={{
@@ -205,7 +206,6 @@ export default function ProjectItem() {
 
               <Modal destroyOnClose={true} title="Create Sprint" visible={isModalOpen} onOk={sprintModal.handleOk} onCancel={sprintModal.handleCancel}>
                 <Form layout='vertical'>
-                  <button onClick={() => console.log(newSprint)}>test</button>
                   <Form.Item label="Sprint name">
                     <Input
                       placeholder="Sprint name"
@@ -238,7 +238,7 @@ export default function ProjectItem() {
 
             </Row>
             <Row className="projectContent">
-              <Outlet context={projectTasksData} />
+              <Outlet context={{ projectTasksData, taskEditTrigger }} />
             </Row>
           </Layout.Content>
         </Layout>

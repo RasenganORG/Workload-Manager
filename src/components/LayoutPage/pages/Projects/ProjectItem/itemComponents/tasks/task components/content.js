@@ -1,10 +1,12 @@
 import { Row, Col, Form, Select, Input } from 'antd';
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 import moment from 'moment';
+import { find } from 'highcharts';
 
 export default function Content(props) {
-
+  const params = useParams()
   //we would be able to assign a task only to people that are assigned to this project 
   //the list of assigned users is obtained by filtering through the allUsers state using the id's of the
   //users that are assinged to the selected project
@@ -15,18 +17,28 @@ export default function Content(props) {
   const { onInputChange, onSelectChange } = props.eventHandlers
   const { description, creationDate } = formData.taskData
   const { userList } = useSelector(state => state.users)
+  const [assignedUser, setAssignedUser] = useState('')
   const { project } = useSelector(state => state.projects.currentProject)
+  const { userProjectEntries } = useSelector(state => state.userProjectEntries)
   //we filter the users that are assign to the project and return an array with all the users assigned
   const getAssignedUsers = (users) => {
     let usersArr = []
+    const currentProjectUserProject = userProjectEntries.filter(up => up.projectId === params.projectId)
     users.forEach(user => {
-      if (project.usersAssigned.includes(user.id)) {
-        usersArr.push(user)
-      }
+
+      currentProjectUserProject.forEach(userProject => {
+        if (userProject.userId === user.id) {
+          usersArr.push(user)
+        }
+      })
     })
     return usersArr
   }
+  const getAssignedUser = () => {
+    const user = userList?.find(user => user.id === formData.asigneeId)
 
+  }
+  console.log(getAssignedUser())
   useEffect(() => {
     if (userList) {
       setUsersAssigned(getAssignedUsers(userList))

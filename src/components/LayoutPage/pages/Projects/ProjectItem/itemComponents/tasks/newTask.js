@@ -27,8 +27,8 @@ export default function NewTask() {
       complexity: '',
       creationDate: Date.now(),
       comments: [],
-      backlogId: '',
-      sprintId: '',
+      backlogId: null,
+      sprintId: null,
     },
     timeTracker: {
       loggedWorload: [],
@@ -38,7 +38,7 @@ export default function NewTask() {
       }
     }
   })
-  const { projectTasks, setProjectTasks } = useOutletContext()
+  const { projectTasks, setProjectTasks } = useOutletContext().projectTasksData
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -73,6 +73,8 @@ export default function NewTask() {
   }
   const onSubmit = () => {
     dispatch(addTask(formData))
+    dispatch(getAllTasks())
+
     navigate(-1)
   }
   //we verify the user that are assign to the project and return an array with all the users assigned
@@ -90,7 +92,8 @@ export default function NewTask() {
 
   useEffect(() => {
     dispatch(getAllUsers())
-    dispatch(getAllTasks()).then(setProjectTasks(tasks?.filter(task => task.projectId == params.projectId)))
+    dispatch(getAllTasks())
+    setProjectTasks(tasks?.filter(task => task.projectId == params.projectId))
 
     if (backlogItems) {
       const projectBacklog = backlogItems?.find(backlogItem => backlogItem.projectId === params.projectId)
@@ -99,7 +102,7 @@ export default function NewTask() {
         ...prevState,
         taskData: {
           ...prevState.taskData,
-          backlogId: projectBacklog.projectId
+          backlogId: projectBacklog.backlogId
 
         }
       }))

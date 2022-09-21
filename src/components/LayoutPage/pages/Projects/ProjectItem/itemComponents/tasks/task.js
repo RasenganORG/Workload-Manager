@@ -28,6 +28,7 @@ export default function Task() {
     asigneeId: currentTask?.asigneeId,
     taskData: currentTask?.taskData,
   })
+  console.log(formData)
   const [loggedTimeForm, setLoggedTimeForm] = useState({
     task: {
       loggedHours: '',
@@ -132,6 +133,7 @@ export default function Task() {
         projectId: projectId,
         asigneeId: asigneeId,
         taskData: {
+          ...taskData,
           title: taskData.title,
           description: taskData.description,
           queue: taskData.queue,

@@ -29,10 +29,14 @@ export default function Projects() {
   }, [dispatch])
 
 
-  const generateProjectCard = (project, iterationId) => {
+  const generateProjectCard = (project, index) => {
     const { id, title, description, status, estimatedWorkingTime } = project
     const userProjectEntriesAssigned = userProjectEntries?.filter(userProjectEntry => userProjectEntry.projectId === id)
-
+    const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+      '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+      '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+      '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC'];
+    const randomColor = Math.floor(Math.random() * colorArray.length)
     const getAssignedUsers = () => {
       const users = [];
       userProjectEntriesAssigned?.forEach((userProject) => {
@@ -47,7 +51,6 @@ export default function Projects() {
       const matches = userName.match(/\b(\w)/g);
       return matches.join('')
     }
-
     const assignedUsers = getAssignedUsers()
     const getProjectCompletationPercent = () => {
       const { start, end } = estimatedWorkingTime
@@ -60,25 +63,24 @@ export default function Projects() {
 
       return Math.round(parseInt(daysSinceProjectStarted) / parseInt(estimatedProjectDuration) * 100)
     }
-    const generateUserAvatars = (user) => {
-
+    const generateUserAvatars = (user, index) => {
       return (
-        <Tooltip title={user.name} placement="top">
-          <Avatar src={user.avatar}>{getUserInitials(user.name)}</Avatar>
+        <Tooltip key={index} title={user.name} placement="top">
+          <Avatar src={user.avatar} style={{ backgroundColor: colorArray[randomColor] }}>{getUserInitials(user.name)}</Avatar>
         </Tooltip>
       )
     }
 
     return (
-      <Col key={id} span={8}>
+      <Col key={index} span={8}>
         <Badge.Ribbon text={status} color="green">
           <Card title={<Link to={id}>{title}</Link>} bordered={false}>
             <p>{description}</p>
             <Row gutter={4}>
               <Col span={12} style={{ display: 'flex', justifyContent: 'center', alignItems: "center" }} >
                 <Avatar.Group  >
-                  {assignedUsers ? assignedUsers.map(user => {
-                    return generateUserAvatars(user)
+                  {assignedUsers ? assignedUsers.map((user, index) => {
+                    return generateUserAvatars(user, index)
                   }) : ''}
 
                 </Avatar.Group>
@@ -124,8 +126,8 @@ export default function Projects() {
         </Button>
       </Row>
       <Row gutter={[16, 16]} >
-        {projectList ? projectList.map((project, iterationId) => {
-          { return generateProjectCard(project, iterationId) }
+        {projectList ? projectList.map((project, index) => {
+          { return generateProjectCard(project, index) }
         }) : 'No projects added yet'}
       </Row>
       <Outlet />

@@ -9,21 +9,23 @@ import { deleteTask, updateProject } from '../../../../../../../features/project
 import { useEffect, useState } from 'react';
 import { updateTask, getAllTasks } from '../../../../../../../features/tasks/tasksSlice';
 import { resetReloadTasks, resetTasksSuccess } from '../../../../../../../features/tasks/tasksSlice';
+import { toast } from 'react-toastify';
+import { current } from '@reduxjs/toolkit';
 
 export default function Tasks(props) {
   const params = useParams()
   const navigate = useNavigate();
   const dispatch = useDispatch()
-  const { tasks, isLoading, reloadTasks, isSuccess } = useSelector(state => state.tasks)
+  const { tasks } = useSelector(state => state.tasks)
+  const { backlogItems } = useSelector(state => state.backlog)
   const { userList } = useSelector(state => state.users)
-  const { projectTasks, setProjectTasks } = useOutletContext(); // <-- access context value
+  const { currentSprintId } = useSelector(state => state.sprint)
+  const { projectTasks, setProjectTasks } = useOutletContext().projectTasksData; // <-- access context value
+  const [wasTaskEdited, setWasTaskEdited] = useState(false)
+  const [boardData, setBoardData] = useState({ lanes: [] })
+  //get project tasks and filter them by the que ue
 
-  //get project tasks and filter them by the queue
-  const backlogTasks = projectTasks ? projectTasks.filter((task) => task.taskData.queue === 'Backlog') : 0
-  const sprintTasks = projectTasks ? projectTasks.filter((task) => task.taskData.queue === 'Sprint') : 0
-  const inProgressTasks = projectTasks ? projectTasks.filter((task) => task.taskData.queue === 'In Progress') : 0
-  const completedTasks = projectTasks ? projectTasks.filter((task) => task.taskData.queue === 'Completed') : 0
-  const blockedTasks = projectTasks ? projectTasks.filter((task) => task.taskData.queue === 'Blocked') : 0
+  console.log(useOutletContext().projectTasksData)
 
   const updateProjectTasksLocally = (taskId, currentTask, newTask) => {
     const updateProjectTasks = [...projectTasks]
@@ -34,17 +36,40 @@ export default function Tasks(props) {
 
   const handleLaneChange = (fromLaneId, toLaneId, cardId) => {
     const currentTask = tasks.find(task => task.id == cardId)
+    const currentBacklog = backlogItems?.find(backlogItem => backlogItem.projectId === params.projectId)
+
     const isTaskCompleted = () => {
       return toLaneId === "Completed"
     }
-    const newTask = {
-      ...currentTask,
-      taskData: {
-        ...currentTask.taskData,
-        queue: toLaneId,
-        isTaskCompleted: isTaskCompleted()
-      },
+    let newTask = {
+      ...currentTask
     }
+    if (toLaneId !== "Backlog") {
+      newTask = {
+        ...currentTask,
+        taskData: {
+          ...currentTask.taskData,
+          queue: toLaneId,
+          isTaskCompleted: isTaskCompleted(),
+          sprintId: currentSprintId,
+          backlogId: null
+        },
+      }
+    } else {
+      newTask = {
+        ...currentTask,
+        taskData: {
+          ...currentTask.taskData,
+          queue: toLaneId,
+          isTaskCompleted: isTaskCompleted(),
+          sprintId: null,
+          backlogId: currentBacklog.backlogId
+        },
+      }
+
+
+    }
+
 
     updateProjectTasksLocally(cardId, currentTask, newTask) //we store a local copy of the projects task locally in order to avoid fetching the tasks from back end once a task changes lanes
 
@@ -55,7 +80,6 @@ export default function Tasks(props) {
     //so that the name can be displayed on the task 
     const userObject = userList?.find(user => user.id === task.asigneeId)
 
-
     return {
       id: task.id.toString(),
       title: task.taskData.title,
@@ -63,90 +87,87 @@ export default function Tasks(props) {
       label: userObject?.name,
     }
   }
-  const data = {
-    lanes: [
-      {
-        id: 'Backlog',
-        title: 'Backlog',
-        label: `${backlogTasks.length}`,
-        cards: backlogTasks ? backlogTasks.map((task) => taskGenerator(task)) : []
-      },
-      {
-        id: 'Sprint',
-        title: 'Sprint',
-        label: `${sprintTasks.length}`,
-        cards: sprintTasks ? sprintTasks.map((task) => taskGenerator(task)) : []
-      },
-      {
-        id: 'Blocked',
-        title: 'Blocked ',
-        label: `${blockedTasks.length}`,
-        cards: blockedTasks ? blockedTasks.map((task) => taskGenerator(task)) : []
-      },
-      {
-        id: 'In Progress',
-        title: `In Progress`,
-        label: `${inProgressTasks.length}`,
-        cards: inProgressTasks ? inProgressTasks.map((task) => taskGenerator(task)) : []
-      },
-      {
-        id: 'Completed',
-        title: 'Completed',
-        label: `${completedTasks.length}`,
-        cards: completedTasks ? completedTasks.map((task) => taskGenerator(task)) : []
-      }
-    ]
-  }
-  const getData = () => {
+
+  const generateBoardData = () => {
+    const currentBacklog = backlogItems?.find(backlogItem => backlogItem.projectId === params.projectId)
+    console.log(projectTasks)
+    const backlogTasksArr = projectTasks ? projectTasks.filter((task) => task.taskData.backlogId === currentBacklog?.backlogId) : []
+    const sprintTasksArr = projectTasks ? projectTasks.filter((task) => task.taskData.sprintId === currentSprintId) : []
+
+    const sprintTaskss = sprintTasksArr ? sprintTasksArr.filter((task) => task.taskData.queue === 'Sprint') : []
+    const inProgressTaskss = sprintTasksArr ? sprintTasksArr.filter((task) => task.taskData.queue === 'In Progress') : []
+    const completedTaskss = sprintTasksArr ? sprintTasksArr.filter((task) => task.taskData.queue === 'Completed') : []
+    const blockedTaskss = sprintTasksArr ? sprintTasksArr.filter((task) => task.taskData.queue === 'Blocked') : []
+
+    // console.log(projectTasks)
+
+    // console.log(backlogTasksArr)
+    // console.log('sprint', sprintTasksArr)
     return {
       lanes: [
         {
           id: 'Backlog',
           title: 'Backlog',
-          label: `${backlogTasks.length}`,
-          cards: backlogTasks ? backlogTasks.map((task) => taskGenerator(task)) : []
+          label: `${backlogTasksArr?.length}`,
+          cards: backlogTasksArr?.map((task) => taskGenerator(task))
         },
         {
           id: 'Sprint',
           title: 'Sprint',
-          label: `${sprintTasks.length}`,
-          cards: sprintTasks ? sprintTasks.map((task) => taskGenerator(task)) : []
+          label: `${sprintTaskss.length}`,
+          cards: sprintTaskss ? sprintTaskss.map((task) => taskGenerator(task)) : []
         },
         {
           id: 'Blocked',
           title: 'Blocked ',
-          label: `${blockedTasks.length}`,
-          cards: blockedTasks ? blockedTasks.map((task) => taskGenerator(task)) : []
+          label: `${blockedTaskss.length}`,
+          cards: blockedTaskss ? blockedTaskss.map((task) => taskGenerator(task)) : []
         },
         {
           id: 'In Progress',
           title: `In Progress`,
-          label: `${inProgressTasks.length}`,
-          cards: inProgressTasks ? inProgressTasks.map((task) => taskGenerator(task)) : []
+          label: `${inProgressTaskss.length}`,
+          cards: inProgressTaskss ? inProgressTaskss.map((task) => taskGenerator(task)) : []
         },
         {
           id: 'Completed',
           title: 'Completed',
-          label: `${completedTasks.length}`,
-          cards: completedTasks ? completedTasks.map((task) => taskGenerator(task)) : []
+          label: `${completedTaskss.length}`,
+          cards: completedTaskss ? completedTaskss.map((task) => taskGenerator(task)) : []
         }
       ]
     }
   }
+
   useEffect(() => {
     dispatch(getAllTasks())
   }, [dispatch, params.id, window.location.href])
 
   useEffect(() => {
-    tasks ? setProjectTasks(tasks?.filter(task => task.projectId == params.projectId)) : setProjectTasks([]);
+    tasks ? setProjectTasks(tasks?.filter(task => task.projectId === params.projectId)) : setProjectTasks([]);
+
   }, [tasks])
 
+  useEffect(() => {
+
+    setBoardData((prevState) => ({
+      lanes: generateBoardData().lanes
+    }))
+    console.log('DADA')
+  }, [currentSprintId, tasks])
+
+  // useEffect(() => {
+  //   console.log(generateBoardData())
+  //   setBoardData((prevState) => ({
+  //     lanes: generateBoardData().lanes
+  //   }))
+  // }, [projectTasks])
   return (
     <Layout>
       <Board
-        data={data}
+        data={boardData}
         style={{ background: "transparent" }}
-        draggable={true}
+        cardDraggable={currentSprintId.length !== 0}
         onCardClick={(cardId, metadata, laneId) => navigate(`${cardId}`)}
         onCardMoveAcrossLanes={(fromLaneId, toLaneId, cardId) => handleLaneChange(fromLaneId, toLaneId, cardId)}
         hideCardDeleteIcon={true}

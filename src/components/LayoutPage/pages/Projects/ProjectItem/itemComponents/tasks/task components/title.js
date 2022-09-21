@@ -7,7 +7,7 @@ export default function Title(props) {
   const { viewMode, setViewMode } = props.display
   const { formData, setFormData } = props.form
   const { title } = formData.taskData
-  const { Meta } = Card;
+
   const navigate = useNavigate()
 
   return (

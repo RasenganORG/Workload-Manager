@@ -51,12 +51,10 @@ export function TimeTracker(props) {
       }))
     },
     onDateChange: (date) => {
-      console.log(date)
       setLoggedTimeForm((prevState) => ({
         ...prevState,
         date: date
       }))
-      console.log(loggedTimeForm)
     },
     resetState: () => { },
 

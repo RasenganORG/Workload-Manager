@@ -26,7 +26,7 @@ export default function ProjectStatistics() {
   }) : []
   const getFilteredUsers = () => {
     let newArray = []
-    if (project.usersAssigned.length >= 1) {
+    if (project.usersAssigned?.length >= 1) {
       project.usersAssigned.forEach((userId) => {
         const userObject = userList?.find(user => user.id === userId)
         newArray.push(userObject)
