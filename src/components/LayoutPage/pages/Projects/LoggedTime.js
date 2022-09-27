@@ -14,6 +14,7 @@ function LoggedTime() {
   const allUsers = useSelector(state => state.users.userList)
   const { tasks } = useSelector(state => state.tasks)
 
+  const [timeToBeLogged, setTimeToBeLogged] = useState([])
   useEffect(() => {
     if (params.taskId) {
       const task = tasks.find(task => task.id === params.taskId)
@@ -21,7 +22,12 @@ function LoggedTime() {
     } else {
       setTitle(currentProject.title)
     }
+    if (loggedTime) {
+      const newArr = loggedTime.filter(entry => entry.task.loggedHours !== '')
+      setTimeToBeLogged(newArr)
+    }
   }, [window.location.href])
+
 
   const getTitle = () => {
     return (
@@ -62,8 +68,8 @@ function LoggedTime() {
 
   return (
     <Card title={getTitle()} style={{ width: "100%", margin: "16px 0" }} >
-      {loggedTime?.length === 0 ? 'No time logged yet' : ''}
-      {loggedTime?.map((item, index) => generateTimeLogItem(item.userId, item.task.loggedHours, item.task.message, item.date, index))}
+      {timeToBeLogged?.length === 0 ? 'No time logged yet' : ''}
+      {timeToBeLogged?.map((item, index) => generateTimeLogItem(item.userId, item.task.loggedHours, item.task.message, item.date, index))}
     </ Card >
   )
 }

@@ -13,6 +13,7 @@ export default function ProjectStatistics() {
   const params = useParams()
   const dispatch = useDispatch()
   const { project, isSuccess } = useSelector(state => state.projects.currentProject)
+  const { userProjectEntries } = useSelector(state => state.userProjectEntries)
   const { tasks } = useSelector(state => state.tasks)
   const userList = useSelector(state => state.users.userList)
   const [highchartValues, setHighchartValues] = useState({})
@@ -21,17 +22,16 @@ export default function ProjectStatistics() {
     return {
       id: task.id,
       content: task.taskData.title,
-      date: moment(task.creationDate).format("DD/MM/YYYY")
+      date: moment(task.taskData.creationDate).format("DD/MM/YYYY")
     }
   }) : []
   const getFilteredUsers = () => {
     let newArray = []
-    if (project.usersAssigned?.length >= 1) {
-      project.usersAssigned.forEach((userId) => {
-        const userObject = userList?.find(user => user.id === userId)
-        newArray.push(userObject)
-      })
-    }
+    userProjectEntries?.forEach(userProject => {
+      const userFound = userList.find(userListItem => userListItem.id === userProject.userId)
+      newArray.push(userFound)
+    })
+
     return newArray
   }
   const getTasksByUser = (userId) => {
@@ -76,25 +76,25 @@ export default function ProjectStatistics() {
         completedTasks.push(projectTasks.completedTasks.length)
         totalTasks.push((projectTasks.pendingTasks.length + projectTasks.completedTasks.length))
       })
-
       setHighchartValues({
         chart: {
           type: 'column'
         },
         title: {
-          text: 'Task status statistics'
+          text: 'Assigned tasks per users'
         },
         series: [
+          // {
+          //   name: "Total tasks",
+          //   data: totalTasks
+          // },
+          // {
+          //   name: "Completed tasks",
+          //   data: completedTasks
+          // }
+          // , 
           {
-            name: "Total tasks",
-            data: totalTasks
-          },
-          {
-            name: "Completed tasks",
-            data: completedTasks
-          }
-          , {
-            name: "Pending tasks",
+            name: "Assigned pending tasks",
             data: pendingTasks
           }
         ],
@@ -106,7 +106,9 @@ export default function ProjectStatistics() {
   }
   const dateCellRender = (value) => {
     const stringValue = value.format("DD/MM/yyyy");
+    console.log(formattedTasks)
     const listData = formattedTasks.filter(task => task.date === stringValue)
+    console.log(listData)
     return (
       <ul className="events">
         {listData.map((item) => (
@@ -173,17 +175,14 @@ export default function ProjectStatistics() {
               options={highchartValues}
             />
           </div>
-          <div>
+          {/* <div>
             <PageHeader
               className="user-statistics-header"
               title="User statistics"
             />
 
             {/* <UserStatistics />  to create a components*/}
-            {userList && project.usersAssigned && tasks ? filteredUsers.map((user, index) => {
-              return userGenerator(user.name, user.phoneNumber, user.email, user.id, index)
-            }) : <p>No users added yet</p>}
-          </div>
+
         </Card>
       </Layout.Content>
     </Layout>

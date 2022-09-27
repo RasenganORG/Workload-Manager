@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 import moment from "moment"
 import { updateUser, updateUsersProject } from "../../../../../../features/users/userSlice"
 import { getProjectUsers, addUserProject, removeUsersFromProject } from "../../../../../../features/userProject/userProjectSlice";
-
+import { getAllTasks } from "../../../../../../features/tasks/tasksSlice";
 export default function EditProject() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -82,7 +82,6 @@ export default function EditProject() {
   }
   const onSubmit = () => {
 
-
     setDispatchUpdates(true)
   }
   const getRemovedUsers = () => {
@@ -126,7 +125,7 @@ export default function EditProject() {
         setAssignedUsers(newUserArr)
         userModal.resetCurrentUser()
         setIsUserModalOpen(false);
-
+        dispatch(getAllTasks())
       } else {
         toast.error("Please complete all fields")
       }
@@ -211,7 +210,7 @@ export default function EditProject() {
       dispatch(updateProject({ projectData: formData, projectId: params.projectId }))
       dispatch(removeUsersFromProject({ usersToRemove: getRemovedUsers(), projectId: params.projectId }))
       dispatch(addUserProject(getAddedUsers()))
-
+      dispatch(removeUsersFromTasks({ usersArr: getRemovedUsers(), projectId: params.projectId }))
       navigate('/')
 
       setDispatchUpdates(false)

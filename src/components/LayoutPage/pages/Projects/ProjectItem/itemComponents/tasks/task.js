@@ -8,7 +8,7 @@ import Comments from './task components/comments';
 import Content from './task components/content';
 import Title from './task components/title';
 import UpdateButtons from './task components/updateButtons';
-import { deleteTask, updateTask } from '../../../../../../../features/tasks/tasksSlice';
+import { deleteTask, getAllTasks, updateTask } from '../../../../../../../features/tasks/tasksSlice';
 import { TimeTracker } from './timeTracker';
 import { addLoggedTime, getLoggedTimeByTask, getAllLoggedTime } from '../../../../../../../features/loggedTime/LoggedTimeSlice';
 
@@ -98,6 +98,7 @@ export default function Task() {
     dispatch(addLoggedTime(loggedTimeForm))
     dispatch(updateTask({ taskData: formData, taskId: formData.id }))
     dispatch(getAllLoggedTime())
+    dispatch(getAllTasks())
     setViewMode('readOnly')
     navigate('../')
   }
@@ -115,8 +116,8 @@ export default function Task() {
   const eventHandlers = { onInputChange, onSelectChange, handleSave, handleEditButton, handleDelete }
 
   useEffect(() => {
+    dispatch(getAllTasks())
     dispatch(getLoggedTimeByTask(params.taskId))
-
     setCurrentTask(getTask(tasks))
     dispatch(getAllUsers())
   }, [])
@@ -144,6 +145,7 @@ export default function Task() {
           comments: taskData.comments,
           creationDate: taskData.creationDate,
           creatorId: taskData.creatorId,
+
         },
         timeTracker: timeTracker
 

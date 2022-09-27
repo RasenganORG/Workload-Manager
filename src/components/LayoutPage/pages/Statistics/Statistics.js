@@ -1,5 +1,6 @@
 import React from 'react'
-import { Layout, Row, Col, Card, Select } from 'antd'
+import { Layout, Row, Col, Card, Select, Modal, Button, DatePicker } from 'antd'
+import { DownOutlined } from '@ant-design/icons';
 import HighchartsReact from "highcharts-react-official";
 import Highcharts, { format } from 'highcharts'
 import moment from 'moment';
@@ -10,15 +11,22 @@ import { getAllTasks } from '../../../../features/tasks/tasksSlice';
 
 export default function Statistics() {
   const dispatch = useDispatch()
+  const [customChartPeriod, setCustomChartPeriod] = useState({
+    startDate: moment(),
+    endDate: moment()
+  })
+  const [timePeriodType, setTimePeriodType] = useState('predefinedTime')
   const [selectedUsers, setSelectedUsers] = useState([])
   const [displayedTimePeriod, setDisplayedTimePeriod] = useState('currentWeek')
   const { userList } = useSelector(state => state.users)
   const { tasks } = useSelector(state => state.tasks)
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(getAllUsers())
     dispatch(getAllTasks())
   }, [])
+
   useEffect(() => {
     if (userList) {
       if (selectedUsers.length === 0) {
@@ -30,51 +38,80 @@ export default function Statistics() {
     }
   }, [userList])
 
+  const chartTimePeriodModal = {
+    showModal: () => {
+      setIsModalOpen(true);
+    },
+    handleOk: () => {
+      setIsModalOpen(false);
+    },
+    handleCancel: () => {
+      setIsModalOpen(false);
+    },
+    onDateRangeChange: (value) => {
+      console.log(value)
+    }
+  }
+
   const getTimePeriod = () => {
     //returns an array containing the time period in Date.UTC format, format that is used by Highcharts
-    const date = new Date()
     const timePeriod = [];
-    let selectedTimePeriod = {
-      days: 7,
-      displayFutureDates: true,
-    };
 
-    switch (displayedTimePeriod) {
-      case 'currentWeek':
-        selectedTimePeriod = {
-          days: 7,
-          displayFutureDates: true
-        };
-        break;
+    if (timePeriodType === 'predefinedTime') {
+      const currentDate = new Date()
 
-      case 'currentMonth':
-        selectedTimePeriod = {
-          days: 30,
-          displayFutureDates: true
-        };
-        break;
-      case 'pastWeek':
-        selectedTimePeriod = {
-          days: 7,
-          displayFutureDates: false
-        };
-        break;
-      case 'pastMonth':
-        selectedTimePeriod = {
-          days: 30,
-          displayFutureDates: false
-        };
-        break;
+      let selectedTimePeriod = {
+        days: 7,
+        displayFutureDates: true,
+      };
 
+      switch (displayedTimePeriod) {
+        case 'currentWeek':
+          selectedTimePeriod = {
+            days: 7,
+            displayFutureDates: true
+          };
+          break;
+
+        case 'currentMonth':
+          selectedTimePeriod = {
+            days: 30,
+            displayFutureDates: true
+          };
+          break;
+        case 'pastWeek':
+          selectedTimePeriod = {
+            days: 7,
+            displayFutureDates: false
+          };
+          break;
+        case 'pastMonth':
+          selectedTimePeriod = {
+            days: 30,
+            displayFutureDates: false
+          };
+          break;
+
+      }
+      //we use an array contructor to iterara a number of $days times and generate the requested date
+      [...Array(selectedTimePeriod.days)].forEach((_, i) => {
+        const day = selectedTimePeriod.displayFutureDates ? currentDate.getUTCDate() + i : currentDate.getUTCDate() - i;
+
+        const utcDate = Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(),
+          day);
+        timePeriod.push(utcDate)
+      });
+
+    } else {
+      const { startDate, endDate } = customChartPeriod;
+      const rangeDaysDuration = moment(endDate).diff(moment(startDate), 'days');
+
+      [...Array(rangeDaysDuration + 1)].forEach((_, index) => {
+        const day = moment(new Date(moment(startDate)).getUTCDate() + index)
+        const utcDate = Date.UTC(new Date(moment(startDate)).getUTCFullYear(), new Date(moment(startDate)).getUTCMonth(), day);
+        timePeriod.push(utcDate)
+      })
     }
-    //we use an array contructor to iterara a number of $days times and generate the requested date
-    [...Array(selectedTimePeriod.days)].forEach((_, i) => {
-      const day = selectedTimePeriod.displayFutureDates ? date.getUTCDate() + i : date.getUTCDate() - i;
-
-      const utcDate = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(),
-        day);
-      timePeriod.push(utcDate)
-    });
 
     return timePeriod
   }
@@ -89,6 +126,7 @@ export default function Statistics() {
     return tasksByUser
   }
   const generateData = () => {
+
     const series = []
     const timePeriod = getTimePeriod()
     const tasksByUser = getTasksByUser()
@@ -102,20 +140,22 @@ export default function Statistics() {
       timePeriod.forEach((day, dayIndex) => {
         const formattedDay = moment(day).format('DD-MM-YYYY') //format day for the week so that we can compare it against the days where user has plannedWorkload saved 
         const dailyTasks = user.tasks?.filter((task) => formattedDay === moment(task.timeTracker.plannedWorkingTime.date).format('DD-MM-YYYY'))
+        const isFutureDate = moment().subtract(1, 'days').isBefore(day) //we check if the iterated date is before the currentDate or not
 
-        if (dailyTasks) {
-          //if user has tasks in a given day, we iterate over the tasks planned for that day and add all the planned hours
-          const workinghours = dailyTasks.reduce((totalTime, currentTask) => {
-            return totalTime + parseInt(currentTask.timeTracker.plannedWorkingTime.duration)
-          }, 0)
+        //if user has tasks in a given day, we iterate over the tasks planned for that day and add all the planned hours
+        const workinghours = dailyTasks?.reduce((totalTime, currentTask) => {
+          return totalTime + parseInt(currentTask.timeTracker.plannedWorkingTime.duration)
+        }, 0)
+        userStatistic.data.push([day, workinghours])
 
-          userStatistic.data.push([day, workinghours])
-        }
+
       })
       series.push(userStatistic)
     })
+    console.log(series)
     return series
   }
+
   const chartDefaultValue = {
     chart: {
       type: 'area'
@@ -177,9 +217,31 @@ export default function Statistics() {
     setSelectedUsers(value);
   };
   const handlePeriodChange = (value) => {
-    setDisplayedTimePeriod(value)
+    if (timePeriodType === 'predefinedTime') {
+      setDisplayedTimePeriod(value)
+    } else {
+
+    }
+
   };
 
+  const onTimePeriodChange = (e) => {
+    setTimePeriodType(e)
+  }
+  const onCustomRangeChange = (value) => {
+    setCustomChartPeriod({
+      startDate: value[0],
+      endDate: value[1]
+    })
+  }
+  const getTimeRangeToDisplay = () => {
+    const startDate = moment(customChartPeriod.startDate).format('DD/MM/YYYY')
+    const endDate = moment(customChartPeriod.endDate).format('DD/MM/YYYY')
+    return `${startDate} to ${endDate}`
+    // return (
+    //   <p>: from {startDate} to {endDate}</p>
+    // )
+  }
   return (
     <Layout
       style={{
@@ -191,7 +253,7 @@ export default function Statistics() {
           highcharts={Highcharts}
           options={chartDefaultValue}
         />
-        <Row style={{ fontWeight: 'bold' }}>
+        <Row style={{ fontWeight: 'bold' }} align="bottom">
           <Col span={18}>
             <p>Users to display</p>
             <Select
@@ -210,16 +272,43 @@ export default function Statistics() {
             </Select>
           </Col>
           <Col span={6}>
-            <p>Time  period</p>
-            <Select defaultValue="currentWeek" style={{ width: '100%' }} onChange={handlePeriodChange}>
-              <Select.Option value="currentWeek">Current Week</Select.Option>
-              <Select.Option value="currentMonth">Current Month</Select.Option>
-              <Select.Option value="pastWeek" >Past week</Select.Option>
-              <Select.Option value="pastMonth">Past Month</Select.Option>
-            </Select>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <p>Time period:</p>
+              <Select defaultValue="predefinedTime" style={{ width: '50%' }} onChange={onTimePeriodChange}>
+                <Select.Option value="predefinedTime">Predefined time</Select.Option>
+                <Select.Option value="custom">Custom</Select.Option>
+              </Select>
+            </div>
+            {timePeriodType === 'predefinedTime' ?
+              <Select defaultValue="currentWeek" style={{ width: '100%' }} onChange={handlePeriodChange}>
+                <Select.Option value="currentWeek">Current Week</Select.Option>
+                <Select.Option value="currentMonth">Current Month</Select.Option>
+                <Select.Option value="pastWeek" >Past week</Select.Option>
+                <Select.Option value="pastMonth">Past Month</Select.Option>
+                {/* <Select.Option value="custom">Custom time</Select.Option> */}
+              </Select>
+              :
+              <DatePicker.RangePicker
+                style={{ width: '100%' }}
+                allowClear={false}
+                defaultValue={[moment(), '']}
+                format={"DD/MM/YYYY"}
+                onChange={(value) => { onCustomRangeChange(value) }}
+              />
+            }
+
 
           </Col>
         </Row>
+        <Modal title="Select custom period" visible={isModalOpen} onOk={chartTimePeriodModal.handleOk} onCancel={chartTimePeriodModal.handleCancel}>
+          < DatePicker.RangePicker
+            style={{ width: '100%' }}
+            allowClear={false}
+            defaultValue={[moment(), '']}
+            format={"DD/MM/YYYY"}
+            onChange={(value) => { chartTimePeriodModal.onDateRangeChange(value) }}
+          />
+        </Modal>
       </Card>
     </Layout >
   )

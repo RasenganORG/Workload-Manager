@@ -27,11 +27,11 @@ export default function NewTask() {
       complexity: '',
       creationDate: Date.now(),
       comments: [],
+      timeEstimate: '',
       backlogId: null,
       sprintId: null,
     },
     timeTracker: {
-      loggedWorload: [],
       plannedWorkingTime: {
         date: 'none',
         duration: ''
@@ -42,7 +42,6 @@ export default function NewTask() {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { userList } = useSelector(state => state.users)
   const { project } = useSelector(state => state.projects.currentProject)
 
   const onInputChange = (e) => {
@@ -73,25 +72,14 @@ export default function NewTask() {
   }
   const onSubmit = () => {
     dispatch(addTask(formData))
+    console.log(formData)
     dispatch(getAllTasks())
-
     navigate(-1)
   }
-  //we verify the user that are assign to the project and return an array with all the users assigned
-  const getAssignedUsers = (users) => {
-    let usersArr = []
-    users?.forEach(user => {
-      if (project.usersAssigned?.includes(user.id)) {
-        usersArr.push(user)
-      }
-    })
-    return usersArr
-  }
+
   // can only assign the task to an user assigned to the project
-  const assignedUsers = getAssignedUsers(userList)
 
   useEffect(() => {
-    dispatch(getAllUsers())
     dispatch(getAllTasks())
     setProjectTasks(tasks?.filter(task => task.projectId == params.projectId))
 
@@ -111,6 +99,7 @@ export default function NewTask() {
 
   return (
     <Layout>
+      <button onClick={() => console.log(formData)}> test</button>
       <Layout.Content style={{ margin: "16px 0" }}>
         <Card
           title={<div style={{ display: 'flex', justifyContent: 'space-between' }}><p>Add task</p> <CloseOutlined onClick={() => navigate(-1)} /></div>}
@@ -136,6 +125,7 @@ export default function NewTask() {
                 placeholder="Add the task title"
                 name="title"
                 onChange={(e) => onInputChange(e)}
+
               />
             </Form.Item>
             <Form.Item
@@ -156,25 +146,30 @@ export default function NewTask() {
                 onChange={(e) => onInputChange(e)}
               />
             </Form.Item>
-            {/* <Form.Item
-              label="Asignee"
-              data-cy="taskAsignee"
+            <Form.Item
+              label="Estimated working time"
+              name="taskEstimateWrapper"
+              rules={[
+                {
+                  required: true,
+                  message: "Please add an estimated working time(hours)!"
+                }
+              ]}
+              data-cy="taskEstimate"
             >
-              <Select
-                data-cy="newTaskAsignee"
-                placeholder="Assign an user to this tasks(leave blank for the task to remain unassigned)"
-                name='asignee'
-                onChange={(value) => {
-                  onSelectChange(value, 'asignee')
+              <Input
+                name="timeEstimate"
+                suffix='hours'
+                style={{
+                  width: '100%',
+                  appearance: 'textfield !important'
                 }}
-              >
+                placeholder="Estimated working time"
+                onChange={(e) => onInputChange(e)}
 
-                {assignedUsers ? assignedUsers.map((user, index) => {
-                  return <Select.Option key={index} value={user.id}>{user.name}</Select.Option>
-                }) : ''}
-
-              </Select>
-            </Form.Item> */}
+                type='number'
+              />
+            </Form.Item>
             <Form.Item
               label="Due date"
               name="dueDate"

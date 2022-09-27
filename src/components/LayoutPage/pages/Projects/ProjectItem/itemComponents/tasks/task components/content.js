@@ -48,7 +48,7 @@ export default function Content(props) {
   return (
     <>
       <Row gutter={32}>
-        <Col span={24} style={{ textAlign: 'left' }}>
+        <Col span={18} style={{ textAlign: 'left' }}>
           {viewMode == 'readOnly' ?
             <>
               <p >{description}</p>

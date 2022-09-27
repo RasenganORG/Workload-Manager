@@ -97,11 +97,11 @@ export function TimeTracker(props) {
       <Row style={{ padding: '1rem 0 0 0', textAlign: 'left' }} justify={'end'}>
         <Col span={12}>
           <p style={{ fontWeight: 'bold' }}><ClockCircleOutlined /> Time tracker</p>
-          <Progress percent={30} />
+          {/* <Progress percent={30} /> */}
 
           <Row style={{ justifyContent: 'space-between' }}>
-            <p>Estimated working time: X hours</p>
-            <p>Logged time: X hours</p>
+            {/* <p>Estimated working time: X hours</p>
+            <p>Logged time: X hours</p> */}
           </Row>
           {/* only an user assigned to a task would have the option to plan working the task */}
           <div>

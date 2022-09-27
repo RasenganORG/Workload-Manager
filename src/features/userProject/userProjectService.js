@@ -32,7 +32,6 @@ const removeUsersFromProject = async (data) => {
 //get all projects where an user is present
 const getUserProjects = async (userId) => {
   const response = await axios.get(`${USER_PROJECT_URL}getUserProject/${userId}`)
-  console.log(`${USER_PROJECT_URL}getUserProject/${userId}`)
   return response.data
 }
 //get all users from a project

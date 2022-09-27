@@ -21,6 +21,7 @@ export default function ProjectItem() {
   const [wasTaskEdited, setWasTaskEdited] = useState(false)
   const projectTasksData = { projectTasks, setProjectTasks }
   const taskEditTrigger = { wasTaskEdited, setWasTaskEdited }
+  const [projectSprints, setProjectSprints] = useState([])
   const { currentProject, isLoading } = useSelector(state => state.projects)
   const { sprints, currentSprintId } = useSelector(state => state.sprint)
   const { project } = currentProject
@@ -49,7 +50,10 @@ export default function ProjectItem() {
   const handleSprintChange = (e) => {
     dispatch(updateCurrentSprintId(e))
   }
+  useEffect(() => {
+    dispatch(getSprintsByProject(pathParams.projectId))
 
+  }, [])
   useEffect(() => {
     dispatch(getLoggedTimeByProject(pathParams.projectId))
     dispatch(getProjectItem(pathParams.projectId))
@@ -58,9 +62,16 @@ export default function ProjectItem() {
     dispatch(getAllUsers())
     dispatch(getAllTasks())
     dispatch(getBacklogItems())
-
+    if (sprints?.length > 0) {
+      setProjectSprints(sprints)
+    }
   }, [currentProject.isSuccess])
 
+  useEffect(() => {
+    if (sprints?.length > 0) {
+      setProjectSprints(sprints)
+    }
+  }, [sprints])
   const updateRenderedSprints = async () => {
     dispatch(addSprint(newSprint)).then(getSprintsByProject(pathParams.projectId))
 
@@ -69,9 +80,19 @@ export default function ProjectItem() {
     console.log("Sprint was changed")
   }, [currentSprintId])
 
+  useEffect(() => {
+    console.log("Sprint was changed")
+  }, [projectSprints])
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const generateSprintSelect = () => {
+  const updateLocalSprints = (addedSprint) => {
+    const newSprints = [...projectSprints]
+    newSprints.push(addedSprint)
+    setProjectSprints(newSprints)
+  }
+  const generateSprintSelect = (sprints) => {
+
 
     return (
       <Select
@@ -81,7 +102,7 @@ export default function ProjectItem() {
         }}
         onChange={handleSprintChange}
       >
-        {sprints ? sprints.map((sprint, index) => {
+        {projectSprints ? projectSprints.map((sprint, index) => {
           return <Select.Option key={index} value={sprint.sprintId}>{sprint.name}</Select.Option>
 
         }) : 'No sprints added'}
@@ -95,7 +116,8 @@ export default function ProjectItem() {
       setIsModalOpen(true);
     },
     handleOk: () => {
-      updateRenderedSprints()
+      dispatch(addSprint(newSprint))
+      updateLocalSprints(newSprint)
       sprintModal.resetNewSprintForm()
       setIsModalOpen(false);
     },

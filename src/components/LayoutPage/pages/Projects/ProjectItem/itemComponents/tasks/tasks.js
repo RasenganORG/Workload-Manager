@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { updateTask, getAllTasks } from '../../../../../../../features/tasks/tasksSlice';
 import { resetReloadTasks, resetTasksSuccess } from '../../../../../../../features/tasks/tasksSlice';
 import { toast } from 'react-toastify';
-import { current } from '@reduxjs/toolkit';
+import { getSprintsByProject } from '../../../../../../../features/sprint/sprintSlice';
 
 export default function Tasks(props) {
   const params = useParams()
@@ -25,7 +25,6 @@ export default function Tasks(props) {
   const [boardData, setBoardData] = useState({ lanes: [] })
   //get project tasks and filter them by the que ue
 
-  console.log(useOutletContext().projectTasksData)
 
   const updateProjectTasksLocally = (taskId, currentTask, newTask) => {
     const updateProjectTasks = [...projectTasks]
@@ -90,19 +89,13 @@ export default function Tasks(props) {
 
   const generateBoardData = () => {
     const currentBacklog = backlogItems?.find(backlogItem => backlogItem.projectId === params.projectId)
-    console.log(projectTasks)
     const backlogTasksArr = projectTasks ? projectTasks.filter((task) => task.taskData.backlogId === currentBacklog?.backlogId) : []
     const sprintTasksArr = projectTasks ? projectTasks.filter((task) => task.taskData.sprintId === currentSprintId) : []
-
     const sprintTaskss = sprintTasksArr ? sprintTasksArr.filter((task) => task.taskData.queue === 'Sprint') : []
     const inProgressTaskss = sprintTasksArr ? sprintTasksArr.filter((task) => task.taskData.queue === 'In Progress') : []
     const completedTaskss = sprintTasksArr ? sprintTasksArr.filter((task) => task.taskData.queue === 'Completed') : []
     const blockedTaskss = sprintTasksArr ? sprintTasksArr.filter((task) => task.taskData.queue === 'Blocked') : []
 
-    // console.log(projectTasks)
-
-    // console.log(backlogTasksArr)
-    // console.log('sprint', sprintTasksArr)
     return {
       lanes: [
         {
@@ -141,6 +134,8 @@ export default function Tasks(props) {
 
   useEffect(() => {
     dispatch(getAllTasks())
+    dispatch(getSprintsByProject(params.projectId))
+
   }, [dispatch, params.id, window.location.href])
 
   useEffect(() => {
@@ -153,15 +148,8 @@ export default function Tasks(props) {
     setBoardData((prevState) => ({
       lanes: generateBoardData().lanes
     }))
-    console.log('DADA')
   }, [currentSprintId, tasks])
 
-  // useEffect(() => {
-  //   console.log(generateBoardData())
-  //   setBoardData((prevState) => ({
-  //     lanes: generateBoardData().lanes
-  //   }))
-  // }, [projectTasks])
   return (
     <Layout>
       <Board
