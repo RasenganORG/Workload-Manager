@@ -95,11 +95,13 @@ export default function Task() {
 
   // event handlers
   const handleSave = (e) => {
-    dispatch(addLoggedTime(loggedTimeForm))
     dispatch(updateTask({ taskData: formData, taskId: formData.id }))
     dispatch(getAllLoggedTime())
     dispatch(getAllTasks())
     setViewMode('readOnly')
+    if (loggedTimeForm.task.loggedHours) {
+      dispatch(addLoggedTime(loggedTimeForm))
+    }
     navigate('../')
   }
 
@@ -157,6 +159,7 @@ export default function Task() {
 
   return (
     <Card title={<Title display={display} eventHandlers={eventHandlers} form={form} />} style={{ width: "100%", margin: "16px 0" }}>
+      <button onClick={() => { console.log(loggedTimeForm) }}>asdassd</button>
       <Content
         display={display}
         form={form}

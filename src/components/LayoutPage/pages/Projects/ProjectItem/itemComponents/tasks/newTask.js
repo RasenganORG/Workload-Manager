@@ -99,7 +99,6 @@ export default function NewTask() {
 
   return (
     <Layout>
-      <button onClick={() => console.log(formData)}> test</button>
       <Layout.Content style={{ margin: "16px 0" }}>
         <Card
           title={<div style={{ display: 'flex', justifyContent: 'space-between' }}><p>Add task</p> <CloseOutlined onClick={() => navigate(-1)} /></div>}

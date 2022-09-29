@@ -9,7 +9,7 @@ import { getAllUsers } from '../../../../features/users/userSlice';
 import { getAllTasks } from '../../../../features/tasks/tasksSlice';
 import { getAllSprints } from '../../../../features/sprint/sprintSlice';
 import { getAllUserProjectEntries } from '../../../../features/userProject/userProjectSlice';
-
+import { getAllLoggedTime } from '../../../../features/loggedTime/LoggedTimeSlice';
 export default function Statistics() {
   const dispatch = useDispatch()
   const [customTimePeriod, setCustomTimePeriod] = useState({
@@ -23,6 +23,7 @@ export default function Statistics() {
   const { tasks } = useSelector(state => state.tasks)
   const { sprints } = useSelector(state => state.sprint)
   const { userProjectEntries } = useSelector(state => state.userProjectEntries)
+  const { loggedTime } = useSelector(state => state.loggedTime)
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function Statistics() {
     dispatch(getAllUserProjectEntries())
     dispatch(getAllTasks())
     dispatch(getAllSprints())
+    dispatch(getAllLoggedTime())
   }, [])
 
   useEffect(() => {
@@ -69,7 +71,6 @@ export default function Statistics() {
         days: 7,
         displayFutureDates: true,
       };
-
       switch (displayedTimePeriod) {
         case 'currentWeek':
           selectedTimePeriod = {
@@ -122,9 +123,9 @@ export default function Statistics() {
   }
   const getSelectedUsers = () => {
     const usersArr = []
-    selectedUsers.forEach(selectedUserId => {
-      const user = userList.find(user => user.id === selectedUserId)
-      const projectsAssignedTo = userProjectEntries.filter(userProject => userProject.userId === selectedUserId)
+    selectedUsers?.forEach(selectedUserId => {
+      const user = userList?.find(user => user.id === selectedUserId)
+      const projectsAssignedTo = userProjectEntries?.filter(userProject => userProject.userId === selectedUserId)
       const userObj = {
         name: user.name,
         id: user.id,
@@ -132,10 +133,12 @@ export default function Statistics() {
       }
       usersArr.push(userObj)
     })
+
     return usersArr
   }
+
   const getActiveSprints = () => {
-    const { startDate, endDate } = customTimePeriod
+    const { startDate, endDate } = customTimePeriod //todo, changes startDate and endDate when using predefined dates
     const activeSprintsArr = []
     sprints?.forEach(sprint => {
       if (moment(sprint.startDate).isSameOrAfter(startDate, 'day') && moment(sprint.endDate).isSameOrBefore(endDate, 'day')) {
@@ -144,10 +147,23 @@ export default function Statistics() {
     })
     return activeSprintsArr
   }
-
-  const getUserTasksByProject = () => {
+  const getUsersWithLoggedTime = () => {
     const newUsersArr = [];
     const users = [...getSelectedUsers()]
+    const activeSprints = getActiveSprints()
+
+    users?.forEach((user, userIndex) => {
+      //created a deep copy of the userObject, if we were to create a shallow copy we would be unable to edit/add keys
+      const newUser = JSON.parse(JSON.stringify(user))
+      const userLoggedTime = loggedTime?.filter(loggedTimeEntry => loggedTimeEntry.userId === user.id)
+      newUser.loggedTime = userLoggedTime
+      newUsersArr.push(newUser)
+    })
+    return newUsersArr
+  }
+  const getUserDataPerProject = () => {
+    const newUsersArr = [];
+    const users = [...getUsersWithLoggedTime()]
     const activeSprints = getActiveSprints()
     const isTaskValid = (task, project, user) => {
       if (
@@ -164,8 +180,7 @@ export default function Statistics() {
       //created a deep copy of the userObject, if we were to create a shallow copy we would be unable to edit/add keys
       const newUser = JSON.parse(JSON.stringify(user))
       user.projects.forEach((project, projectIndex) => {
-        // newUser.projects[projectIndex].text = `Bine boss, asta e proj index ${projectIndex}`
-        const projectTasks = tasks.filter(task => isTaskValid(task, project, user))
+        const projectTasks = tasks?.filter(task => isTaskValid(task, project, user))
 
         newUser.projects[projectIndex].tasks = projectTasks
 
@@ -177,10 +192,10 @@ export default function Statistics() {
   const generateNewData = () => {
     const series = []
     const timePeriod = getTimePeriod() //array of UTC data, as selected by the users
-    const userTasksbyProject = getUserTasksByProject() //array of objecst, containing the user name/id, the projects that they are assigned to and the eligible tasks assigned to them from sprints within the range selected
-    const getTotalWorkingTimePerPrject = (tasks) => {
+    const userTasksbyProject = getUserDataPerProject() //array of objecst, containing the user name/id, the projects that they are assigned to, the eligible tasks assigned to them from sprints within the range selected and the logged tikme
+    const getTotalWorkingTimePerPrject = (projectTasks) => {
       //function that takes projects tasks as a parameter and returns the sum of all task estimates in hours
-      const totalProjectHours = tasks.reduce(
+      const totalProjectHours = projectTasks.reduce(
         (accumulator, task) => accumulator + parseInt(task.taskData.timeEstimate), 0
       )
       return totalProjectHours
@@ -198,9 +213,9 @@ export default function Statistics() {
       }))
       timePeriod?.forEach(day => {
         const isFutureDate = moment().subtract(1, 'days').isBefore(day) //we check if the iterated date is before the currentDate or not
+        let dailyTime = 0;
 
         if (isFutureDate) {
-          let dailyTime = 0;
 
           userWorkloadPerProject.forEach((project, index) => {
             //we iterate over each of user's projects, check the total time duration and add the daily hours depending on their availability per project
@@ -221,7 +236,13 @@ export default function Statistics() {
           })
           userStatistic.data.push([day, dailyTime])
         } else {
-          userStatistic.data.push([day, 0])
+          //get the  task logged time entries from the current day
+          const dailyLoggedEntries = userTaskProject.loggedTime.filter(loggedTime => moment(loggedTime.date).isSame(day, 'day'))
+          dailyTime = dailyLoggedEntries.reduce(
+            (accumulator, loggedEntry) => accumulator + parseInt(loggedEntry.task.loggedHours), 0
+          )
+
+          userStatistic.data.push([day, dailyTime])
         }
       })
       series.push(userStatistic)
@@ -281,10 +302,7 @@ export default function Statistics() {
   const handlePeriodChange = (value) => {
     if (timePeriodType === 'predefinedTime') {
       setDisplayedTimePeriod(value)
-    } else {
-
     }
-
   };
 
   const onTimePeriodChange = (e) => {
@@ -328,7 +346,7 @@ export default function Statistics() {
           </Col>
           <Col span={6}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <p>Time period:</p>
+              <p>Time period type:</p>
               <Select defaultValue="predefinedTime" style={{ width: '50%' }} onChange={onTimePeriodChange}>
                 <Select.Option value="predefinedTime">Predefined time</Select.Option>
                 <Select.Option value="custom">Custom</Select.Option>
@@ -340,7 +358,6 @@ export default function Statistics() {
                 <Select.Option value="currentMonth">Current Month</Select.Option>
                 <Select.Option value="pastWeek" >Past week</Select.Option>
                 <Select.Option value="pastMonth">Past Month</Select.Option>
-                {/* <Select.Option value="custom">Custom time</Select.Option> */}
               </Select>
               :
               <DatePicker.RangePicker
