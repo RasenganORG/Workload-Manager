@@ -13,10 +13,16 @@ const getSprintsByProject = async (projectId) => {
   return response.data
 }
 
+const getAllSprints = async () => {
+  const response = await axios.get(`${SPRINT_URL}getAll`)
+
+  return response.data
+}
 
 const sprintService = {
   addSprint,
-  getSprintsByProject
+  getSprintsByProject,
+  getAllSprints
 }
 
 export default sprintService

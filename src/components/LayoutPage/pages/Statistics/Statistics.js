@@ -1,6 +1,5 @@
 import React from 'react'
-import { Layout, Row, Col, Card, Select, Modal, Button, DatePicker } from 'antd'
-import { DownOutlined } from '@ant-design/icons';
+import { Layout, Row, Col, Card, Select, Modal, DatePicker } from 'antd'
 import HighchartsReact from "highcharts-react-official";
 import Highcharts, { format } from 'highcharts'
 import moment from 'moment';
@@ -8,10 +7,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { getAllUsers } from '../../../../features/users/userSlice';
 import { getAllTasks } from '../../../../features/tasks/tasksSlice';
+import { getAllSprints } from '../../../../features/sprint/sprintSlice';
+import { getAllUserProjectEntries } from '../../../../features/userProject/userProjectSlice';
 
 export default function Statistics() {
   const dispatch = useDispatch()
-  const [customChartPeriod, setCustomChartPeriod] = useState({
+  const [customTimePeriod, setCustomTimePeriod] = useState({
     startDate: moment(),
     endDate: moment()
   })
@@ -20,17 +21,21 @@ export default function Statistics() {
   const [displayedTimePeriod, setDisplayedTimePeriod] = useState('currentWeek')
   const { userList } = useSelector(state => state.users)
   const { tasks } = useSelector(state => state.tasks)
+  const { sprints } = useSelector(state => state.sprint)
+  const { userProjectEntries } = useSelector(state => state.userProjectEntries)
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(getAllUsers())
+    dispatch(getAllUserProjectEntries())
     dispatch(getAllTasks())
+    dispatch(getAllSprints())
   }, [])
 
   useEffect(() => {
     if (userList) {
       if (selectedUsers.length === 0) {
-        //if no users are selected, we show all users by default
+        //we select the 3 first users by default
         const defaultSelectedUsers = []
         userList.slice(0, 3)?.forEach(user => defaultSelectedUsers.push(user.id))
         setSelectedUsers(defaultSelectedUsers)
@@ -103,7 +108,7 @@ export default function Statistics() {
       });
 
     } else {
-      const { startDate, endDate } = customChartPeriod;
+      const { startDate, endDate } = customTimePeriod;
       const rangeDaysDuration = moment(endDate).diff(moment(startDate), 'days');
 
       [...Array(rangeDaysDuration + 1)].forEach((_, index) => {
@@ -115,44 +120,113 @@ export default function Statistics() {
 
     return timePeriod
   }
-  const getTasksByUser = () => {
-    const tasksByUser = []
-    const users = userList?.filter(user => selectedUsers.includes(user.id))
-    users?.forEach((user) => {
-      const userTasks = tasks?.filter(task => task.asigneeId === user.id)
-      tasksByUser.push({ name: user.name, userId: user.id, tasks: userTasks })
-    })
-
-    return tasksByUser
-  }
-  const generateData = () => {
-
-    const series = []
-    const timePeriod = getTimePeriod()
-    const tasksByUser = getTasksByUser()
-
-    tasksByUser.forEach((user, userIndex) => {
-      const userStatistic = {
+  const getSelectedUsers = () => {
+    const usersArr = []
+    selectedUsers.forEach(selectedUserId => {
+      const user = userList.find(user => user.id === selectedUserId)
+      const projectsAssignedTo = userProjectEntries.filter(userProject => userProject.userId === selectedUserId)
+      const userObj = {
         name: user.name,
+        id: user.id,
+        projects: projectsAssignedTo
+      }
+      usersArr.push(userObj)
+    })
+    return usersArr
+  }
+  const getActiveSprints = () => {
+    const { startDate, endDate } = customTimePeriod
+    const activeSprintsArr = []
+    sprints?.forEach(sprint => {
+      if (moment(sprint.startDate).isSameOrAfter(startDate, 'day') && moment(sprint.endDate).isSameOrBefore(endDate, 'day')) {
+        activeSprintsArr.push(sprint)
+      }
+    })
+    return activeSprintsArr
+  }
+
+  const getUserTasksByProject = () => {
+    const newUsersArr = [];
+    const users = [...getSelectedUsers()]
+    const activeSprints = getActiveSprints()
+    const isTaskValid = (task, project, user) => {
+      if (
+        task.projectId === project.projectId &&
+        task.asigneeId === user.id &&
+        task.taskData.queue !== 'Blocked' &&
+        task.taskData.queue !== 'Completed' &&
+        activeSprints.find(sprint => sprint.sprintId === task.taskData.sprintId)
+      ) {
+        return true
+      }
+    }
+    users?.forEach((user, userIndex) => {
+      //created a deep copy of the userObject, if we were to create a shallow copy we would be unable to edit/add keys
+      const newUser = JSON.parse(JSON.stringify(user))
+      user.projects.forEach((project, projectIndex) => {
+        // newUser.projects[projectIndex].text = `Bine boss, asta e proj index ${projectIndex}`
+        const projectTasks = tasks.filter(task => isTaskValid(task, project, user))
+
+        newUser.projects[projectIndex].tasks = projectTasks
+
+      })
+      newUsersArr.push(newUser)
+    })
+    return newUsersArr
+  }
+  const generateNewData = () => {
+    const series = []
+    const timePeriod = getTimePeriod() //array of UTC data, as selected by the users
+    const userTasksbyProject = getUserTasksByProject() //array of objecst, containing the user name/id, the projects that they are assigned to and the eligible tasks assigned to them from sprints within the range selected
+    const getTotalWorkingTimePerPrject = (tasks) => {
+      //function that takes projects tasks as a parameter and returns the sum of all task estimates in hours
+      const totalProjectHours = tasks.reduce(
+        (accumulator, task) => accumulator + parseInt(task.taskData.timeEstimate), 0
+      )
+      return totalProjectHours
+    }
+
+    userTasksbyProject.forEach(userTaskProject => {
+      const userStatistic = {
+        name: userTaskProject.name,
         data: []
       }
-
-      timePeriod.forEach((day, dayIndex) => {
-        const formattedDay = moment(day).format('DD-MM-YYYY') //format day for the week so that we can compare it against the days where user has plannedWorkload saved 
-        const dailyTasks = user.tasks?.filter((task) => formattedDay === moment(task.timeTracker.plannedWorkingTime.date).format('DD-MM-YYYY'))
+      let userWorkloadPerProject = userTaskProject.projects.map(project => ({
+        projectId: project.id,
+        availability: project.availability,
+        estimatedWorkloadDuration: getTotalWorkingTimePerPrject(project.tasks)
+      }))
+      timePeriod?.forEach(day => {
         const isFutureDate = moment().subtract(1, 'days').isBefore(day) //we check if the iterated date is before the currentDate or not
 
-        //if user has tasks in a given day, we iterate over the tasks planned for that day and add all the planned hours
-        const workinghours = dailyTasks?.reduce((totalTime, currentTask) => {
-          return totalTime + parseInt(currentTask.timeTracker.plannedWorkingTime.duration)
-        }, 0)
-        userStatistic.data.push([day, workinghours])
+        if (isFutureDate) {
+          let dailyTime = 0;
 
+          userWorkloadPerProject.forEach((project, index) => {
+            //we iterate over each of user's projects, check the total time duration and add the daily hours depending on their availability per project
+            //for ex, if a project total duration is 5 hours but user is assigned 4 hours to that project project, for the day we would add 4 hours, 
+            //and then we would substract 4 hours from the project duration so that the next day we have 1 hours left to display
+            if (project.estimatedWorkloadDuration >= project.availability) {
+              dailyTime += parseInt(project.availability)
+              userWorkloadPerProject[index].estimatedWorkloadDuration -= project.availability
+            } else {
+              dailyTime += project.estimatedWorkloadDuration
+              if (project.estimatedWorkloadDuration - project.estimatedWorkloadDuration < 0) {
+                userWorkloadPerProject[index].estimatedWorkloadDuration = 0
+              } else {
+                userWorkloadPerProject[index].estimatedWorkloadDuration -= project.estimatedWorkloadDuration
+              }
 
+            }
+          })
+          userStatistic.data.push([day, dailyTime])
+        } else {
+          userStatistic.data.push([day, 0])
+        }
       })
       series.push(userStatistic)
     })
-    console.log(series)
+
     return series
   }
 
@@ -188,6 +262,9 @@ export default function Statistics() {
     },
 
     plotOptions: {
+      column: {
+        stacking: true
+      },
       series: {
         marker: {
           enabled: true,
@@ -196,22 +273,7 @@ export default function Statistics() {
       }
     },
     colors: ["#fd7f6f", "#7eb0d5", "#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7"],
-    // Define the data points. All series have a dummy year of 2010/71 in order
-    // to be compared on the same x axis. Note that in JavaScript, months start
-    // at 0 for January, 1 for February etc.
-    series: generateData()
-    //     name: "Teodor",
-    //     data: 
-    //     //  [
-    //     //   [Date.UTC(2022, 9, 1), 2],
-    //     //   [Date.UTC(2022, 9, 2), 8],
-    //     //   [Date.UTC(2022, 9, 3), 7],
-    //     //   [Date.UTC(2022, 9, 4), 3],
-    //     //   [Date.UTC(2022, 9, 5), 2],
-    //     //   [Date.UTC(2022, 9, 6), 3],
-    //     //   [Date.UTC(2022, 9, 7), 4],
-    //     // ]
-    //   } 
+    series: generateNewData()
   }
   const handleUserSelection = (value) => {
     setSelectedUsers(value);
@@ -229,19 +291,12 @@ export default function Statistics() {
     setTimePeriodType(e)
   }
   const onCustomRangeChange = (value) => {
-    setCustomChartPeriod({
+    setCustomTimePeriod({
       startDate: value[0],
       endDate: value[1]
     })
   }
-  const getTimeRangeToDisplay = () => {
-    const startDate = moment(customChartPeriod.startDate).format('DD/MM/YYYY')
-    const endDate = moment(customChartPeriod.endDate).format('DD/MM/YYYY')
-    return `${startDate} to ${endDate}`
-    // return (
-    //   <p>: from {startDate} to {endDate}</p>
-    // )
-  }
+
   return (
     <Layout
       style={{

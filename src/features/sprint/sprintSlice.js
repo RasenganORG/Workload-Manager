@@ -39,6 +39,20 @@ export const getSprintsByProject = createAsyncThunk('sprint/getSprintsByProject'
   }
 })
 
+export const getAllSprints = createAsyncThunk('sprint/getAll', async (_, thunkAPI) => {
+  try {
+    return await sprintService.getAllSprints()
+  } catch (error) {
+    const message =
+      (error.response &&
+        error.response.data &&
+        error.response.data.message) ||
+      error.message ||
+      error.toString()
+    return thunkAPI.rejectWithValue(message)
+  }
+})
+
 
 export const sprintSlice = createSlice({
   name: 'sprint',
@@ -78,6 +92,19 @@ export const sprintSlice = createSlice({
         state.sprints = action.payload
       })
       .addCase(getSprintsByProject.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(getAllSprints.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(getAllSprints.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.sprints = action.payload
+      })
+      .addCase(getAllSprints.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload

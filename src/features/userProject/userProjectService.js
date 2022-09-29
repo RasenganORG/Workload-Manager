@@ -41,7 +41,7 @@ const getProjectUsers = async (projectId) => {
   return response.data
 }
 //get all userProject entries
-const getAllProjectUserEntries = async () => {
+const getAllUserProjectEntries = async () => {
   const response = await axios.get(`${USER_PROJECT_URL}getAll/`)
 
   return response.data
@@ -54,7 +54,7 @@ const userProjectService = {
   removeUsersFromProject,
   getUserProjects,
   getProjectUsers,
-  getAllProjectUserEntries
+  getAllUserProjectEntries
 }
 
 export default userProjectService

@@ -93,9 +93,9 @@ export const getProjectUsers = createAsyncThunk('userProject/getProjectUsers', a
   }
 })
 
-export const getAllProjectUserEntries = createAsyncThunk('userProject/getAll', async (_, thunkAPI) => {
+export const getAllUserProjectEntries = createAsyncThunk('userProject/getAll', async (_, thunkAPI) => {
   try {
-    return await userProjectService.getAllProjectUserEntries()
+    return await userProjectService.getAllUserProjectEntries()
   } catch (error) {
     const message =
       (error.response &&
@@ -196,15 +196,15 @@ export const userProjectSlice = createSlice({
         state.isError = true
         state.message = action.payload
       })
-      .addCase(getAllProjectUserEntries.pending, (state) => {
+      .addCase(getAllUserProjectEntries.pending, (state) => {
         state.isLoading = true
       })
-      .addCase(getAllProjectUserEntries.fulfilled, (state, action) => {
+      .addCase(getAllUserProjectEntries.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
         state.userProjectEntries = action.payload
       })
-      .addCase(getAllProjectUserEntries.rejected, (state, action) => {
+      .addCase(getAllUserProjectEntries.rejected, (state, action) => {
         state.isLoading = false
         state.isError = true
         state.message = action.payload

@@ -6,7 +6,7 @@ import Spinner from '../../../Spinner';
 import { getProjects, reset } from '../../../../features/projects/projectsSlice';
 import { getAllUsers } from '../../../../features/users/userSlice';
 import { getAllTasks } from '../../../../features/tasks/tasksSlice';
-import { getAllProjectUserEntries } from '../../../../features/userProject/userProjectSlice';
+import { getAllUserProjectEntries } from '../../../../features/userProject/userProjectSlice';
 import { useState } from 'react';
 import { getBacklogItems } from '../../../../features/backlog/backlogSlice';
 
@@ -24,7 +24,7 @@ export default function Projects() {
     dispatch(getProjects())
     dispatch(getAllUsers())
     dispatch(getAllTasks())
-    dispatch(getAllProjectUserEntries())
+    dispatch(getAllUserProjectEntries())
     dispatch(getBacklogItems())
   }, [dispatch])
 

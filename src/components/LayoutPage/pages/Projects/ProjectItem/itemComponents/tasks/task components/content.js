@@ -15,7 +15,7 @@ export default function Content(props) {
   // const { comments } = formData
   const { viewMode } = props.display
   const { onInputChange, onSelectChange } = props.eventHandlers
-  const { description, creationDate } = formData.taskData
+  const { description, creationDate, timeEstimate } = formData.taskData
   const { userList } = useSelector(state => state.users)
   const [assignedUser, setAssignedUser] = useState('')
   const { project } = useSelector(state => state.projects.currentProject)
@@ -53,6 +53,7 @@ export default function Content(props) {
             <>
               <p >{description}</p>
               <h5>Created on <i>{moment(creationDate).format("DD MMMM YYYY")}</i></h5>
+              <h5>Estimated duration: {timeEstimate} hours</h5>
             </>
             :
             <Input.TextArea name='description' style={{ width: '50%' }} onChange={(e) => onInputChange(e)} defaultValue={description} />
