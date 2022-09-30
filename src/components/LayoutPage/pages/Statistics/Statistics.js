@@ -10,6 +10,7 @@ import { getAllTasks } from '../../../../features/tasks/tasksSlice';
 import { getAllSprints } from '../../../../features/sprint/sprintSlice';
 import { getAllUserProjectEntries } from '../../../../features/userProject/userProjectSlice';
 import { getAllLoggedTime } from '../../../../features/loggedTime/LoggedTimeSlice';
+
 export default function Statistics() {
   const dispatch = useDispatch()
   const [customTimePeriod, setCustomTimePeriod] = useState({
@@ -45,25 +46,9 @@ export default function Statistics() {
     }
   }, [userList])
 
-  const chartTimePeriodModal = {
-    showModal: () => {
-      setIsModalOpen(true);
-    },
-    handleOk: () => {
-      setIsModalOpen(false);
-    },
-    handleCancel: () => {
-      setIsModalOpen(false);
-    },
-    onDateRangeChange: (value) => {
-      console.log(value)
-    }
-  }
-
   const getTimePeriod = () => {
     //returns an array containing the time period in Date.UTC format, format that is used by Highcharts
     const timePeriod = [];
-
     if (timePeriodType === 'predefinedTime') {
       const currentDate = new Date()
 
@@ -77,6 +62,10 @@ export default function Statistics() {
             days: 7,
             displayFutureDates: true
           };
+          // setCustomTimePeriod({
+          //   startDate: moment(),
+          //   endDate: moment().add(7, 'days')
+          // })
           break;
 
         case 'currentMonth':
@@ -84,18 +73,30 @@ export default function Statistics() {
             days: 30,
             displayFutureDates: true
           };
+          // setCustomTimePeriod({
+          //   startDate: moment(),
+          //   endDate: moment().add(30, 'days')
+          // })
           break;
         case 'pastWeek':
           selectedTimePeriod = {
             days: 7,
             displayFutureDates: false
           };
+          // setCustomTimePeriod({
+          //   startDate: moment().add(-7, 'days'),
+          //   endDate: moment()
+          // })
           break;
         case 'pastMonth':
           selectedTimePeriod = {
             days: 30,
             displayFutureDates: false
           };
+          // setCustomTimePeriod({
+          //   startDate: moment().add(-30, 'days'),
+          //   endDate: moment()
+          // })
           break;
 
       }
@@ -138,7 +139,7 @@ export default function Statistics() {
   }
 
   const getActiveSprints = () => {
-    const { startDate, endDate } = customTimePeriod //todo, changes startDate and endDate when using predefined dates
+    const { startDate, endDate } = customTimePeriod //todo, changes startDate and endDate when using predefined dates to recalculate active sprints
     const activeSprintsArr = []
     sprints?.forEach(sprint => {
       if (moment(sprint.startDate).isSameOrAfter(startDate, 'day') && moment(sprint.endDate).isSameOrBefore(endDate, 'day')) {
@@ -150,7 +151,6 @@ export default function Statistics() {
   const getUsersWithLoggedTime = () => {
     const newUsersArr = [];
     const users = [...getSelectedUsers()]
-    const activeSprints = getActiveSprints()
 
     users?.forEach((user, userIndex) => {
       //created a deep copy of the userObject, if we were to create a shallow copy we would be unable to edit/add keys
@@ -193,14 +193,37 @@ export default function Statistics() {
     const series = []
     const timePeriod = getTimePeriod() //array of UTC data, as selected by the users
     const userTasksbyProject = getUserDataPerProject() //array of objecst, containing the user name/id, the projects that they are assigned to, the eligible tasks assigned to them from sprints within the range selected and the logged tikme
+
     const getTotalWorkingTimePerPrject = (projectTasks) => {
-      //function that takes projects tasks as a parameter and returns the sum of all task estimates in hours
+      //function that takes projects tasks as a parameter and returns the sum of all task estimates in hours,
       const totalProjectHours = projectTasks.reduce(
         (accumulator, task) => accumulator + parseInt(task.taskData.timeEstimate), 0
       )
       return totalProjectHours
     }
+    const getTotalWorkingTimPerProject = (projectTasks, userName) => {
+      let projectTotalTime = 0;
+      projectTasks.forEach(task => {
 
+        const wasTimeLogged = loggedTime.filter(loggedTimeEntry => loggedTimeEntry.task.taskId === task.id)
+
+        if (wasTimeLogged.length) {
+          //if we have time logged for the task, we reduce the total logged time duration for that task
+          const totalTaskTimeLogged = wasTimeLogged.reduce(
+            (accumulator, loggedEntry) => accumulator + parseInt(loggedEntry.task.loggedHours), 0
+          )
+          //verify if the task logged time time minus the task estimate if at least one, and if so decrement it from the task estimate
+          //if the logged time is more or equal than the task estimate we would not log any time for the task, not taking it into consideration when creating the statistics
+          if (parseInt(task.taskData.timeEstimate) - totalTaskTimeLogged > 0) {
+            projectTotalTime += (parseInt(task.taskData.timeEstimate) - totalTaskTimeLogged)
+          }
+        } else {
+          projectTotalTime += parseInt(task.taskData.timeEstimate)
+        }
+      })
+      return projectTotalTime
+    }
+    // console.log(userTasksbyProject)
     userTasksbyProject.forEach(userTaskProject => {
       const userStatistic = {
         name: userTaskProject.name,
@@ -209,14 +232,14 @@ export default function Statistics() {
       let userWorkloadPerProject = userTaskProject.projects.map(project => ({
         projectId: project.id,
         availability: project.availability,
-        estimatedWorkloadDuration: getTotalWorkingTimePerPrject(project.tasks)
+        estimatedWorkloadDuration: getTotalWorkingTimPerProject(project.tasks, userTaskProject.name)
       }))
+
       timePeriod?.forEach(day => {
         const isFutureDate = moment().subtract(1, 'days').isBefore(day) //we check if the iterated date is before the currentDate or not
         let dailyTime = 0;
 
         if (isFutureDate) {
-
           userWorkloadPerProject.forEach((project, index) => {
             //we iterate over each of user's projects, check the total time duration and add the daily hours depending on their availability per project
             //for ex, if a project total duration is 5 hours but user is assigned 4 hours to that project project, for the day we would add 4 hours, 
@@ -372,15 +395,12 @@ export default function Statistics() {
 
           </Col>
         </Row>
-        <Modal title="Select custom period" visible={isModalOpen} onOk={chartTimePeriodModal.handleOk} onCancel={chartTimePeriodModal.handleCancel}>
-          < DatePicker.RangePicker
-            style={{ width: '100%' }}
-            allowClear={false}
-            defaultValue={[moment(), '']}
-            format={"DD/MM/YYYY"}
-            onChange={(value) => { chartTimePeriodModal.onDateRangeChange(value) }}
-          />
-        </Modal>
+        <Row>
+          <h2>active sprins:</h2>
+
+          {/* {getActiveSprints().map(sprint => (<p>{sprint.}</p>))} */}
+        </Row>
+
       </Card>
     </Layout >
   )
