@@ -80,7 +80,7 @@ export default function Tasks(props) {
     const userObject = userList?.find(user => user.id === task.asigneeId)
 
     return {
-      id: task.id.toString(),
+      id: task.id,
       title: task.taskData.title,
       description: task.taskData.description,
       label: userObject?.name,
@@ -144,7 +144,6 @@ export default function Tasks(props) {
   }, [tasks])
 
   useEffect(() => {
-
     setBoardData((prevState) => ({
       lanes: generateBoardData().lanes
     }))

@@ -1,8 +1,9 @@
 import React from 'react'
 import { Layout, Row, Col, Card, Select, Modal, DatePicker } from 'antd'
 import HighchartsReact from "highcharts-react-official";
-import Highcharts, { format } from 'highcharts'
+import Highcharts from 'highcharts'
 import moment from 'moment';
+import { extendMoment } from 'moment-range';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { getAllUsers } from '../../../../features/users/userSlice';
@@ -14,18 +15,15 @@ import { getAllLoggedTime } from '../../../../features/loggedTime/LoggedTimeSlic
 export default function Statistics() {
   const dispatch = useDispatch()
   const [customTimePeriod, setCustomTimePeriod] = useState({
-    startDate: moment(),
-    endDate: moment()
+    startDate: moment().add(-7, 'days'),
+    endDate: moment().add(7, 'days')
   })
-  const [timePeriodType, setTimePeriodType] = useState('predefinedTime')
   const [selectedUsers, setSelectedUsers] = useState([])
-  const [displayedTimePeriod, setDisplayedTimePeriod] = useState('currentWeek')
   const { userList } = useSelector(state => state.users)
   const { tasks } = useSelector(state => state.tasks)
   const { sprints } = useSelector(state => state.sprint)
   const { userProjectEntries } = useSelector(state => state.userProjectEntries)
   const { loggedTime } = useSelector(state => state.loggedTime)
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(getAllUsers())
@@ -49,76 +47,15 @@ export default function Statistics() {
   const getTimePeriod = () => {
     //returns an array containing the time period in Date.UTC format, format that is used by Highcharts
     const timePeriod = [];
-    if (timePeriodType === 'predefinedTime') {
-      const currentDate = new Date()
 
-      let selectedTimePeriod = {
-        days: 7,
-        displayFutureDates: true,
-      };
-      switch (displayedTimePeriod) {
-        case 'currentWeek':
-          selectedTimePeriod = {
-            days: 7,
-            displayFutureDates: true
-          };
-          // setCustomTimePeriod({
-          //   startDate: moment(),
-          //   endDate: moment().add(7, 'days')
-          // })
-          break;
+    const { startDate, endDate } = customTimePeriod;
+    const rangeDaysDuration = moment(endDate).diff(moment(startDate), 'days');
 
-        case 'currentMonth':
-          selectedTimePeriod = {
-            days: 30,
-            displayFutureDates: true
-          };
-          // setCustomTimePeriod({
-          //   startDate: moment(),
-          //   endDate: moment().add(30, 'days')
-          // })
-          break;
-        case 'pastWeek':
-          selectedTimePeriod = {
-            days: 7,
-            displayFutureDates: false
-          };
-          // setCustomTimePeriod({
-          //   startDate: moment().add(-7, 'days'),
-          //   endDate: moment()
-          // })
-          break;
-        case 'pastMonth':
-          selectedTimePeriod = {
-            days: 30,
-            displayFutureDates: false
-          };
-          // setCustomTimePeriod({
-          //   startDate: moment().add(-30, 'days'),
-          //   endDate: moment()
-          // })
-          break;
-
-      }
-      //we use an array contructor to iterara a number of $days times and generate the requested date
-      [...Array(selectedTimePeriod.days)].forEach((_, i) => {
-        const day = selectedTimePeriod.displayFutureDates ? currentDate.getUTCDate() + i : currentDate.getUTCDate() - i;
-
-        const utcDate = Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(),
-          day);
-        timePeriod.push(utcDate)
-      });
-
-    } else {
-      const { startDate, endDate } = customTimePeriod;
-      const rangeDaysDuration = moment(endDate).diff(moment(startDate), 'days');
-
-      [...Array(rangeDaysDuration + 1)].forEach((_, index) => {
-        const day = moment(new Date(moment(startDate)).getUTCDate() + index)
-        const utcDate = Date.UTC(new Date(moment(startDate)).getUTCFullYear(), new Date(moment(startDate)).getUTCMonth(), day);
-        timePeriod.push(utcDate)
-      })
-    }
+    [...Array(rangeDaysDuration + 1)].forEach((_, index) => {
+      const day = moment(new Date(moment(startDate)).getUTCDate() + index)
+      const utcDate = Date.UTC(new Date(moment(startDate)).getUTCFullYear(), new Date(moment(startDate)).getUTCMonth(), day);
+      timePeriod.push(utcDate)
+    })
 
     return timePeriod
   }
@@ -137,12 +74,13 @@ export default function Statistics() {
 
     return usersArr
   }
-
   const getActiveSprints = () => {
-    const { startDate, endDate } = customTimePeriod //todo, changes startDate and endDate when using predefined dates to recalculate active sprints
+    const selectedRange = moment.range(customTimePeriod.startDate, customTimePeriod.endDate);
+
     const activeSprintsArr = []
     sprints?.forEach(sprint => {
-      if (moment(sprint.startDate).isSameOrAfter(startDate, 'day') && moment(sprint.endDate).isSameOrBefore(endDate, 'day')) {
+      const sprintRange = moment.range(sprint.startDate, sprint.endDate)
+      if (sprintRange.overlaps(selectedRange)) {
         activeSprintsArr.push(sprint)
       }
     })
@@ -152,8 +90,7 @@ export default function Statistics() {
     const newUsersArr = [];
     const users = [...getSelectedUsers()]
 
-    users?.forEach((user, userIndex) => {
-      //created a deep copy of the userObject, if we were to create a shallow copy we would be unable to edit/add keys
+    users?.forEach((user) => {
       const newUser = JSON.parse(JSON.stringify(user))
       const userLoggedTime = loggedTime?.filter(loggedTimeEntry => loggedTimeEntry.userId === user.id)
       newUser.loggedTime = userLoggedTime
@@ -176,14 +113,13 @@ export default function Statistics() {
         return true
       }
     }
-    users?.forEach((user, userIndex) => {
-      //created a deep copy of the userObject, if we were to create a shallow copy we would be unable to edit/add keys
-      const newUser = JSON.parse(JSON.stringify(user))
+    users?.forEach((user) => {
+      const newUser = user
+
       user.projects.forEach((project, projectIndex) => {
         const projectTasks = tasks?.filter(task => isTaskValid(task, project, user))
 
         newUser.projects[projectIndex].tasks = projectTasks
-
       })
       newUsersArr.push(newUser)
     })
@@ -194,17 +130,9 @@ export default function Statistics() {
     const timePeriod = getTimePeriod() //array of UTC data, as selected by the users
     const userTasksbyProject = getUserDataPerProject() //array of objecst, containing the user name/id, the projects that they are assigned to, the eligible tasks assigned to them from sprints within the range selected and the logged tikme
 
-    const getTotalWorkingTimePerPrject = (projectTasks) => {
-      //function that takes projects tasks as a parameter and returns the sum of all task estimates in hours,
-      const totalProjectHours = projectTasks.reduce(
-        (accumulator, task) => accumulator + parseInt(task.taskData.timeEstimate), 0
-      )
-      return totalProjectHours
-    }
-    const getTotalWorkingTimPerProject = (projectTasks, userName) => {
+    const getTotalWorkingTimePerProject = (projectTasks) => {
       let projectTotalTime = 0;
       projectTasks.forEach(task => {
-
         const wasTimeLogged = loggedTime.filter(loggedTimeEntry => loggedTimeEntry.task.taskId === task.id)
 
         if (wasTimeLogged.length) {
@@ -223,7 +151,6 @@ export default function Statistics() {
       })
       return projectTotalTime
     }
-    // console.log(userTasksbyProject)
     userTasksbyProject.forEach(userTaskProject => {
       const userStatistic = {
         name: userTaskProject.name,
@@ -232,7 +159,7 @@ export default function Statistics() {
       let userWorkloadPerProject = userTaskProject.projects.map(project => ({
         projectId: project.id,
         availability: project.availability,
-        estimatedWorkloadDuration: getTotalWorkingTimPerProject(project.tasks, userTaskProject.name)
+        estimatedWorkloadDuration: getTotalWorkingTimePerProject(project.tasks, userTaskProject.name)
       }))
 
       timePeriod?.forEach(day => {
@@ -249,32 +176,27 @@ export default function Statistics() {
               userWorkloadPerProject[index].estimatedWorkloadDuration -= project.availability
             } else {
               dailyTime += project.estimatedWorkloadDuration
-              if (project.estimatedWorkloadDuration - project.estimatedWorkloadDuration < 0) {
-                userWorkloadPerProject[index].estimatedWorkloadDuration = 0
-              } else {
-                userWorkloadPerProject[index].estimatedWorkloadDuration -= project.estimatedWorkloadDuration
-              }
+              userWorkloadPerProject[index].estimatedWorkloadDuration -= project.estimatedWorkloadDuration
 
             }
           })
           userStatistic.data.push([day, dailyTime])
         } else {
           //get the  task logged time entries from the current day
-          const dailyLoggedEntries = userTaskProject.loggedTime.filter(loggedTime => moment(loggedTime.date).isSame(day, 'day'))
+          const dailyLoggedEntries = userTaskProject.loggedTime.filter(loggedTime => moment(loggedTime.date).isSame(moment(day), 'day'))
+
           dailyTime = dailyLoggedEntries.reduce(
             (accumulator, loggedEntry) => accumulator + parseInt(loggedEntry.task.loggedHours), 0
           )
-
           userStatistic.data.push([day, dailyTime])
         }
       })
       series.push(userStatistic)
     })
-
     return series
   }
 
-  const chartDefaultValue = {
+  const chartValues = {
     chart: {
       type: 'area'
     },
@@ -322,15 +244,7 @@ export default function Statistics() {
   const handleUserSelection = (value) => {
     setSelectedUsers(value);
   };
-  const handlePeriodChange = (value) => {
-    if (timePeriodType === 'predefinedTime') {
-      setDisplayedTimePeriod(value)
-    }
-  };
 
-  const onTimePeriodChange = (e) => {
-    setTimePeriodType(e)
-  }
   const onCustomRangeChange = (value) => {
     setCustomTimePeriod({
       startDate: value[0],
@@ -347,7 +261,7 @@ export default function Statistics() {
       <Card style={{ textAlign: 'left' }}>
         <HighchartsReact
           highcharts={Highcharts}
-          options={chartDefaultValue}
+          options={chartValues}
         />
         <Row style={{ fontWeight: 'bold' }} align="bottom">
           <Col span={18}>
@@ -369,38 +283,17 @@ export default function Statistics() {
           </Col>
           <Col span={6}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <p>Time period type:</p>
-              <Select defaultValue="predefinedTime" style={{ width: '50%' }} onChange={onTimePeriodChange}>
-                <Select.Option value="predefinedTime">Predefined time</Select.Option>
-                <Select.Option value="custom">Custom</Select.Option>
-              </Select>
+              <p>Time period:</p>
             </div>
-            {timePeriodType === 'predefinedTime' ?
-              <Select defaultValue="currentWeek" style={{ width: '100%' }} onChange={handlePeriodChange}>
-                <Select.Option value="currentWeek">Current Week</Select.Option>
-                <Select.Option value="currentMonth">Current Month</Select.Option>
-                <Select.Option value="pastWeek" >Past week</Select.Option>
-                <Select.Option value="pastMonth">Past Month</Select.Option>
-              </Select>
-              :
-              <DatePicker.RangePicker
-                style={{ width: '100%' }}
-                allowClear={false}
-                defaultValue={[moment(), '']}
-                format={"DD/MM/YYYY"}
-                onChange={(value) => { onCustomRangeChange(value) }}
-              />
-            }
-
-
+            <DatePicker.RangePicker
+              style={{ width: '100%' }}
+              allowClear={false}
+              defaultValue={[moment().add(-7, 'days'), moment().add(7, 'days')]}
+              format={"DD/MM/YYYY"}
+              onChange={(value) => { onCustomRangeChange(value) }}
+            />
           </Col>
         </Row>
-        <Row>
-          <h2>active sprins:</h2>
-
-          {/* {getActiveSprints().map(sprint => (<p>{sprint.}</p>))} */}
-        </Row>
-
       </Card>
     </Layout >
   )

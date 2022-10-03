@@ -159,7 +159,6 @@ export default function Task() {
 
   return (
     <Card title={<Title display={display} eventHandlers={eventHandlers} form={form} />} style={{ width: "100%", margin: "16px 0" }}>
-      <button onClick={() => { console.log(loggedTimeForm) }}>asdassd</button>
       <Content
         display={display}
         form={form}
