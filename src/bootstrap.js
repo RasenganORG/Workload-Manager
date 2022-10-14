@@ -15,16 +15,17 @@
 // );
 
 import React from 'react'
-import ReactDOM from 'react-dom'
+import ReactDOM from "react-dom/client";
 import App from './App'
 import { createMemoryHistory, createBrowserHistory } from 'history'
 
 const mount = (el) => {
-  ReactDOM.render(<App />, el)
+  const root = ReactDOM.createRoot(el)
+  root.render(<App />);
 
 }
 
-mount(document.querySelector('#project-manager-root'))
+// mount(document.getElementById('project-manager-root'))
 // if (process.env.NODE_ENV === "development") {
 //   const el = document.querySelector('#_marketing-dev-root')
 
