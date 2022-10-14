@@ -1,6 +1,6 @@
 
 import axios from "axios";
-const USER_PROJECT_URL = "http://localhost:8080/api/userProject/"
+const USER_PROJECT_URL = "http://localhost:8083/api/userProject/"
 
 //add an array of users to the userProject table
 const addUserProject = async (usersArray) => {

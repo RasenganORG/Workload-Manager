@@ -1,5 +1,5 @@
 import axios from "axios";
-const BILLING_URL = "http://localhost:8080/api/billing/"
+const BILLING_URL = "http://localhost:8083/api/billing/"
 
 //get all billing options
 const getBillingOptions = async () => {

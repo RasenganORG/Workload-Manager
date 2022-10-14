@@ -32,7 +32,7 @@ export default function ProjectItem() {
     endDate: null,
     started: false
   })
-  console.log(moment('2022-10-28T14:13:45.117Z').format('DD/MM/YYYY'))
+
   const onInputChange = (value) => {
     setNewSprint((prevState) => ({
       ...prevState,

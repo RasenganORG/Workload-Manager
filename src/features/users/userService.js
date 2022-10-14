@@ -1,6 +1,6 @@
 import axios from "axios";
-const USERS_URL = "http://localhost:8080/api/users/"
-const USER_URL = "http://localhost:8080/api/user/"
+const USERS_URL = "http://localhost:8083/api/users/"
+const USER_URL = "http://localhost:8083/api/user/"
 
 //get all users
 const getAllUsers = async () => {

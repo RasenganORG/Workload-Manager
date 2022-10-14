@@ -1,6 +1,6 @@
 import axios from "axios";
-const UTP_URL = "http://localhost:8080/api/tasks/"
-const ALL_TASKS_URL = "http://localhost:8080/api/tasks/get-all"
+const UTP_URL = "http://localhost:8083/api/tasks/"
+const ALL_TASKS_URL = "http://localhost:8083/api/tasks/get-all"
 
 //UTP = user_task_project
 

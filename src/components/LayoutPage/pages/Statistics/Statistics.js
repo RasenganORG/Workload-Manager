@@ -24,6 +24,7 @@ export default function Statistics() {
   const { sprints } = useSelector(state => state.sprint)
   const { userProjectEntries } = useSelector(state => state.userProjectEntries)
   const { loggedTime } = useSelector(state => state.loggedTime)
+  const momentRange = extendMoment(moment);
 
   useEffect(() => {
     dispatch(getAllUsers())

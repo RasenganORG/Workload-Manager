@@ -1,5 +1,5 @@
 import axios from "axios";
-const LOGGED_TIME_URL = "http://localhost:8080/api/loggedTime/"
+const LOGGED_TIME_URL = "http://localhost:8083/api/loggedTime/"
 
 //get all entries
 const addLoggedTime = async (data) => {

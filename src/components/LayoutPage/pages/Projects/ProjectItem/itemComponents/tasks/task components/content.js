@@ -38,7 +38,6 @@ export default function Content(props) {
     const user = userList?.find(user => user.id === formData.asigneeId)
 
   }
-  console.log(getAssignedUser())
   useEffect(() => {
     if (userList) {
       setUsersAssigned(getAssignedUsers(userList))

@@ -1,6 +1,6 @@
 import axios from "axios";
-const PROJECTS_URL = "http://localhost:8080/api/projects/"
-const PROJECT_URL = "http://localhost:8080/api/project/"
+const PROJECTS_URL = "http://localhost:8083/api/projects/"
+const PROJECT_URL = "http://localhost:8083/api/project/"
 //get all projects
 const getProjects = async () => {
   const response = await axios.get(PROJECTS_URL);

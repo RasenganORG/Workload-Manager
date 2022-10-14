@@ -1,5 +1,5 @@
 import axios from "axios";
-const SPRINT_URL = "http://localhost:8080/api/sprint/"
+const SPRINT_URL = "http://localhost:8083/api/sprint/"
 
 const addSprint = async (data) => {
   const response = await axios.post(`${SPRINT_URL}add`, data);
