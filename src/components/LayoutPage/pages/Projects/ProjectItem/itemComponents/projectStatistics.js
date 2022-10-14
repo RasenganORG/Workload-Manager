@@ -106,9 +106,7 @@ export default function ProjectStatistics() {
   }
   const dateCellRender = (value) => {
     const stringValue = value.format("DD/MM/yyyy");
-    console.log(formattedTasks)
     const listData = formattedTasks.filter(task => task.date === stringValue)
-    console.log(listData)
     return (
       <ul className="events">
         {listData.map((item) => (

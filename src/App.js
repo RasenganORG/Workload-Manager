@@ -22,56 +22,74 @@ import Tasks from './components/LayoutPage/pages/Projects/ProjectItem/itemCompon
 import Task from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/task';
 import EditProject from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/editProject';
 import LoggedTime from './components/LayoutPage/pages/Projects/LoggedTime';
+
+// function App() {
+//   return (
+
+//     <div className="App" >
+//       <Router>
+//         <Routes>
+//           <Route path="/" element={<LayoutPage />}>
+//             <Route index element={<Navigate to='projects' />} />
+//             <Route path="/projects" element={<Projects />} />
+//             <Route path="/projects/add-project" element={<NewProject />} />
+//             <Route path="/projects/:projectId" element={<ProjectItem />}>
+//               <Route path="" index element={<Navigate to='tasks' />} />
+//               <Route path="about" element={<AboutProject />} />
+//               <Route path="add-task" element={<NewTask />} />
+//               <Route path="statistics" element={<ProjectStatistics />} />
+//               <Route path="time-log" element={<LoggedTime />} />
+
+//               <Route path="tasks" element={<Tasks />} />
+//               <Route path="tasks/:taskId" element={<Task />} />
+//               <Route path="tasks/:taskId/time-log" element={<LoggedTime />} />
+//               <Route path="edit-project" element={<EditProject />} />
+
+
+//             </Route>
+
+//             <Route
+//               path="statistics"
+//               element={
+//                 <PrivateRoute>
+//                   <Statistics />
+//                 </PrivateRoute>
+//               } />
+//             <Route
+//               path="user-list"
+//               element={
+//                 <PrivateRoute>
+//                   <UserList />
+//                 </PrivateRoute>
+//               } />
+//           </Route>
+
+//           <Route path="/login" element={<LogIn />} />
+//           <Route path="/register" element={<Register />} />
+//           <Route path="*" element={<NotFound />} />
+//         </Routes>
+//       </Router>
+//       <ToastContainer />
+//     </div>
+
+//   );
+// }
+
+// export default App;
+
+
+import React from "react"
+import "./App.css"
+
 function App() {
+  console.log(
+    'test'
+  )
   return (
-
-    <div className="App" >
-      <Router>
-        <Routes>
-          <Route path="/" element={<LayoutPage />}>
-            <Route index element={<Navigate to='projects' />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/projects/add-project" element={<NewProject />} />
-            <Route path="/projects/:projectId" element={<ProjectItem />}>
-              <Route path="" index element={<Navigate to='tasks' />} />
-              <Route path="about" element={<AboutProject />} />
-              <Route path="add-task" element={<NewTask />} />
-              <Route path="statistics" element={<ProjectStatistics />} />
-              <Route path="time-log" element={<LoggedTime />} />
-
-              <Route path="tasks" element={<Tasks />} />
-              <Route path="tasks/:taskId" element={<Task />} />
-              <Route path="tasks/:taskId/time-log" element={<LoggedTime />} />
-              <Route path="edit-project" element={<EditProject />} />
-
-
-            </Route>
-
-            <Route
-              path="statistics"
-              element={
-                <PrivateRoute>
-                  <Statistics />
-                </PrivateRoute>
-              } />
-            <Route
-              path="user-list"
-              element={
-                <PrivateRoute>
-                  <UserList />
-                </PrivateRoute>
-              } />
-          </Route>
-
-          <Route path="/login" element={<LogIn />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Router>
-      <ToastContainer />
+    <div className='App'>
+      <h1>This is the container</h1>
     </div>
-
-  );
+  )
 }
 
-export default App;
+export default App
