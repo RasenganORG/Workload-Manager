@@ -1,27 +1,27 @@
 import './App.css';
 import React from "react";
-import "antd/dist/antd.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LayoutPage from './components/LayoutPage/LayoutPage';
-import LogIn from './components/Login/LogIn';
-import Register from './components/Register/Register';
-import Projects from './components/LayoutPage/pages/Projects/Projects';
-import ProjectItem from './components/LayoutPage/pages/Projects/ProjectItem/ProjectItem';
-import NotFound from './components/LayoutPage/pages/404/NotFound';
-import Statistics from './components/LayoutPage/pages/Statistics/Statistics';
-import UserList from './components/LayoutPage/pages/UserList/UserList';
-import NewProject from './components/LayoutPage/pages/Projects/NewProject/NewProject';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'
-import PrivateRoute from './features/auth/PrivateRoute';
-import { Navigate } from 'react-router-dom';
-import AboutProject from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/aboutProject';
-import ProjectStatistics from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/projectStatistics';
-import NewTask from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/newTask';
-import Tasks from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/tasks';
-import Task from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/task';
-import EditProject from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/editProject';
-import LoggedTime from './components/LayoutPage/pages/Projects/LoggedTime';
+// import "antd/dist/antd.css";
+// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import LayoutPage from './components/LayoutPage/LayoutPage';
+// import LogIn from './components/Login/LogIn';
+// import Register from './components/Register/Register';
+// import Projects from './components/LayoutPage/pages/Projects/Projects';
+// import ProjectItem from './components/LayoutPage/pages/Projects/ProjectItem/ProjectItem';
+// import NotFound from './components/LayoutPage/pages/404/NotFound';
+// import Statistics from './components/LayoutPage/pages/Statistics/Statistics';
+// import UserList from './components/LayoutPage/pages/UserList/UserList';
+// import NewProject from './components/LayoutPage/pages/Projects/NewProject/NewProject';
+// import { ToastContainer } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css'
+// import PrivateRoute from './features/auth/PrivateRoute';
+// import { Navigate } from 'react-router-dom';
+// import AboutProject from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/aboutProject';
+// import ProjectStatistics from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/projectStatistics';
+// import NewTask from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/newTask';
+// import Tasks from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/tasks';
+// import Task from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/tasks/task';
+// import EditProject from './components/LayoutPage/pages/Projects/ProjectItem/itemComponents/editProject';
+// import LoggedTime from './components/LayoutPage/pages/Projects/LoggedTime';
 
 // function App() {
 //   return (
@@ -78,13 +78,9 @@ import LoggedTime from './components/LayoutPage/pages/Projects/LoggedTime';
 // export default App;
 
 
-import React from "react"
-import "./App.css"
 
 function App() {
-  console.log(
-    'test'
-  )
+
   return (
     <div className='App'>
       <h1>This is the container</h1>

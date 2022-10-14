@@ -29,6 +29,7 @@ const devConfig = {
       template: './public/index.html'
     }),
 
+
   ]
 }
 
