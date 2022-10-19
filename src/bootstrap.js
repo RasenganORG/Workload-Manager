@@ -1,38 +1,26 @@
-// import React from 'react'
-// import { createRoot } from 'react-dom/client'
-
-// const App = () => {
-//   return (
-//     <h1>Project Manager App</h1>
-//   )
-// }
-
-// const root = createRoot(document.getElementById('root'));
-// root.render(
-//   <React.Fragment>
-//     <App />
-//   </React.Fragment>
-// );
-
 import React from 'react'
-import ReactDOM from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import App from './App'
-import { createMemoryHistory, createBrowserHistory } from 'history'
+import { Provider } from 'react-redux';
+import { store } from './app/store';
 
 const mount = (el) => {
-  const root = ReactDOM.createRoot(el)
-  root.render(<App />);
+  const root = createRoot(el)
 
+  root.render(
+    <Provider store={store}>
+      <App />
+    </Provider>
+  );
 }
 
-// mount(document.getElementById('project-manager-root'))
-// if (process.env.NODE_ENV === "development") {
-//   const el = document.querySelector('#_marketing-dev-root')
+if (process.env.NODE_ENV === "development") {
+  const el = document.querySelector('#_project-manager-root')
 
-//   if (el) {
-//     mount(el, {defaultHistory: createBrowserHistory() })
-//   }
-// }
+  if (el) {
+    mount(el)
+  }
+}
 
 export { mount }
 

@@ -62,7 +62,7 @@ body {
 	border-radius: 50%;
 	animation: spin 1.2s linear infinite;
 }
-
+ 
 @keyframes spin {
 	0% {
 		transform: rotate(0deg);

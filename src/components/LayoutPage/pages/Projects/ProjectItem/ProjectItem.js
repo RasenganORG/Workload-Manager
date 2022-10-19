@@ -16,6 +16,7 @@ import moment from 'moment';
 
 export default function ProjectItem() {
   const pathParams = useParams()
+
   const dispatch = useDispatch()
   const [projectTasks, setProjectTasks] = useState('')
   const [wasTaskEdited, setWasTaskEdited] = useState(false)

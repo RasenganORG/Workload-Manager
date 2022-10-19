@@ -20,7 +20,7 @@ const devConfig = {
       name: 'projectManager',
       filename: 'remoteEntry.js',
       exposes: {
-        './ProjectManagerApp': './src/bootstrap'
+        './ProjectManagerApp': './src/bootstrap',
       },
       shared: packageJson.dependencies
 

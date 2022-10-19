@@ -1,4 +1,5 @@
-import Board from 'react-trello'
+import React from 'react';
+// import Board from 'react-trello'
 import { Layout, Skeleton, Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons';
 
@@ -151,14 +152,14 @@ export default function Tasks(props) {
 
   return (
     <Layout>
-      <Board
+      {/* <Board
         data={boardData}
         style={{ background: "transparent" }}
         cardDraggable={currentSprintId.length !== 0}
         onCardClick={(cardId, metadata, laneId) => navigate(`${cardId}`)}
         onCardMoveAcrossLanes={(fromLaneId, toLaneId, cardId) => handleLaneChange(fromLaneId, toLaneId, cardId)}
         hideCardDeleteIcon={true}
-      />
+      /> */}
       <Outlet />
     </Layout>
 

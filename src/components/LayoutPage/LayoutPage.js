@@ -62,7 +62,7 @@ export default function LayoutPage() {
     <div className="Homepage">
       <Layout>
         <Layout.Header className="Layout.Header">
-          <Row>
+          <Row >
             <Col span={3}>
               <Input.Search
                 placeholder="Search project"
