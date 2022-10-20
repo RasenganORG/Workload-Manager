@@ -1,4 +1,9 @@
 module.exports = {
+  resolve: {
+    alias: {
+      process: "process/browser"
+    }
+  },
   module: {
     rules: [
       {
