@@ -43,8 +43,8 @@ export default function App() {
                 <Route path="time-log" element={<LoggedTime />} />
 
                 <Route path="tasks" element={<Tasks />} />
-                {/*   <Route path="tasks/:taskId" element={<Task />} />
-              <Route path="tasks/:taskId/time-log" element={<LoggedTime />} /> */}
+                <Route path="tasks/:taskId" element={<Task />} />
+                <Route path="tasks/:taskId/time-log" element={<LoggedTime />} />
 
                 <Route path="edit-project" element={<EditProject />} />
 

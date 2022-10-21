@@ -1,3 +1,4 @@
+import React from 'react'
 import "./Register.scss"
 import "antd/dist/antd.css";
 import { Form, Input, Button } from 'antd';

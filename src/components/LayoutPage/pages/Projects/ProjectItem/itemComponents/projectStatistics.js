@@ -1,3 +1,4 @@
+import React from 'react'
 import { Layout, Card, Badge, Calendar, PageHeader, Col, Avatar, Row, Button, Divider } from "antd"
 import HighchartsReact from "highcharts-react-official";
 import Highcharts from 'highcharts'

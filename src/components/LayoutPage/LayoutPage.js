@@ -1,6 +1,6 @@
+import React from 'react'
 import { SearchOutlined } from '@ant-design/icons';
 import { Layout, Menu, Input, Col, Row, Button } from 'antd';
-import React from 'react';
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, reset } from '../../features/auth/authSlice';
