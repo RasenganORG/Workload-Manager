@@ -117,7 +117,7 @@ export default function Statistics() {
     users?.forEach((user) => {
       const newUser = user
 
-      user.projects.forEach((project, projectIndex) => {
+      user.projects?.forEach((project, projectIndex) => {
         const projectTasks = tasks?.filter(task => isTaskValid(task, project, user))
 
         newUser.projects[projectIndex].tasks = projectTasks
@@ -130,12 +130,11 @@ export default function Statistics() {
     const series = []
     const timePeriod = getTimePeriod() //array of UTC data, as selected by the users
     const userTasksbyProject = getUserDataPerProject() //array of objecst, containing the user name/id, the projects that they are assigned to, the eligible tasks assigned to them from sprints within the range selected and the logged tikme
-
     const getTotalWorkingTimePerProject = (projectTasks) => {
       let projectTotalTime = 0;
-      projectTasks.forEach(task => {
-        const wasTimeLogged = loggedTime.filter(loggedTimeEntry => loggedTimeEntry.task.taskId === task.id)
 
+      projectTasks?.forEach(task => {
+        const wasTimeLogged = loggedTime?.filter(loggedTimeEntry => loggedTimeEntry.task.taskId === task.id)
         if (wasTimeLogged.length) {
           //if we have time logged for the task, we reduce the total logged time duration for that task
           const totalTaskTimeLogged = wasTimeLogged.reduce(
@@ -150,14 +149,15 @@ export default function Statistics() {
           projectTotalTime += parseInt(task.taskData.timeEstimate)
         }
       })
+
       return projectTotalTime
     }
-    userTasksbyProject.forEach(userTaskProject => {
+    userTasksbyProject?.forEach(userTaskProject => {
       const userStatistic = {
         name: userTaskProject.name,
         data: []
       }
-      let userWorkloadPerProject = userTaskProject.projects.map(project => ({
+      let userWorkloadPerProject = userTaskProject.projects?.map(project => ({
         projectId: project.id,
         availability: project.availability,
         estimatedWorkloadDuration: getTotalWorkingTimePerProject(project.tasks, userTaskProject.name)
@@ -168,7 +168,7 @@ export default function Statistics() {
         let dailyTime = 0;
 
         if (isFutureDate) {
-          userWorkloadPerProject.forEach((project, index) => {
+          userWorkloadPerProject?.forEach((project, index) => {
             //we iterate over each of user's projects, check the total time duration and add the daily hours depending on their availability per project
             //for ex, if a project total duration is 5 hours but user is assigned 4 hours to that project project, for the day we would add 4 hours, 
             //and then we would substract 4 hours from the project duration so that the next day we have 1 hours left to display
@@ -184,9 +184,9 @@ export default function Statistics() {
           userStatistic.data.push([day, dailyTime])
         } else {
           //get the  task logged time entries from the current day
-          const dailyLoggedEntries = userTaskProject.loggedTime.filter(loggedTime => moment(loggedTime.date).isSame(moment(day), 'day'))
+          const dailyLoggedEntries = userTaskProject.loggedTime?.filter(loggedTime => moment(loggedTime.date).isSame(moment(day), 'day'))
 
-          dailyTime = dailyLoggedEntries.reduce(
+          dailyTime = dailyLoggedEntries?.reduce(
             (accumulator, loggedEntry) => accumulator + parseInt(loggedEntry.task.loggedHours), 0
           )
           userStatistic.data.push([day, dailyTime])
