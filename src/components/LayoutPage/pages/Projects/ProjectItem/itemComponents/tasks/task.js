@@ -1,9 +1,8 @@
 import React from 'react';
 import { Card, Row, Col } from 'antd';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
-// import { updateTask, deleteTask } from '../../../../../../../features/projects/projectsSlice';
 import { getAllUsers } from '../../../../../../../features/users/userSlice';
 import Comments from './task components/comments';
 import Content from './task components/content';

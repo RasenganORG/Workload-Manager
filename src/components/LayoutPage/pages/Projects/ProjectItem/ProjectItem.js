@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux';
 import { getProjectItem } from '../../../../../features/projects/projectsSlice';
 import Spinner from '../../../../Spinner';
@@ -16,7 +16,9 @@ import moment from 'moment';
 
 export default function ProjectItem() {
   const pathParams = useParams()
+  const user = localStorage.getItem("user")
 
+  console.log(pathParams)
   const dispatch = useDispatch()
   const [projectTasks, setProjectTasks] = useState('')
   const [wasTaskEdited, setWasTaskEdited] = useState(false)

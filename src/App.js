@@ -1,7 +1,7 @@
 import './App.css';
-import React, { useEffect, Suspense } from "react";
+import React, { Suspense } from "react";
 import "antd/dist/antd.css"
-import { Link, Routes, Route, Outlet, Router, BrowserRouter, useParams } from "react-router-dom";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 import LayoutPage from './components/LayoutPage/LayoutPage';
 import LogIn from './components/Login/LogIn';
 import Register from './components/Register/Register';
@@ -27,9 +27,8 @@ export default function App() {
 
   return (
     <Suspense fallback={null}>
-      <BrowserRouter basename='projectManager'>
+      <BrowserRouter basename='pm'>
         <div className="App" >
-
           <Routes>
             <Route path="/" element={<LayoutPage />}>
               <Route index element={<Navigate to='/projects' />} />

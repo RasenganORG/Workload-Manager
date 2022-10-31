@@ -3,7 +3,7 @@ const REGISTER_URL = "http://localhost:8083/api/user"
 const LOGIN_URL = "http://localhost:8083/api/getLoggedUser/"
 
 //register user
-const register = async (userData) => {
+const register = async (userData) => {``
   const response = await axios.post(REGISTER_URL, userData)
 
   if (response.data) {

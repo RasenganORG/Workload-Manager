@@ -27,10 +27,10 @@ export default function LayoutPage() {
       label: <Link to="user-list">User list</Link>,
       key: 'user-list'
     },
-    {
-      label: <Link to="concedii">Concedii</Link>,
-      key: 'concedii'
-    },
+    // {
+    //   label: <Link to="concedii">Concedii</Link>,
+    //   key: 'concedii'
+    // },
     {
       label: <Link to="statistics">Statistics</Link>,
       key: 'statistics'

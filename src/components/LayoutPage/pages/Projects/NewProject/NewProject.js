@@ -9,11 +9,9 @@ import { addProject, getProjects } from "../../../../../features/projects/projec
 import { getAllUsers } from "../../../../../features/users/userSlice"
 import { getBillingOptions } from "../../../../../features/billing/billingSlice"
 import moment from "moment"
-import { addUserProject } from "../../../../../features/userProject/userProjectSlice";
 import { toast } from "react-toastify"
 
 export default function NewProject() {
-  const params = useParams()
   const [formData, setFormData] = useState({
     title: '',
     description: '',

@@ -19,7 +19,7 @@
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.2",
     "react-router": "^6.3.0",
-    "react-router-dom": "^6.3.0",
+    "react-router-dom": "^6.4.2",
     "react-scripts": "5.0.1",
     "react-toastify": "^9.0.7",
     "react-trello": "^2.2.11",
@@ -46,7 +46,7 @@
   "scripts": {
     "start": "webpack serve --config config/webpack.dev.js",
     "build": "webpack serve --config config/webpack.dev.js"
-    },
+  },
   "eslintConfig": {
     "extends": [
       "react-app",

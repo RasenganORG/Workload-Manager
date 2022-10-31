@@ -18,7 +18,7 @@ const devConfig = {
   },
   plugins: [
     new ModuleFederationPlugin({
-      name: 'projectManager',
+      name: 'pm',
       filename: 'remoteEntry.js',
       exposes: {
         './ProjectManagerApp': './src/bootstrap',
