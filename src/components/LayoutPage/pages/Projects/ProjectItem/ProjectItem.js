@@ -16,14 +16,9 @@ import moment from 'moment';
 
 export default function ProjectItem() {
   const pathParams = useParams()
-  const user = localStorage.getItem("user")
-
-  console.log(pathParams)
   const dispatch = useDispatch()
   const [projectTasks, setProjectTasks] = useState('')
-  const [wasTaskEdited, setWasTaskEdited] = useState(false)
   const projectTasksData = { projectTasks, setProjectTasks }
-  const taskEditTrigger = { wasTaskEdited, setWasTaskEdited }
   const [projectSprints, setProjectSprints] = useState([])
   const { currentProject, isLoading } = useSelector(state => state.projects)
   const { sprints, currentSprintId } = useSelector(state => state.sprint)
@@ -35,14 +30,12 @@ export default function ProjectItem() {
     endDate: null,
     started: false
   })
-
   const onInputChange = (value) => {
     setNewSprint((prevState) => ({
       ...prevState,
       name: value
     }))
   }
-
   const onDateRangeChange = (value) => {
     setNewSprint((prevState) => ({
       ...prevState,
@@ -53,6 +46,7 @@ export default function ProjectItem() {
   const handleSprintChange = (e) => {
     dispatch(updateCurrentSprintId(e))
   }
+
   useEffect(() => {
     dispatch(getSprintsByProject(pathParams.projectId))
 
@@ -69,23 +63,15 @@ export default function ProjectItem() {
       setProjectSprints(sprints)
     }
   }, [currentProject.isSuccess])
-
   useEffect(() => {
     if (sprints?.length > 0) {
       setProjectSprints(sprints)
     }
   }, [sprints])
-  const updateRenderedSprints = async () => {
-    dispatch(addSprint(newSprint)).then(getSprintsByProject(pathParams.projectId))
 
-  }
-  useEffect(() => {
-    console.log("Sprint was changed")
-  }, [currentSprintId])
-
-  useEffect(() => {
-    console.log("Sprint was changed")
-  }, [projectSprints])
+  // useEffect(() => {
+  //   console.log("Sprint was changed")
+  // }, [projectSprints])
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -94,25 +80,21 @@ export default function ProjectItem() {
     newSprints.push(addedSprint)
     setProjectSprints(newSprints)
   }
-  const generateSprintSelect = (sprints) => {
+  const generateSprintSelect = () => (
+    <Select
+      style={{
+        width: '100%',
+        textAlign: 'left'
+      }}
+      onChange={handleSprintChange}
+    >
+      {projectSprints ? projectSprints.map((sprint, index) => {
+        return <Select.Option key={index} value={sprint.sprintId}>{sprint.name}</Select.Option>
 
+      }) : 'No sprints added'}
 
-    return (
-      <Select
-        style={{
-          width: '100%',
-          textAlign: 'left'
-        }}
-        onChange={handleSprintChange}
-      >
-        {projectSprints ? projectSprints.map((sprint, index) => {
-          return <Select.Option key={index} value={sprint.sprintId}>{sprint.name}</Select.Option>
-
-        }) : 'No sprints added'}
-
-      </Select>
-    )
-  }
+    </Select>
+  )
 
   const sprintModal = {
     showModal: () => {
@@ -229,7 +211,7 @@ export default function ProjectItem() {
                 <Button onClick={sprintModal.showModal}> Add a Sprint </Button>
               </Col>
 
-              <Modal destroyOnClose={true} title="Create Sprint" visible={isModalOpen} onOk={sprintModal.handleOk} onCancel={sprintModal.handleCancel}>
+              <Modal destroyOnClose={true} title="Create Sprint" open={isModalOpen} onOk={sprintModal.handleOk} onCancel={sprintModal.handleCancel}>
                 <Form layout='vertical'>
                   <Form.Item label="Sprint name">
                     <Input
@@ -263,7 +245,9 @@ export default function ProjectItem() {
 
             </Row>
             <Row className="projectContent">
-              <Outlet context={{ projectTasksData, taskEditTrigger }} />
+              <button onClick={() => console.log(projectTasks)}>console.log da context</button>
+
+              <Outlet context={{ projectTasksData }} />
             </Row>
           </Layout.Content>
         </Layout>

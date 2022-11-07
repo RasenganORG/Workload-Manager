@@ -1,8 +1,6 @@
 import React from 'react';
 import Board from 'react-trello'
-import { Layout, Skeleton, Spin } from 'antd'
-import { LoadingOutlined } from '@ant-design/icons';
-
+import { Layout } from 'antd'
 import { Outlet, useNavigate, useOutletContext, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from "react-redux"
 import { deleteTask, updateProject } from '../../../../../../../features/projects/projectsSlice';
@@ -13,7 +11,7 @@ import { resetReloadTasks, resetTasksSuccess } from '../../../../../../../featur
 import { toast } from 'react-toastify';
 import { getSprintsByProject } from '../../../../../../../features/sprint/sprintSlice';
 
-export default function Tasks(props) {
+export default function Tasks() {
   const params = useParams()
   const navigate = useNavigate();
   const dispatch = useDispatch()
@@ -22,10 +20,8 @@ export default function Tasks(props) {
   const { userList } = useSelector(state => state.users)
   const { currentSprintId } = useSelector(state => state.sprint)
   const { projectTasks, setProjectTasks } = useOutletContext().projectTasksData; // <-- access context value
-  const [wasTaskEdited, setWasTaskEdited] = useState(false)
   const [boardData, setBoardData] = useState({ lanes: [] })
   //get project tasks and filter them by the que ue
-
 
   const updateProjectTasksLocally = (taskId, currentTask, newTask) => {
     const updateProjectTasks = [...projectTasks]
@@ -148,10 +144,12 @@ export default function Tasks(props) {
     setBoardData((prevState) => ({
       lanes: generateBoardData().lanes
     }))
+    console.log('realoaded Tasks page, here are the tasks', projectTasks)
   }, [currentSprintId, tasks])
 
   return (
     <Layout>
+      <button onClick={() => console.log(projectTasks)}>console.log da context</button>
       <Board
         data={boardData}
         style={{ background: "transparent" }}

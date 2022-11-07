@@ -24,7 +24,6 @@ export default function Statistics() {
   const { sprints } = useSelector(state => state.sprint)
   const { userProjectEntries } = useSelector(state => state.userProjectEntries)
   const { loggedTime } = useSelector(state => state.loggedTime)
-  const momentRange = extendMoment(moment);
 
   useEffect(() => {
     dispatch(getAllUsers())
@@ -36,7 +35,7 @@ export default function Statistics() {
 
   useEffect(() => {
     if (userList) {
-      if (selectedUsers.length === 0) {
+      if (selectedUsers?.length === 0) {
         //we select the 3 first users by default
         const defaultSelectedUsers = []
         userList.slice(0, 3)?.forEach(user => defaultSelectedUsers.push(user.id))
@@ -71,13 +70,15 @@ export default function Statistics() {
         projects: projectsAssignedTo
       }
       usersArr.push(userObj)
+
     })
 
     return usersArr
   }
   const getActiveSprints = () => {
-    const selectedRange = moment.range(customTimePeriod.startDate, customTimePeriod.endDate);
+    extendMoment(moment);
 
+    const selectedRange = moment.range(customTimePeriod.startDate, customTimePeriod.endDate);
     const activeSprintsArr = []
     sprints?.forEach(sprint => {
       const sprintRange = moment.range(sprint.startDate, sprint.endDate)

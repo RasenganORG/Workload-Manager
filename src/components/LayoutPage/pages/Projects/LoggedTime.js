@@ -1,10 +1,10 @@
 import React from 'react'
 import { useNavigate, useParams } from 'react-router';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { Card, Row, Col, Descriptions, Button, Select, Input, Tooltip, Comment } from 'antd';
+import { Card, Row, Button } from 'antd';
 import moment from 'moment';
-import { EditOutlined, LeftCircleOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, LeftCircleOutlined } from '@ant-design/icons';
 
 function LoggedTime() {
   const params = useParams()
@@ -38,9 +38,7 @@ function LoggedTime() {
             <h2 style={{ margin: 0 }}>{title}</h2>
           </>
         </div>
-
         <div style={{ display: 'flex', gap: '1rem' }}>
-
           <Button onClick={() => navigate(-1)}><LeftCircleOutlined />Go back</Button>
         </div>
       </div>
@@ -53,7 +51,6 @@ function LoggedTime() {
     return (
       <Card key={index}>
         <Row justify='space-between' >
-
           <div style={{ textAlign: 'left' }}>
             <h3 style={{ fontWeight: 'bold' }}> {moment(date).format('DD MMMM, YYYY')}, logged by {filteredUser?.name}</h3>
             <p>Time logged: <b>{duration} hours</b> </p>
