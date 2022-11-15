@@ -1,5 +1,5 @@
 import React from 'react'
-import { Layout, Row, Col, Card, Select, Modal, DatePicker } from 'antd'
+import { Layout, Row, Col, Card, Select, DatePicker } from 'antd'
 import HighchartsReact from "highcharts-react-official";
 import Highcharts from 'highcharts'
 import moment from 'moment';

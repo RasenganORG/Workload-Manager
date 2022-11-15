@@ -40,42 +40,35 @@ export default function App() {
                 <Route path="add-task" element={<NewTask />} />
                 <Route path="statistics" element={<ProjectStatistics />} />
                 <Route path="time-log" element={<LoggedTime />} />
-
                 <Route path="tasks" element={<Tasks />} />
                 <Route path="tasks/:taskId" element={<Task />} />
                 <Route path="tasks/:taskId/time-log" element={<LoggedTime />} />
-
                 <Route path="edit-project" element={<EditProject />} />
-
-
               </Route>
-
               <Route
                 path="statistics"
                 element={
                   <PrivateRoute>
                     <Statistics />
                   </PrivateRoute>
-                } />
+                }
+              />
               <Route
                 path="user-list"
                 element={
                   <PrivateRoute>
                     <UserList />
                   </PrivateRoute>
-                } />
+                }
+              />
             </Route>
-
             <Route path="/login" element={<LogIn />} />
             <Route path="/register" element={<Register />} />
             <Route path="*" element={<NotFound />} />
-
           </Routes>
-
           <ToastContainer />
         </div>
       </BrowserRouter>
     </Suspense>
   )
 }
-

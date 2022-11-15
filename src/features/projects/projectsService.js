@@ -66,4 +66,4 @@ const projectsService = {
   deleteTask
 }
 
-export default projectsService
+export default projectsService;

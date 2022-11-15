@@ -3,7 +3,7 @@ import { Layout, Card, Form, Input, Button, Select, DatePicker, Tag, Modal } fro
 import { CloseOutlined } from '@ant-design/icons';
 import TextArea from "antd/lib/input/TextArea"
 import { useState, useEffect } from "react"
-import { useNavigate, useParams } from "react-router"
+import { useNavigate } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { addProject, getProjects } from "../../../../../features/projects/projectsSlice"
 import { getAllUsers } from "../../../../../features/users/userSlice"
@@ -53,7 +53,6 @@ export default function NewProject() {
       }
     }))
   }
-
   const onSubmit = () => {
     //even though the the assignedUsers belong to a separate backend entity, userProject,
     //we send through the addProject function, as at the submission time we don't have access 
@@ -192,7 +191,6 @@ export default function NewProject() {
 
               data-cy="addUsers"
             >
-
               <div>
                 {assignedUsers.map((user, index) => {
                   return <Tag
@@ -206,9 +204,7 @@ export default function NewProject() {
                   </Tag>
                 })}
                 <Button type="primary" onClick={() => userModal.showModal()}>Add user</Button>
-
               </div>
-
               <Modal title="Add user" visible={isUserModalOpen} onOk={userModal.handleOk} onCancel={userModal.handleCancel}>
                 <Form layout='vertical'>
                   <Form.Item label="User to be added">
@@ -229,14 +225,9 @@ export default function NewProject() {
                       onChange={(e) => userModal.onChange(e.target.value, 'availability')}
                     />
                   </Form.Item>
-
                 </Form>
               </Modal>
-
-
-
             </Form.Item>
-
             <Form.Item
               label="Estimated completation time"
               name="dueDateWrapper"
@@ -247,7 +238,6 @@ export default function NewProject() {
                 }
               ]}
               data-cy="dueDateSelector"
-
             >
               <DatePicker.RangePicker
                 allowClear={false}
@@ -255,7 +245,6 @@ export default function NewProject() {
                 format={"DD/MM/YYYY"}
                 onChange={(value) => { onDateRangeChange(value) }}
               />
-
             </Form.Item>
             <Form.Item
               label="Color label"
@@ -299,7 +288,6 @@ export default function NewProject() {
                   return <Select.Option key={index} value={billingOption.billing}>{billingOption.billing}</Select.Option>
                 }) : ''}
               </Select>
-
             </Form.Item>
             <Form.Item data-cy="newProjectSubmitButton" >
               <Button type="primary" htmlType="submit">Create project</Button>

@@ -51,6 +51,7 @@ export default function ProjectItem() {
     dispatch(getSprintsByProject(pathParams.projectId))
 
   }, [])
+
   useEffect(() => {
     dispatch(getLoggedTimeByProject(pathParams.projectId))
     dispatch(getProjectItem(pathParams.projectId))
@@ -68,10 +69,6 @@ export default function ProjectItem() {
       setProjectSprints(sprints)
     }
   }, [sprints])
-
-  // useEffect(() => {
-  //   console.log("Sprint was changed")
-  // }, [projectSprints])
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -149,6 +146,7 @@ export default function ProjectItem() {
   if (project == null) {
     return <>Error loading project</>
   }
+
   return (
     <div className="ProjectWrapper">
       <Layout
@@ -166,21 +164,18 @@ export default function ProjectItem() {
           <Breadcrumb.Item>{project ? project.title : ''}</Breadcrumb.Item>
         </Breadcrumb>
         <Layout>
-
           <Layout.Content>
             <Row justify="space-between" align="middle">
               <PageHeader
                 className="site-page-header"
                 title={project ? project?.title : ''}
               />
-
               <Button type="primary" style={{ margin: "16px", display: "flex" }}>
                 <Link to="add-task">
                   Add task
                 </Link>
               </Button>
             </Row>
-
             <Row>
               <Menu defaultSelectedKeys={href} style={{ flex: 'auto' }} mode='horizontal' items={menuItems} />
               <Menu mode='horizontal' selectable={false} items={
@@ -189,7 +184,6 @@ export default function ProjectItem() {
                   label: <Link to="edit-project">Edit project <EditOutlined /></Link>,
                 }]
               } />
-
             </Row>
             <Row>
               <Col
@@ -201,7 +195,6 @@ export default function ProjectItem() {
               <Col span={16}   >
                 {generateSprintSelect()}
               </Col>
-
               <Col
                 span={6}
                 style={{
@@ -210,7 +203,6 @@ export default function ProjectItem() {
               >
                 <Button onClick={sprintModal.showModal}> Add a Sprint </Button>
               </Col>
-
               <Modal destroyOnClose={true} title="Create Sprint" open={isModalOpen} onOk={sprintModal.handleOk} onCancel={sprintModal.handleCancel}>
                 <Form layout='vertical'>
                   <Form.Item label="Sprint name">
@@ -230,7 +222,6 @@ export default function ProjectItem() {
                       }
                     ]}
                     data-cy="dueDateSelector"
-
                   >
                     <DatePicker.RangePicker
                       allowClear={false}
@@ -238,7 +229,6 @@ export default function ProjectItem() {
                       format={"DD/MM/YYYY"}
                       onChange={(value) => { onDateRangeChange(value) }}
                     />
-
                   </Form.Item>
                 </Form>
               </Modal>
@@ -250,8 +240,6 @@ export default function ProjectItem() {
           </Layout.Content>
         </Layout>
       </Layout>
-
     </div >
-
   )
 }

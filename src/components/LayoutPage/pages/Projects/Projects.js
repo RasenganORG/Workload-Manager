@@ -4,13 +4,12 @@ import { useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Spinner from '../../../Spinner';
-import { getProjects, reset } from '../../../../features/projects/projectsSlice';
+import { getProjects } from '../../../../features/projects/projectsSlice';
 import { getAllUsers } from '../../../../features/users/userSlice';
 import { getAllTasks } from '../../../../features/tasks/tasksSlice';
 import { getAllUserProjectEntries } from '../../../../features/userProject/userProjectSlice';
 import { useState } from 'react';
 import { getBacklogItems } from '../../../../features/backlog/backlogSlice';
-
 import moment from 'moment';
 
 export default function Projects() {
@@ -18,7 +17,6 @@ export default function Projects() {
   const dispatch = useDispatch()
   const { tasks } = useSelector(state => state.tasks)
   const { userProjectEntries } = useSelector(state => state.userProjectEntries)
-  const [assignedUsers, setAssignedUsers] = useState([])
   const { userList } = useSelector(state => state.users)
 
   useEffect(() => {
@@ -28,7 +26,6 @@ export default function Projects() {
     dispatch(getAllUserProjectEntries())
     dispatch(getBacklogItems())
   }, [dispatch])
-
 
   const generateProjectCard = (project, index) => {
     const { id, title, description, status, estimatedWorkingTime } = project
@@ -71,7 +68,6 @@ export default function Projects() {
         </Tooltip>
       )
     }
-
     return (
       <Col key={index} span={8}>
         <Badge.Ribbon text={status} color="green">
@@ -83,7 +79,6 @@ export default function Projects() {
                   {assignedUsers ? assignedUsers.map((user, index) => {
                     return generateUserAvatars(user, index)
                   }) : ''}
-
                 </Avatar.Group>
               </Col>
               <Col span={12} style={{
