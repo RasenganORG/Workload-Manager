@@ -245,8 +245,6 @@ export default function ProjectItem() {
 
             </Row>
             <Row className="projectContent">
-              <button onClick={() => console.log(projectTasks)}>console.log da context</button>
-
               <Outlet context={{ projectTasksData }} />
             </Row>
           </Layout.Content>
