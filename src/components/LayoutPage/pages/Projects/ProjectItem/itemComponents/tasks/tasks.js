@@ -149,7 +149,6 @@ export default function Tasks() {
 
   return (
     <Layout>
-      <button onClick={() => console.log(projectTasks)}>console.log da context</button>
       <Board
         data={boardData}
         style={{ background: "transparent" }}
